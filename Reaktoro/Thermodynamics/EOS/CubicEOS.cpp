@@ -361,16 +361,16 @@ struct CubicEOS::Impl
 
         for(unsigned i = 0; i < nspecies; ++i)
         {
-            const real bi = bbar[i];
-            const real betai = P*bi/(R*T);
-            const real ai = abar[i];
-            const real aiT = abarT[i];
-            const real qi = q*(1 + ai/amix - bi/bmix);
-            const real qiT = qi*qT/q + q*(aiT - ai*amixT/amix)/amix;
-            const real Ai = (epsilon + sigma - 1.0)*betai - 1.0;
-            const real Bi = (epsilon*sigma - epsilon - sigma)*(2*beta*betai - beta*beta) - (epsilon + sigma - q)*(betai - beta) - (epsilon + sigma - qi)*beta;
-            const real Ci = -3*sigma*epsilon*beta*beta*betai + 2*epsilon*sigma*beta*beta*beta - (epsilon*sigma + qi)*beta*beta - 2*(epsilon*sigma + q)*(beta*betai - beta*beta);
-            const real Zi = -(Ai*Z*Z + (Bi + B)*Z + Ci + 2*C)/(3*Z*Z + 2*A*Z + B);
+            const auto bi = bbar[i];
+            const auto betai = P*bi/(R*T);
+            const auto ai = abar[i];
+            const auto aiT = abarT[i];
+            const auto qi = q*(1 + ai/amix - bi/bmix);
+            const auto qiT = qi*qT/q + q*(aiT - ai*amixT/amix)/amix;
+            const auto Ai = (epsilon + sigma - 1.0)*betai - 1.0;
+            const auto Bi = (epsilon*sigma - epsilon - sigma)*(2*beta*betai - beta*beta) - (epsilon + sigma - q)*(betai - beta) - (epsilon + sigma - qi)*beta;
+            const auto Ci = -3*sigma*epsilon*beta*beta*betai + 2*epsilon*sigma*beta*beta*beta - (epsilon*sigma + qi)*beta*beta - 2*(epsilon*sigma + q)*(beta*betai - beta*beta);
+            const auto Zi = -(Ai*Z*Z + (Bi + B)*Z + Ci + 2*C)/(3*Z*Z + 2*A*Z + B);
             real Ii;
             if(epsilon != sigma) Ii = I + ((Zi + sigma*betai)/(Z + sigma*beta) - (Zi + epsilon*betai)/(Z + epsilon*beta))/(sigma - epsilon);
                             else Ii = I * (1 + betai/beta - (Zi + epsilon*betai)/(Z + epsilon*beta));
