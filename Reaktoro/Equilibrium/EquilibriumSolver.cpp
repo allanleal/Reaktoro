@@ -80,16 +80,16 @@ struct EquilibriumSolver::Impl
     ThermoVector u0;
 
     /// The chemical potentials of the species
-    VectorXdual u;
+    VectorXr u;
 
     /// The chemical potentials of the equilibrium species
-    VectorXdual ue;
+    VectorXr ue;
 
     /// The chemical potentials of the inert species
     Vector ui;
 
     /// The mole fractions of the equilibrium species
-    VectorXdual xe;
+    VectorXr xe;
 
     /// The optimisation problem
     OptimumProblem optimum_problem;

@@ -38,7 +38,7 @@ struct MixtureState
     Pressure P;
 
     /// The mole fractions of the species in the mixture and their partial derivatives
-    VectorXdual x;
+    VectorXr x;
 };
 
 /// Compare two MixtureState instances for equality
@@ -100,7 +100,7 @@ public:
     /// Calculates the mole fractions of the species and their partial derivatives
     /// @param n The molar abundance of the species (in units of mol)
     /// @return The mole fractions and their partial derivatives
-    auto moleFractions(VectorConstRef n) const -> VectorXdual;
+    auto moleFractions(VectorConstRef n) const -> VectorXr;
 
     /// Calculate the state of the mixture.
     /// @param T The temperature (in units of K)
@@ -191,16 +191,16 @@ auto GeneralMixture<SpeciesType>::chargesSpecies() const -> Vector
 }
 
 template<class SpeciesType>
-auto GeneralMixture<SpeciesType>::moleFractions(VectorConstRef n) const -> VectorXdual
+auto GeneralMixture<SpeciesType>::moleFractions(VectorConstRef n) const -> VectorXr
 {
     const unsigned nspecies = numSpecies();
     if(nspecies == 1)
     {
-        VectorXdual x(1);
+        VectorXr x(1);
         x.val[0] = 1.0;
         return x;
     }
-    VectorXdual x(nspecies);
+    VectorXr x(nspecies);
     const double nt = n.sum();
     if(nt == 0.0) return x;
     x.val = n/nt;

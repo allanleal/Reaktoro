@@ -82,11 +82,11 @@ public:
 
     /// Calculate the reaction quotients of the reactions.
     /// @param properties The chemical properties of the system
-    auto lnReactionQuotients(const ChemicalProperties& properties) const -> VectorXdual;
+    auto lnReactionQuotients(const ChemicalProperties& properties) const -> VectorXr;
 
     /// Calculate the kinetic rates of the reactions.
     /// @param properties The thermodynamic properties of the system
-    auto rates(const ChemicalProperties& properties) const -> VectorXdual;
+    auto rates(const ChemicalProperties& properties) const -> VectorXr;
 
 private:
     struct Impl;

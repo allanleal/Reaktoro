@@ -129,7 +129,7 @@ public:
     auto properties() const -> const ChemicalProperties&;
 
     /// Return the reaction rates of the ChemicalQuantity instance.
-    auto rates() const -> const VectorXdual&;
+    auto rates() const -> const VectorXr&;
 
     /// Return the tag variable of the ChemicalQuantity instance.
     auto tag() const -> double;

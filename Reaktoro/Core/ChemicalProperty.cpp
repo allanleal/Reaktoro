@@ -138,10 +138,10 @@ auto ChemicalProperty::pE(const ChemicalSystem& system) -> ChemicalPropertyFunct
         const ThermoVector u0a = rows(properties.standardPartialMolarGibbsEnergies(), ifirst, num_aqueous)/RT;
 
         // The ln activities of the aqueous species
-        const VectorXdual ln_aa = rows(properties.lnActivities(), ifirst, num_aqueous);
+        const VectorXr ln_aa = rows(properties.lnActivities(), ifirst, num_aqueous);
 
         // The normalized chemical potentials of the aqueous species
-        const VectorXdual ua = u0a + ln_aa;
+        const VectorXr ua = u0a + ln_aa;
 
         // The standard chemical potential of electron species (zero if not existent in the system)
         ThermoScalar u0a_electron;
@@ -149,7 +149,7 @@ auto ChemicalProperty::pE(const ChemicalSystem& system) -> ChemicalPropertyFunct
             u0a_electron = u0a[ielectron];
 
         // The dual potentials of the elements and its derivatives
-        VectorXdual y;
+        VectorXr y;
         y.val = lu.trsolve(ua.val);
         y.ddT = lu.trsolve(ua.ddT);
         y.ddP = lu.trsolve(ua.ddP);
@@ -301,7 +301,7 @@ auto ChemicalProperty::alkalinity(const ChemicalSystem& system) -> ChemicalPrope
         alkalinity_factors[j++] = system.species(i).charge();
 
     ChemicalScalar volume(num_species);
-    VectorXdual n;
+    VectorXr n;
 
     ChemicalPropertyFunction f = [=](const ChemicalProperties& properties) mutable
     {

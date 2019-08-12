@@ -53,7 +53,7 @@ auto mineralCatalystFunctionActivity(const MineralCatalyst& catalyst, const Chem
 
     MineralCatalystFunction fn = [=](const ChemicalProperties& properties) mutable
     {
-        const VectorXdual& ln_a = properties.lnActivities();
+        const VectorXr& ln_a = properties.lnActivities();
         ChemicalScalar ai = exp(ln_a[ispecies]);
         ChemicalScalar res = pow(ai, power);
         return res;

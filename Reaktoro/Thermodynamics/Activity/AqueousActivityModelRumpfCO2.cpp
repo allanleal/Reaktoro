@@ -53,7 +53,7 @@ auto aqueousActivityModelRumpfCO2(const AqueousMixture& mixture) -> AqueousActiv
         const ThermoScalar& T = state.T;
 
         // The stoichiometric molalities of the ions in the aqueous mixture and their molar derivatives
-        const VectorXdual& ms = state.ms;
+        const VectorXr& ms = state.ms;
 
         // Extract the stoichiometric molalities of the specific ions and their molar derivatives
         if(iNa < nions) mNa = ms[iNa];

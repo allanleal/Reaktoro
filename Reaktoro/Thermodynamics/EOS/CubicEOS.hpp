@@ -90,16 +90,16 @@ public:
         ChemicalScalar residual_molar_heat_capacity_cv;
 
         /// The partial molar volumes of the speies in the phase (in units of m3/mol).
-        VectorXdual partial_molar_volumes;
+        VectorXr partial_molar_volumes;
 
         /// The residual partial molar Gibbs energies of the species in the phase (in units of J/mol).
-        VectorXdual residual_partial_molar_gibbs_energies;
+        VectorXr residual_partial_molar_gibbs_energies;
 
         /// The residual partial molar enthalpies of the species in the phase (in units of J/mol).
-        VectorXdual residual_partial_molar_enthalpies;
+        VectorXr residual_partial_molar_enthalpies;
 
         /// The fugacity coefficients of the species in the phase.
-        VectorXdual ln_fugacity_coefficients;
+        VectorXr ln_fugacity_coefficients;
     };
 
     /// Construct a CubicEOS instance with given number of species.
@@ -145,7 +145,7 @@ public:
     /// @param T The temperature of the phase (in units of K)
     /// @param P The pressure of the phase (in units of Pa)
     /// @param x The mole fractions of the species in the phase (in units of mol/mol)
-    auto operator()(const ThermoScalar& T, const ThermoScalar& P, const VectorXdual& x) -> Result;
+    auto operator()(const ThermoScalar& T, const ThermoScalar& P, const VectorXr& x) -> Result;
 
 private:
     struct Impl;

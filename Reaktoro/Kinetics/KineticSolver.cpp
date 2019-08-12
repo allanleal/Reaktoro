@@ -113,19 +113,19 @@ struct KineticSolver::Impl
     ChemicalProperties properties;
 
     /// The vector with the values of the reaction rates
-    VectorXdual r;
+    VectorXr r;
 
     /// The partial derivatives of the reaction rates `r` w.r.t. to `be`, `ne`, `nk`, `and `u = [be nk]`
     Matrix drdbe, drdne, drdnk, drdu;
 
     /// The source term
-    VectorXdual q;
+    VectorXr q;
 
     /// The partial derivatives of the source rates `q` w.r.t. to `be`, `ne`, `nk`, `and `u = [be nk]`
     Matrix dqdbe, dqdne, dqdnk, dqdu;
 
     /// The function that calculates the source term in the problem
-    std::function<VectorXdual(const ChemicalProperties&)> source_fn;
+    std::function<VectorXr(const ChemicalProperties&)> source_fn;
 
     Impl()
     {}
@@ -207,7 +207,7 @@ struct KineticSolver::Impl
 
         source_fn = [=](const ChemicalProperties& properties)
         {
-            VectorXdual q(num_species);
+            VectorXr q(num_species);
             q.val = n;
             if(old_source_fn)
                 q += old_source_fn(properties);
@@ -223,7 +223,7 @@ struct KineticSolver::Impl
         const Index size = system.numSpeciesInPhase(iphase);
         auto old_source_fn = source_fn;
         ChemicalScalar phasevolume;
-        VectorXdual q(size);
+        VectorXr q(size);
 
         source_fn = [=](const ChemicalProperties& properties) mutable
         {
@@ -244,7 +244,7 @@ struct KineticSolver::Impl
         const Indices& isolid_species = partition.indicesSolidSpecies();
         auto old_source_fn = source_fn;
         ChemicalScalar fluidvolume;
-        VectorXdual q;
+        VectorXr q;
 
         source_fn = [=](const ChemicalProperties& properties) mutable
         {
@@ -264,7 +264,7 @@ struct KineticSolver::Impl
         const Indices& ifluid_species = partition.indicesFluidSpecies();
         auto old_source_fn = source_fn;
         ChemicalScalar solidvolume;
-        VectorXdual q;
+        VectorXr q;
 
         source_fn = [=](const ChemicalProperties& properties) mutable
         {

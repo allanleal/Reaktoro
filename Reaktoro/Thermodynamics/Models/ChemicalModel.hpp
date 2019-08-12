@@ -55,68 +55,68 @@ public:
     auto phaseProperties(Index iphase, Index ispecies, Index nspecies) const -> PhaseChemicalModelResultConst;
 
     /// Return the natural log of the activity coefficients of the species.
-    inline auto lnActivityCoefficients() -> VectorXdualRef { return ln_activity_coefficients; }
+    inline auto lnActivityCoefficients() -> VectorXrRef { return ln_activity_coefficients; }
 
     /// Return the natural log of the activity coefficients of the species.
-    inline auto lnActivityCoefficients() const -> VectorXdualConstRef { return ln_activity_coefficients; }
+    inline auto lnActivityCoefficients() const -> VectorXrConstRef { return ln_activity_coefficients; }
 
     /// Return the natural log of the activities of the species.
-    inline auto lnActivities() -> VectorXdualRef { return ln_activities; }
+    inline auto lnActivities() -> VectorXrRef { return ln_activities; }
 
     /// Return the natural log of the activities of the species.
-    inline auto lnActivities() const -> VectorXdualConstRef { return ln_activities; }
+    inline auto lnActivities() const -> VectorXrConstRef { return ln_activities; }
 
     /// Return the molar volumes of the phases (in units of m3/mol).
-    inline auto phaseMolarVolumes() -> VectorXdualRef { return phase_molar_volumes; }
+    inline auto phaseMolarVolumes() -> VectorXrRef { return phase_molar_volumes; }
 
     /// Return the molar volumes of the phases (in units of m3/mol).
-    inline auto phaseMolarVolumes() const -> VectorXdualConstRef { return phase_molar_volumes; }
+    inline auto phaseMolarVolumes() const -> VectorXrConstRef { return phase_molar_volumes; }
 
     /// Return the residual molar Gibbs energies of the phases w.r.t. to its ideal state (in units of J/mol).
-    inline auto phaseResidualMolarGibbsEnergies() -> VectorXdualRef { return phase_residual_molar_gibbs_energies; }
+    inline auto phaseResidualMolarGibbsEnergies() -> VectorXrRef { return phase_residual_molar_gibbs_energies; }
 
     /// Return the residual molar Gibbs energies of the phases w.r.t. to its ideal state (in units of J/mol).
-    inline auto phaseResidualMolarGibbsEnergies() const -> VectorXdualConstRef { return phase_residual_molar_gibbs_energies; }
+    inline auto phaseResidualMolarGibbsEnergies() const -> VectorXrConstRef { return phase_residual_molar_gibbs_energies; }
 
     /// Return the residual molar enthalpies of the phases w.r.t. to its ideal state (in units of J/mol).
-    inline auto phaseResidualMolarEnthalpies() -> VectorXdualRef { return phase_residual_molar_enthalpies; }
+    inline auto phaseResidualMolarEnthalpies() -> VectorXrRef { return phase_residual_molar_enthalpies; }
 
     /// Return the residual molar enthalpies of the phases w.r.t. to its ideal state (in units of J/mol).
-    inline auto phaseResidualMolarEnthalpies() const -> VectorXdualConstRef { return phase_residual_molar_enthalpies; }
+    inline auto phaseResidualMolarEnthalpies() const -> VectorXrConstRef { return phase_residual_molar_enthalpies; }
 
     /// Return the residual molar isobaric heat capacities of the phases w.r.t. to its ideal state (in units of J/(mol*K)).
-    inline auto phaseResidualMolarHeatCapacitiesCp() -> VectorXdualRef { return phase_residual_molar_heat_capacities_cp; }
+    inline auto phaseResidualMolarHeatCapacitiesCp() -> VectorXrRef { return phase_residual_molar_heat_capacities_cp; }
 
     /// Return the residual molar isobaric heat capacities of the phases w.r.t. to its ideal state (in units of J/(mol*K)).
-    inline auto phaseResidualMolarHeatCapacitiesCp() const -> VectorXdualConstRef { return phase_residual_molar_heat_capacities_cp; }
+    inline auto phaseResidualMolarHeatCapacitiesCp() const -> VectorXrConstRef { return phase_residual_molar_heat_capacities_cp; }
 
     /// Return the residual molar isochoric heat capacities of the phases w.r.t. to its ideal state (in units of J/(mol*K)).
-    inline auto phaseResidualMolarHeatCapacitiesCv() -> VectorXdualRef { return phase_residual_molar_heat_capacities_cv; }
+    inline auto phaseResidualMolarHeatCapacitiesCv() -> VectorXrRef { return phase_residual_molar_heat_capacities_cv; }
 
     /// Return the residual molar isochoric heat capacities of the phases w.r.t. to its ideal state (in units of J/(mol*K)).
-    inline auto phaseResidualMolarHeatCapacitiesCv() const -> VectorXdualConstRef { return phase_residual_molar_heat_capacities_cv; }
+    inline auto phaseResidualMolarHeatCapacitiesCv() const -> VectorXrConstRef { return phase_residual_molar_heat_capacities_cv; }
 
 private:
     /// The natural log of the activity coefficients of the species.
-    VectorXdual ln_activity_coefficients;
+    VectorXr ln_activity_coefficients;
 
     /// The natural log of the activities of the species.
-    VectorXdual ln_activities;
+    VectorXr ln_activities;
 
     /// The molar volumes of the phases (in units of m3/mol).
-    VectorXdual phase_molar_volumes;
+    VectorXr phase_molar_volumes;
 
     /// The residual molar Gibbs energies of the phases w.r.t. to its ideal state (in units of J/mol).
-    VectorXdual phase_residual_molar_gibbs_energies;
+    VectorXr phase_residual_molar_gibbs_energies;
 
     /// The residual molar enthalpies of the phases w.r.t. to its ideal state (in units of J/mol).
-    VectorXdual phase_residual_molar_enthalpies;
+    VectorXr phase_residual_molar_enthalpies;
 
     /// The residual molar isobaric heat capacities of the phases w.r.t. to its ideal state (in units of J/(mol*K)).
-    VectorXdual phase_residual_molar_heat_capacities_cp;
+    VectorXr phase_residual_molar_heat_capacities_cp;
 
     /// The residual molar isochoric heat capacities of the phases w.r.t. to its ideal state (in units of J/(mol*K)).
-    VectorXdual phase_residual_molar_heat_capacities_cv;
+    VectorXr phase_residual_molar_heat_capacities_cv;
 };
 
 /// The signature of the chemical model function that calculates the chemical properties of the species in a chemical system.

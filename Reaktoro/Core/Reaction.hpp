@@ -46,7 +46,7 @@ using ReactionRateFunction = std::function<ChemicalScalar(const ChemicalProperti
 /// @param properties The thermodynamic properties of the chemical system at (*T*, *P*, **n**)
 /// @see Reaction
 /// @ingroup Core
-using ReactionRateVectorFunction = std::function<VectorXdual(const ChemicalProperties&)>;
+using ReactionRateVectorFunction = std::function<VectorXr(const ChemicalProperties&)>;
 
 /// Provide a computational representation of a chemical reaction.
 /// The Reaction class provides a representation of a chemical reaction
