@@ -239,33 +239,37 @@ struct EquilibriumSolver::Impl
             u = u0 + properties.lnActivities();
 
             // Set the scaled chemical potentials of the equilibrium species
-            ue = rows(u, ies, ies);
+            ue = rows(u, ies);
 
             // Set the mole fractions of the equilibrium species
-            xe = rows(properties.moleFractions(), ies, ies);
+            xe = rows(properties.moleFractions(), ies);
 
             // Set the objective result
-            res.val = dot(ne, ue.val);
-            res.grad = ue.val;
+            res.val = dot(ne, ue);
+            res.grad = ue;
 
             // Set the Hessian of the objective function
             switch(options.hessian)
             {
             case GibbsHessian::Exact:
-                res.hessian.mode = Hessian::Dense;
-                res.hessian.dense = ue.ddn;
+                RuntimeError("Could not use GibbsHessian::Exact.", "This develop version currently only supports GibbsHessian::ApproximationDiagonal.");
+                // res.hessian.mode = Hessian::Dense;
+                // res.hessian.dense = ue.ddn;
                 break;
             case GibbsHessian::ExactDiagonal:
-                res.hessian.mode = Hessian::Diagonal;
-                res.hessian.diagonal = diagonal(ue.ddn);
+                RuntimeError("Could not use GibbsHessian::ExactDiagonal.", "This develop version currently only supports GibbsHessian::ApproximationDiagonal.");
+                // res.hessian.mode = Hessian::Diagonal;
+                // res.hessian.diagonal = diagonal(ue.ddn);
                 break;
             case GibbsHessian::Approximation:
-                res.hessian.mode = Hessian::Dense;
-                res.hessian.dense = diag(inv(xe.val)) * xe.ddn;
+                RuntimeError("Could not use GibbsHessian::Approximation.", "This develop version currently only supports GibbsHessian::ApproximationDiagonal.");
+                // res.hessian.mode = Hessian::Dense;
+                // res.hessian.dense = diag(inv(xe.val)) * xe.ddn;
                 break;
             case GibbsHessian::ApproximationDiagonal:
                 res.hessian.mode = Hessian::Diagonal;
-                res.hessian.diagonal = diagonal(xe.ddn)/xe.val;
+                // res.hessian.diagonal = diagonal(xe.ddn)/xe.val;
+                res.hessian.diagonal = 1/xe - 1;
                 break;
             }
 
@@ -283,7 +287,7 @@ struct EquilibriumSolver::Impl
     auto updateOptimumState(const ChemicalState& state) -> void
     {
         // The temperature and the RT factor
-        const double T  = state.temperature();
+        const real T  = state.temperature();
         const double RT = universalGasConstant*T;
 
         // Set the molar amounts of the species
@@ -305,14 +309,14 @@ struct EquilibriumSolver::Impl
     auto updateChemicalState(ChemicalState& state) -> void
     {
         // The temperature and the RT factor
-        const double T  = state.temperature();
+        const real T  = state.temperature();
         const double RT = universalGasConstant*T;
 
         // Update the molar amounts of the equilibrium species
         n(ies) = optimum_state.x;
 
         // Update the normalized chemical potentials of the inert species
-        ui = u.val(iis);
+        ui = u(iis);
 
         // Update the normalized dual potentials of the elements
         y = zeros(E); y(iee) = optimum_state.y;
@@ -332,7 +336,7 @@ struct EquilibriumSolver::Impl
     }
 
     /// Find a feasible approximation for an equilibrium problem.
-    auto approximate(ChemicalState& state, double T, double P, Vector be) -> EquilibriumResult
+    auto approximate(ChemicalState& state, const real& T, const real& P, Vector be) -> EquilibriumResult
     {
         // Check the dimension of the vector `be`
         Assert(unsigned(be.rows()) == Ee,
@@ -358,10 +362,10 @@ struct EquilibriumSolver::Impl
         properties.update(T, P);
 
         // Get the standard Gibbs energies of the equilibrium species
-        const Vector ge0 = properties.standardPartialMolarGibbsEnergies().val(ies);
+        const Vector ge0 = properties.standardPartialMolarGibbsEnergies()(ies);
 
         // Get the ln activity constants of the equilibrium species
-        const Vector ln_ce = properties.lnActivityConstants().val(ies);
+        const Vector ln_ce = properties.lnActivityConstants()(ies);
 
         // Define the optimisation problem
         OptimumProblem optimum_problem;
@@ -403,7 +407,7 @@ struct EquilibriumSolver::Impl
     }
 
     /// Find an initial guess for an equilibrium problem.
-    auto initialguess(ChemicalState& state, double T, double P, Vector be) -> EquilibriumResult
+    auto initialguess(ChemicalState& state, const real& T, const real& P, Vector be) -> EquilibriumResult
     {
         // Solve the linear programming problem to obtain an approximation
         auto result = approximate(state, T, P, be);
@@ -439,7 +443,7 @@ struct EquilibriumSolver::Impl
     }
 
     /// Solve the equilibrium problem
-    auto solve(ChemicalState& state, double T, double P, VectorConstRef be) -> EquilibriumResult
+    auto solve(ChemicalState& state, const real& T, const real& P, VectorConstRef be) -> EquilibriumResult
     {
         // Check the dimension of the vector `be`
         Assert(be.size() == static_cast<int>(Ee),
@@ -451,7 +455,7 @@ struct EquilibriumSolver::Impl
     }
 
     /// Solve the equilibrium problem
-    auto solve(ChemicalState& state, double T, double P, const double* b) -> EquilibriumResult
+    auto solve(ChemicalState& state, const real& T, const real& P, const double* b) -> EquilibriumResult
     {
         // Set the molar amounts of the elements
         be = Vector::Map(b, Ee);
@@ -505,21 +509,21 @@ struct EquilibriumSolver::Impl
     /// Return the sensitivity of the equilibrium state.
     auto sensitivity() -> const EquilibriumSensitivity&
     {
-        zerosEe = zeros(Ee);
-        zerosNe = zeros(Ne);
-        unitjEe = zeros(Ee);
+        // zerosEe = zeros(Ee);
+        // zerosNe = zeros(Ne);
+        // unitjEe = zeros(Ee);
 
-        sensitivities.dndT = zeros(Ne);
-        sensitivities.dndP = zeros(Ne);
-        sensitivities.dndb = zeros(Ne, Ee);
+        // sensitivities.dndT = zeros(Ne);
+        // sensitivities.dndP = zeros(Ne);
+        // sensitivities.dndb = zeros(Ne, Ee);
 
-        sensitivities.dndT = solver.dxdp(ue.ddT, zerosEe);
-        sensitivities.dndP = solver.dxdp(ue.ddP, zerosEe);
-        for(Index j = 0; j < Ee; ++j)
-        {
-            unitjEe = unit(Ee, j);
-            sensitivities.dndb.col(j) = solver.dxdp(zerosNe, unitjEe);
-        }
+        // sensitivities.dndT = solver.dxdp(ue.ddT, zerosEe);
+        // sensitivities.dndP = solver.dxdp(ue.ddP, zerosEe);
+        // for(Index j = 0; j < Ee; ++j)
+        // {
+        //     unitjEe = unit(Ee, j);
+        //     sensitivities.dndb.col(j) = solver.dxdp(zerosNe, unitjEe);
+        // }
 
         return sensitivities;
     }
@@ -527,37 +531,37 @@ struct EquilibriumSolver::Impl
     /// Compute the sensitivity of the species amounts with respect to temperature.
     auto dndT() -> VectorConstRef
     {
-        const auto& ieq_species = partition.indicesEquilibriumSpecies();
-        zerosEe = zeros(Ee);
-        sensitivities.dndT = zeros(N);
-        sensitivities.dndT(ieq_species) = solver.dxdp(ue.ddT, zerosEe);
+        // const auto& ieq_species = partition.indicesEquilibriumSpecies();
+        // zerosEe = zeros(Ee);
+        // sensitivities.dndT = zeros(N);
+        // sensitivities.dndT(ieq_species) = solver.dxdp(ue.ddT, zerosEe);
         return sensitivities.dndT;
     }
 
     /// Compute the sensitivity of the species amounts with respect to pressure.
     auto dndP() -> VectorConstRef
     {
-        const auto& ieq_species = partition.indicesEquilibriumSpecies();
-        zerosEe = zeros(Ee);
-        sensitivities.dndP = zeros(N);
-        sensitivities.dndP(ieq_species) = solver.dxdp(ue.ddP, zerosEe);
+        // const auto& ieq_species = partition.indicesEquilibriumSpecies();
+        // zerosEe = zeros(Ee);
+        // sensitivities.dndP = zeros(N);
+        // sensitivities.dndP(ieq_species) = solver.dxdp(ue.ddP, zerosEe);
         return sensitivities.dndP;
     }
 
     /// Compute the sensitivity of the species amounts with respect to element amounts.
     auto dndb() -> VectorConstRef
     {
-        const auto& ieq_species = partition.indicesEquilibriumSpecies();
-        const auto& ieq_elements = partition.indicesEquilibriumElements();
-        zerosEe = zeros(Ee);
-        zerosNe = zeros(Ne);
-        unitjEe = zeros(Ee);
-        sensitivities.dndb = zeros(Ne, Ee);
-        for(Index j : ieq_elements)
-        {
-            unitjEe = unit(Ee, j);
-            sensitivities.dndb.col(j)(ieq_species) = solver.dxdp(zerosNe, unitjEe);
-        }
+        // const auto& ieq_species = partition.indicesEquilibriumSpecies();
+        // const auto& ieq_elements = partition.indicesEquilibriumElements();
+        // zerosEe = zeros(Ee);
+        // zerosNe = zeros(Ne);
+        // unitjEe = zeros(Ee);
+        // sensitivities.dndb = zeros(Ne, Ee);
+        // for(Index j : ieq_elements)
+        // {
+        //     unitjEe = unit(Ee, j);
+        //     sensitivities.dndb.col(j)(ieq_species) = solver.dxdp(zerosNe, unitjEe);
+        // }
         return sensitivities.dndb;
     }
 };
@@ -597,7 +601,7 @@ auto EquilibriumSolver::setPartition(const Partition& partition) -> void
     pimpl->setPartition(partition);
 }
 
-auto EquilibriumSolver::approximate(ChemicalState& state, double T, double P, VectorConstRef be) -> EquilibriumResult
+auto EquilibriumSolver::approximate(ChemicalState& state, const real& T, const real& P, VectorConstRef be) -> EquilibriumResult
 {
     return pimpl->approximate(state, T, P, be);
 }
@@ -612,12 +616,12 @@ auto EquilibriumSolver::approximate(ChemicalState& state) -> EquilibriumResult
     return approximate(state, state.temperature(), state.pressure(), state.elementAmounts());
 }
 
-auto EquilibriumSolver::solve(ChemicalState& state, double T, double P, VectorConstRef be) -> EquilibriumResult
+auto EquilibriumSolver::solve(ChemicalState& state, const real& T, const real& P, VectorConstRef be) -> EquilibriumResult
 {
     return pimpl->solve(state, T, P, be);
 }
 
-auto EquilibriumSolver::solve(ChemicalState& state, double T, double P, const double* be) -> EquilibriumResult
+auto EquilibriumSolver::solve(ChemicalState& state, const real& T, const real& P, const double* be) -> EquilibriumResult
 {
     return pimpl->solve(state, T, P, be);
 }

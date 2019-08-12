@@ -81,13 +81,13 @@ public:
     /// @param iphase The index of the phase
     /// @param T The temperature (in units of K)
     /// @param P The pressure (in units of Pa)
-    virtual auto properties(ThermoModelResult& res, double T, double P) -> void;
+    virtual auto properties(ThermoModelResult& res, const real& T, const real& P) -> void;
 
     /// Return the chemical properties of the phases and its species.
     /// @param T The temperature (in units of K)
     /// @param P The pressure (in units of Pa)
     /// @param n The amounts of the species (in units of mol)
-    virtual auto properties(ChemicalModelResult& res, double T, double P, VectorConstRef n) -> void;
+    virtual auto properties(ChemicalModelResult& res, const real& T, const real& P, VectorConstRef n) -> void;
 
     /// Return a clone of this Phreeqc instance
     virtual auto clone() const -> std::shared_ptr<Interface>;
@@ -98,7 +98,7 @@ public:
     /// properties of the species.
     /// @param T The temperature (in units of K)
     /// @param P The pressure (in units of Pa)
-    auto set(double T, double P) -> void;
+    auto set(const real& T, const real& P) -> void;
 
     /// Set the temperature, pressure and species composition of the interfaced code.
     /// This method should be used to update all thermodynamic properties
@@ -108,7 +108,7 @@ public:
     /// @param T The temperature (in units of K)
     /// @param P The pressure (in units of Pa)
     /// @param n The composition of the species (in units of mol)
-    auto set(double T, double P, VectorConstRef n) -> void;
+    auto set(const real& T, const real& P, VectorConstRef n) -> void;
 
     /// Load a PHREEQC database.
     /// This method will initialize the Phreeqc instance with all species and reactions

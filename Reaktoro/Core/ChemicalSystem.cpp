@@ -132,7 +132,7 @@ struct ChemicalSystem::Impl
 
     auto initializeThermoModel() -> void
     {
-        thermo_model = [&](ThermoModelResult& res, double T, double P)
+        thermo_model = [&](ThermoModelResult& res, const real& T, const real& P)
         {
             const Index num_phases = phases.size();
             Index offset = 0;
@@ -148,7 +148,7 @@ struct ChemicalSystem::Impl
 
     auto initializeChemicalModel() -> void
     {
-        chemical_model = [&](ChemicalModelResult& res, double T, double P, VectorConstRef n)
+        chemical_model = [&](ChemicalModelResult& res, const real& T, const real& P, VectorXrConstRef n)
         {
             const Index num_phases = phases.size();
             Index offset = 0;
@@ -490,14 +490,14 @@ auto ChemicalSystem::elementAmountInSpecies(Index ielement, const Indices& ispec
     return bval;
 }
 
-auto ChemicalSystem::properties(double T, double P) const -> ThermoProperties
+auto ChemicalSystem::properties(const real& T, const real& P) const -> ThermoProperties
 {
     ThermoProperties prop(*this);
     prop.update(T, P);
     return prop;
 }
 
-auto ChemicalSystem::properties(double T, double P, VectorConstRef n) const -> ChemicalProperties
+auto ChemicalSystem::properties(const real& T, const real& P, VectorConstRef n) const -> ChemicalProperties
 {
     ChemicalProperties prop(*this);
     prop.update(T, P, n);

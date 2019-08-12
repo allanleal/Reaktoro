@@ -131,26 +131,6 @@ auto KineticPath::setPartition(const Partition& partition) -> void
     pimpl->setPartition(partition);
 }
 
-auto KineticPath::addSource(const ChemicalState& state, double volumerate, std::string units) -> void
-{
-    pimpl->solver.addSource(state, volumerate, units);
-}
-
-auto KineticPath::addPhaseSink(std::string phase, double volumerate, std::string units) -> void
-{
-    pimpl->solver.addPhaseSink(phase, volumerate, units);
-}
-
-auto KineticPath::addFluidSink(double volumerate, std::string units) -> void
-{
-    pimpl->solver.addFluidSink(volumerate, units);
-}
-
-auto KineticPath::addSolidSink(double volumerate, std::string units) -> void
-{
-    pimpl->solver.addSolidSink(volumerate, units);
-}
-
 auto KineticPath::solve(ChemicalState& state, double t0, double t1, std::string units) -> void
 {
     pimpl->solve(state, t0, t1, units);

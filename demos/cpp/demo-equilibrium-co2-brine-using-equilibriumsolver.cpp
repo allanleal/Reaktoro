@@ -41,8 +41,8 @@ int main()
     problem.add("NaCl", 0.1, "mol");
 
     // Get the temperature, pressure, and mole amounts of the elements.
-    const double T = problem.temperature();
-    const double P = problem.pressure();
+    const real T = problem.temperature();
+    const real P = problem.pressure();
     const Vector b = problem.elementAmounts();
 
     // Create an object of EquilibriumSolver class that can be reused many times.

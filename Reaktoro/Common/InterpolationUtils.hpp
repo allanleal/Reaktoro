@@ -21,22 +21,24 @@
 #include <vector>
 
 // Reaktoro includes
+#include <Reaktoro/Common/Real.hpp>
+#include <Reaktoro/Math/Matrix.hpp>
 
 namespace Reaktoro {
 
 auto interpolate(
-    const std::vector<double>& temperatures,
-    const std::vector<double>& pressures,
-    const std::vector<real>& scalars) -> ThermoScalarFunction;
+    const std::vector<real>& temperatures,
+    const std::vector<real>& pressures,
+    const std::vector<real>& scalars) -> std::function<real(const real&, const real&)>;
 
 auto interpolate(
-    const std::vector<double>& temperatures,
-    const std::vector<double>& pressures,
-    const ThermoScalarFunction& func) -> ThermoScalarFunction;
+    const std::vector<real>& temperatures,
+    const std::vector<real>& pressures,
+    const std::function<real(const real&, const real&)>& func) -> std::function<real(const real&, const real&)>;
 
 auto interpolate(
-    const std::vector<double>& temperatures,
-    const std::vector<double>& pressures,
-    const std::vector<ThermoScalarFunction>& fs) -> ThermoVectorFunction;
+    const std::vector<real>& temperatures,
+    const std::vector<real>& pressures,
+    const std::vector<std::function<real(const real&, const real&)>>& fs) -> std::function<VectorXr(const real&, const real&)>;
 
 } // namespace Reaktoro

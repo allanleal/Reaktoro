@@ -21,6 +21,8 @@
 #include <functional>
 
 // Reaktoro includes
+#include <Reaktoro/Common/Real.hpp>
+#include <Reaktoro/Math/Matrix.hpp>
 
 namespace Reaktoro {
 
@@ -54,6 +56,6 @@ using PhaseThermoModelResult = PhaseThermoModelResultBase<VectorXrRef>;
 using PhaseThermoModelResultConst = PhaseThermoModelResultBase<VectorXrConstRef>;
 
 /// The signature of the chemical model function that calculates the thermodynamic properties of the species in a phase.
-using PhaseThermoModel = std::function<void(PhaseThermoModelResult&, Temperature, Pressure)>;
+using PhaseThermoModel = std::function<void(PhaseThermoModelResult&, const real&, const real&)>;
 
 } // namespace Reaktoro

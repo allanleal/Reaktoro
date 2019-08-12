@@ -33,65 +33,60 @@ namespace internal {
 using AlphaResult = std::tuple<real, real, real>;
 
 /// A high-order function that return an `alpha` function that calculates alpha, alphaT and alphaTT (temperature derivatives) for a given EOS.
-auto alpha(CubicEOS::Model type) -> std::function<AlphaResult(const real&, double)>
+auto alpha(CubicEOS::Model type) -> std::function<AlphaResult(const real&, const real&)>
 {
     // The alpha function for van der Waals EOS
-    auto alphaVDW = [](const real& Tr, double omega) -> AlphaResult
+    auto alphaVDW = [](const real& Tr, const real& omega) -> AlphaResult
     {
-        real val(1.0);
-        real ddt(0.0);
-        real d2dt2(0.0);
-        return std::make_tuple(val, ddt, d2dt2);
+        const auto val = 1.0;
+        const auto ddT = 0.0;
+        const auto d2dT2 = 0.0;
+        return std::make_tuple(val, ddT, d2dT2);
     };
 
     // The alpha function for Redlich-Kwong EOS
-    auto alphaRK = [](const real& Tr, double omega) -> AlphaResult
+    auto alphaRK = [](const real& T, const real& omega) -> AlphaResult
     {
-        real val = 1.0/sqrt(Tr);
-        real ddt = -0.5/Tr * val;
-        real d2dt2 = -0.5/Tr * (ddt - val/Tr);
-        ddt *= Tr.ddT;
-        d2dt2 *= Tr.ddT*Tr.ddT;
-        return std::make_tuple(val, ddt, d2dt2);
+        const auto sqrtT = std::sqrt(T);
+        const auto val = 1.0/sqrtT;
+        const auto ddT = -0.5 / T * val;
+        const auto d2dT2 = 0.5/(T*T) * val - 0.5/T * ddT;
+        return std::make_tuple(val, ddT, d2dT2);
     };
 
     // The alpha function for Soave-Redlich-Kwong EOS
-    auto alphaSRK = [](const real& Tr, double omega) -> AlphaResult
+    auto alphaSRK = [](const real& T, const real& omega) -> AlphaResult
     {
-        double m = 0.480 + 1.574*omega - 0.176*omega*omega;
-        real sqrtTr = sqrt(Tr);
-        real aux_val = 1.0 + m*(1.0 - sqrtTr);
-        real aux_ddt = -0.5*m/sqrtTr;
-        real aux_d2dt2 = 0.25*m/(Tr*sqrtTr);
-        real val = aux_val*aux_val;
-        real ddt = 2.0*aux_val*aux_ddt;
-        real d2dt2 = 2.0*(aux_ddt*aux_ddt + aux_val*aux_d2dt2);
-        ddt *= Tr.ddT;
-        d2dt2 *= Tr.ddT*Tr.ddT;
-        return std::make_tuple(val, ddt, d2dt2);
+        const auto m = 0.480 + 1.574*omega - 0.176*omega*omega;
+        const auto sqrtT = std::sqrt(T);
+        const auto aux_val = 1.0 + m*(1.0 - sqrtT);
+        const auto aux_ddT = -0.5*m/sqrtT;
+        const auto aux_d2dT2 = 0.25*m/(T*sqrtT);
+        const auto val = aux_val*aux_val;
+        const auto ddT = 2.0*aux_val*aux_ddT;
+        const auto d2dT2 = 2.0*(aux_ddT*aux_ddT + aux_val*aux_d2dT2);
+        return std::make_tuple(val, ddT, d2dT2);
     };
 
     // The alpha function for Peng-Robinson (1978) EOS
-    auto alphaPR = [](const real& Tr, double omega) -> AlphaResult
+    auto alphaPR = [](const real& T, const real& omega) -> AlphaResult
     {
         // Jaubert, J.-N., Vitu, S., Mutelet, F. and Corriou, J.-P., 2005.
         // Extension of the PPR78 model (predictive 1978, Peng–Robinson EOS
         // with temperature dependent kij calculated through a group
         // contribution method) to systems containing aromatic compounds.
         // Fluid Phase Equilibria, 237(1-2), pp.193–211.
-        double m = omega <= 0.491 ?
+        const auto m = omega <= 0.491 ?
             0.374640 + 1.54226*omega - 0.269920*omega*omega :
             0.379642 + 1.48503*omega - 0.164423*omega*omega + 0.016666*omega*omega*omega;
-        real sqrtTr = sqrt(Tr);
-        real aux_val = 1.0 + m*(1.0 - sqrtTr);
-        real aux_ddt = -0.5*m/sqrtTr;
-        real aux_d2dt2 = 0.25*m/(Tr*sqrtTr);
-        real val = aux_val*aux_val;
-        real ddt = 2.0*aux_val*aux_ddt;
-        real d2dt2 = 2.0*(aux_ddt*aux_ddt + aux_val*aux_d2dt2);
-        ddt *= Tr.ddT;
-        d2dt2 *= Tr.ddT*Tr.ddT;
-        return std::make_tuple(val, ddt, d2dt2);
+        const auto sqrtT = std::sqrt(T);
+        const auto aux_val = 1.0 + m*(1.0 - sqrtT);
+        const auto aux_ddT = -0.5*m/sqrtT;
+        const auto aux_d2dT2 = 0.25*m/(T*sqrtT);
+        const auto val = aux_val*aux_val;
+        const auto ddT = 2.0*aux_val*aux_ddT;
+        const auto d2dT2 = 2.0*(aux_ddT*aux_ddT + aux_val*aux_d2dT2);
+        return std::make_tuple(val, ddT, d2dT2);
     };
 
     switch(type)
@@ -166,13 +161,13 @@ struct CubicEOS::Impl
     CubicEOS::Model model = CubicEOS::PengRobinson;
 
     /// The critical temperatures of the species (in units of K).
-    std::vector<double> critical_temperatures;
+    std::vector<real> critical_temperatures;
 
     /// The critical pressures of the species (in units of Pa).
-    std::vector<double> critical_pressures;
+    std::vector<real> critical_pressures;
 
     /// The acentric factors of the species.
-    std::vector<double> acentric_factors;
+    std::vector<real> acentric_factors;
 
     /// The function that calculates the interaction parameters kij and its temperature derivatives.
     InteractionParamsFunction calculate_interaction_params;
@@ -195,15 +190,15 @@ struct CubicEOS::Impl
     auto operator()(const real& T, const real& P, const VectorXr& x) -> Result
     {
         // Check if the mole fractions are zero or non-initialized
-        if(x.val.size() == 0 || min(x.val) <= 0.0)
+        if(x.size() == 0 || min(x) <= 0.0)
             return Result(nspecies); // result with zero values
 
         // Auxiliary variables
-        const double R = universalGasConstant;
-        const double Psi = internal::Psi(model);
-        const double Omega = internal::Omega(model);
-        const double epsilon = internal::epsilon(model);
-        const double sigma = internal::sigma(model);
+        const auto R = universalGasConstant;
+        const auto Psi = internal::Psi(model);
+        const auto Omega = internal::Omega(model);
+        const auto epsilon = internal::epsilon(model);
+        const auto sigma = internal::sigma(model);
         const auto alpha = internal::alpha(model);
 
         // Calculate the parameters `a` of the cubic equation of state for each species
@@ -212,16 +207,15 @@ struct CubicEOS::Impl
         VectorXr aTT(nspecies);
         for(unsigned i = 0; i < nspecies; ++i)
         {
-            const double Tc = critical_temperatures[i];
-            const double Pc = critical_pressures[i];
-            const double omega = acentric_factors[i];
-            const double factor = Psi*R*R*(Tc*Tc)/Pc;
-            const real Tr = T/Tc;
-            real alpha_val, alpha_ddt, alpha_d2dt2;
-            std::tie(alpha_val, alpha_ddt, alpha_d2dt2) = alpha(Tr, omega);
+            const auto Tc = critical_temperatures[i];
+            const auto Pc = critical_pressures[i];
+            const auto omega = acentric_factors[i];
+            const auto factor = Psi*R*R*(Tc*Tc)/Pc;
+            real alpha_val, alpha_ddT, alpha_d2dT2;
+            std::tie(alpha_val, alpha_ddT, alpha_d2dT2) = alpha(T, omega);
             a[i] = factor * alpha_val;
-            aT[i] = factor * alpha_ddt;
-            aTT[i] = factor * alpha_d2dt2;
+            aT[i] = factor * alpha_ddT;
+            aTT[i] = factor * alpha_d2dT2;
         };
 
         // Calculate the parameters `b` of the cubic equation of state for each species
@@ -241,26 +235,26 @@ struct CubicEOS::Impl
             kres = calculate_interaction_params(kargs);
 
         // Calculate the parameter `amix` of the phase and the partial molar parameters `abar` of each species
-        real amix(nspecies);
-        real amixT(nspecies);
-        real amixTT(nspecies);
-        VectorXr abar(nspecies);
-        VectorXr abarT(nspecies);
+        real amix = 0.0;
+        real amixT = 0.0;
+        real amixTT = 0.0;
+        VectorXr abar = zeros(nspecies);
+        VectorXr abarT = zeros(nspecies);
         for(unsigned i = 0; i < nspecies; ++i)
         {
             for(unsigned j = 0; j < nspecies; ++j)
             {
-                const real r = kres.k.empty() ? real(1.0) : 1.0 - kres.k[i][j];
-                const real rT = kres.kT.empty() ? real(0.0) : -kres.kT[i][j];
-                const real rTT = kres.kTT.empty() ? real(0.0) : -kres.kTT[i][j];
+                const auto r = kres.k.empty() ? 1.0 : 1.0 - kres.k[i][j];
+                const auto rT = kres.kT.empty() ? 0.0 : -kres.kT[i][j];
+                const auto rTT = kres.kTT.empty() ? 0.0 : -kres.kTT[i][j];
 
-                const real s = sqrt(a[i]*a[j]);
-                const real sT = 0.5*s/(a[i]*a[j]) * (aT[i]*a[j] + a[i]*aT[j]);
-                const real sTT = 0.5*s/(a[i]*a[j]) * (aTT[i]*a[j] + 2*aT[i]*aT[j] + a[i]*aTT[j]) - sT*sT/s;
+                const auto s = std::sqrt(a[i]*a[j]);
+                const auto sT = 0.5*s/(a[i]*a[j]) * (aT[i]*a[j] + a[i]*aT[j]);
+                const auto sTT = 0.5*s/(a[i]*a[j]) * (aTT[i]*a[j] + 2*aT[i]*aT[j] + a[i]*aTT[j]) - sT*sT/s;
 
-                const real aij = r*s;
-                const real aijT = rT*s + r*sT;
-                const real aijTT = rTT*s + 2.0*rT*sT + r*sTT;
+                const auto aij = r*s;
+                const auto aijT = rT*s + r*sT;
+                const auto aijTT = rTT*s + 2.0*rT*sT + r*sTT;
 
                 amix += x[i] * x[j] * aij;
                 amixT += x[i] * x[j] * aijT;
@@ -279,42 +273,42 @@ struct CubicEOS::Impl
         }
 
         // Calculate the parameter `bmix` of the cubic equation of state
-        real bmix(nspecies);
-        Vector bbar(nspecies);
+        real bmix = 0.0;
+        Vector bbar = zeros(nspecies);
         for(unsigned i = 0; i < nspecies; ++i)
         {
-            const double Tci = critical_temperatures[i];
-            const double Pci = critical_pressures[i];
+            const auto Tci = critical_temperatures[i];
+            const auto Pci = critical_pressures[i];
             bbar[i] = Omega*R*Tci/Pci;
             bmix += x[i] * bbar[i];
         }
 
         // Calculate the temperature derivative of `bmix`
-        const double bmixT = 0.0; // no temperature dependence
+        const auto bmixT = 0.0; // no temperature dependence
 
         // Calculate auxiliary quantities `beta` and `q`
-        const real beta = P*bmix/(R*T);
-        const real betaT = beta * (bmixT/bmix - 1.0/T);
+        const auto beta = P*bmix/(R*T);
+        const auto betaT = beta * (bmixT/bmix - 1.0/T);
 
-        const real q = amix/(bmix*R*T);
-        const real qT = q*(amixT/amix - 1.0/T);
-        const real qTT = qT*qT/q + q*(1.0/(T*T) + amixTT/amix - amixT*amixT/(amix*amix));
+        const auto q = amix/(bmix*R*T);
+        const auto qT = q*(amixT/amix - 1.0/T);
+        const auto qTT = qT*qT/q + q*(1.0/(T*T) + amixTT/amix - amixT*amixT/(amix*amix));
 
         // Calculate the coefficients A, B, C of the cubic equation of state
-        const real A = (epsilon + sigma - 1)*beta - 1;
-        const real B = (epsilon*sigma - epsilon - sigma)*beta*beta - (epsilon + sigma - q)*beta;
-        const real C = -epsilon*sigma*beta*beta*beta - (epsilon*sigma + q)*beta*beta;
+        const auto A = (epsilon + sigma - 1)*beta - 1;
+        const auto B = (epsilon*sigma - epsilon - sigma)*beta*beta - (epsilon + sigma - q)*beta;
+        const auto C = -epsilon*sigma*beta*beta*beta - (epsilon*sigma + q)*beta*beta;
 
         // Calculate the partial temperature derivative of the coefficients A, B, C
-        const real AT = (epsilon + sigma - 1)*betaT;
-        const real BT = 2*(epsilon*sigma - epsilon - sigma)*beta*betaT + qT*beta - (epsilon + sigma - q)*betaT;
-        const real CT = -3*epsilon*sigma*beta*beta*betaT - qT*beta*beta - 2*(epsilon*sigma + q)*beta*betaT;
+        const auto AT = (epsilon + sigma - 1)*betaT;
+        const auto BT = 2*(epsilon*sigma - epsilon - sigma)*beta*betaT + qT*beta - (epsilon + sigma - q)*betaT;
+        const auto CT = -3*epsilon*sigma*beta*beta*betaT - qT*beta*beta - 2*(epsilon*sigma + q)*beta*betaT;
 
         // Define the non-linear function and its derivative for calculation of its root
-        const auto f = [&](double Z) -> std::tuple<double, double>
+        const auto f = [&](const real& Z) -> std::tuple<real, real>
         {
-            const double val = Z*Z*Z + A.val*Z*Z + B.val*Z + C.val;
-            const double grad = 3*Z*Z + 2*A.val*Z + B.val;
+            const auto val = Z*Z*Z + A*Z*Z + B*Z + C;
+            const auto grad = 3*Z*Z + 2*A*Z + B;
             return std::make_tuple(val, grad);
         };
 
@@ -323,25 +317,20 @@ struct CubicEOS::Impl
         const auto maxiter = 100;
 
         // Determine the appropriate initial guess for the cubic equation of state
-        const double Z0 = isvapor ? 1.0 : beta.val;
+        const real Z0 = isvapor ? 1.0 : beta;
 
         // Calculate the compressibility factor Z using Newton's method
-        real Z(nspecies);
-        Z.val = newton(f, Z0, tolerance, maxiter);
+        real Z = newton(f, Z0, tolerance, maxiter);
 
         // Calculate the partial derivatives of Z (dZdT, dZdP, dZdn)
-        const double factor = -1.0/(3*Z.val*Z.val + 2*A.val*Z.val + B.val);
-        Z.ddT = factor * (A.ddT*Z.val*Z.val + B.ddT*Z.val + C.ddT);
-        Z.ddP = factor * (A.ddP*Z.val*Z.val + B.ddP*Z.val + C.ddP);
-        for(unsigned i = 0; i < nspecies; ++i)
-            Z.ddn[i] = factor * (A.ddn[i]*Z.val*Z.val + B.ddn[i]*Z.val + C.ddn[i]);
+        const auto factor = -1.0/(3*Z*Z + 2*A*Z + B);
 
         // Calculate the partial temperature derivative of Z
         const real ZT = -(AT*Z*Z + BT*Z + CT)/(3*Z*Z + 2*A*Z + B);
 
         // Calculate the integration factor I and its temperature derivative IT
         real I;
-        if(epsilon != sigma) I = log((Z + sigma*beta)/(Z + epsilon*beta))/(sigma - epsilon);
+        if(epsilon != sigma) I = std::log((Z + sigma*beta)/(Z + epsilon*beta))/(sigma - epsilon);
                         else I = beta/(Z + epsilon*beta);
 
         // Calculate the temperature derivative IT of the integration factor I
@@ -361,7 +350,7 @@ struct CubicEOS::Impl
 
         // Calculate the partial molar Zi for each species
         V = Z*R*T/P;
-        G_res = R*T*(Z - 1 - log(Z - beta) - q*I);
+        G_res = R*T*(Z - 1 - std::log(Z - beta) - q*I);
         H_res = R*T*(Z - 1 + T*qT*I);
         Cp_res = R*T*(ZT + qT*I + T*qTT + T*qT*IT) + H_res/T;
 
@@ -372,7 +361,7 @@ struct CubicEOS::Impl
 
         for(unsigned i = 0; i < nspecies; ++i)
         {
-            const double bi = bbar[i];
+            const real bi = bbar[i];
             const real betai = P*bi/(R*T);
             const real ai = abar[i];
             const real aiT = abarT[i];
@@ -387,7 +376,7 @@ struct CubicEOS::Impl
                             else Ii = I * (1 + betai/beta - (Zi + epsilon*betai)/(Z + epsilon*beta));
 
             Vi[i] = R*T*Zi/P;
-            Gi_res[i] = R*T*(Zi - (Zi - betai)/(Z - beta) - log(Z - beta) - qi*I - q*Ii + q*I);
+            Gi_res[i] = R*T*(Zi - (Zi - betai)/(Z - beta) - std::log(Z - beta) - qi*I - q*Ii + q*I);
             Hi_res[i] = R*T*(Zi - 1 + T*(qiT*I + qT*Ii - qT*I));
             ln_phi[i] = Gi_res[i]/(R*T);
         }

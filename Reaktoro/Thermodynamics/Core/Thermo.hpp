@@ -22,6 +22,7 @@
 #include <memory>
 
 // Reaktoro includes
+#include <Reaktoro/Common/Real.hpp>
 
 namespace Reaktoro {
 
@@ -41,61 +42,61 @@ public:
     /// @param T The temperature value (in units of K)
     /// @param P The pressure value (in units of Pa)
     /// @param species The name of the species
-    auto standardPartialMolarGibbsEnergy(double T, double P, std::string species) const -> real;
+    auto standardPartialMolarGibbsEnergy(const real& T, const real& P, std::string species) const -> real;
 
     /// Calculate the apparent standard molar Helmholtz free energy of a species (in units of J/mol).
     /// @param T The temperature value (in units of K)
     /// @param P The pressure value (in units of Pa)
     /// @param species The name of the species
-    auto standardPartialMolarHelmholtzEnergy(double T, double P, std::string species) const -> real;
+    auto standardPartialMolarHelmholtzEnergy(const real& T, const real& P, std::string species) const -> real;
 
     /// Calculate the apparent standard molar internal energy of a species (in units of J/mol).
     /// @param T The temperature value (in units of K)
     /// @param P The pressure value (in units of Pa)
     /// @param species The name of the species
-    auto standardPartialMolarInternalEnergy(double T, double P, std::string species) const -> real;
+    auto standardPartialMolarInternalEnergy(const real& T, const real& P, std::string species) const -> real;
 
     /// Calculate the apparent standard molar enthalpy of a species (in units of J/mol).
     /// @param T The temperature value (in units of K)
     /// @param P The pressure value (in units of Pa)
     /// @param species The name of the species
-    auto standardPartialMolarEnthalpy(double T, double P, std::string species) const -> real;
+    auto standardPartialMolarEnthalpy(const real& T, const real& P, std::string species) const -> real;
 
     /// Calculate the standard molar entropies of a species (in units of J/K).
     /// @param T The temperature value (in units of K)
     /// @param P The pressure value (in units of Pa)
     /// @param species The name of the species
-    auto standardPartialMolarEntropy(double T, double P, std::string species) const -> real;
+    auto standardPartialMolarEntropy(const real& T, const real& P, std::string species) const -> real;
 
     /// Calculate the standard molar volumes of a species (in units of m3/mol).
     /// @param T The temperature value (in units of K)
     /// @param P The pressure value (in units of Pa)
     /// @param species The name of the species
-    auto standardPartialMolarVolume(double T, double P, std::string species) const -> real;
+    auto standardPartialMolarVolume(const real& T, const real& P, std::string species) const -> real;
 
     /// Calculate the standard molar isobaric heat capacity of a species (in units of J/(mol*K)).
     /// @param T The temperature value (in units of K)
     /// @param P The pressure value (in units of Pa)
     /// @param species The name of the species
-    auto standardPartialMolarHeatCapacityConstP(double T, double P, std::string species) const -> real;
+    auto standardPartialMolarHeatCapacityConstP(const real& T, const real& P, std::string species) const -> real;
 
     /// Calculate the standard molar isochoric heat capacity of a species (in units of J/(mol*K)).
     /// @param T The temperature value (in units of K)
     /// @param P The pressure value (in units of Pa)
     /// @param species The name of the species
-    auto standardPartialMolarHeatCapacityConstV(double T, double P, std::string species) const -> real;
+    auto standardPartialMolarHeatCapacityConstV(const real& T, const real& P, std::string species) const -> real;
 
     /// Calculate the ln equilibrium constant of a reaction.
     /// @param T The temperature value (in units of K)
     /// @param P The pressure value (in units of Pa)
     /// @param reaction The reaction equation
-    auto lnEquilibriumConstant(double T, double P, std::string reaction) -> real;
+    auto lnEquilibriumConstant(const real& T, const real& P, std::string reaction) -> real;
 
     /// Calculate the log equilibrium constant of a reaction.
     /// @param T The temperature value (in units of K)
     /// @param P The pressure value (in units of Pa)
     /// @param reaction The reaction equation
-    auto logEquilibriumConstant(double T, double P, std::string reaction) -> real;
+    auto logEquilibriumConstant(const real& T, const real& P, std::string reaction) -> real;
 
     /// Return true if there is support for the calculation of the apparent standard molar Gibbs free energy of a species.
     /// @param species The name of the species
@@ -134,19 +135,19 @@ public:
     /// @param P The pressure value (in units of Pa)
     /// @param species The name of the species
     /// @see SpeciesThermoState
-    auto speciesThermoStateHKF(double T, double P, std::string species) -> SpeciesThermoState;
+    auto speciesThermoStateHKF(const real& T, const real& P, std::string species) -> SpeciesThermoState;
 
     /// Calculate the thermodynamic state of water using the Haar--Gallagher--Kell (1984) equation of state.
     /// @param T The temperature of water (in units of K)
     /// @param P The pressure of water (in units of Pa)
     /// @see WaterThermoState
-    auto waterThermoStateHGK(double T, double P) -> WaterThermoState;
+    auto waterThermoStateHGK(const real& T, const real& P) -> WaterThermoState;
 
     /// Calculate the thermodynamic state of water using the Wagner and Pruss (1995) equation of state.
     /// @param T The temperature of water (in units of K)
     /// @param P The pressure of water (in units of Pa)
     /// @see WaterThermoState
-    auto waterThermoStateWagnerPruss(double T, double P) -> WaterThermoState;
+    auto waterThermoStateWagnerPruss(const real& T, const real& P) -> WaterThermoState;
 
 private:
     struct Impl;

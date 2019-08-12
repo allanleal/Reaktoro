@@ -415,8 +415,8 @@ auto ReactiveTransportSolver::step(ChemicalField& field) -> void
 
     for(Index icell = 0; icell < num_cells; ++icell)
     {
-        const double T = field[icell].temperature();
-        const double P = field[icell].pressure();
+        const real T = field[icell].temperature();
+        const real P = field[icell].pressure();
         equilibriumsolver.solve(field[icell], T, P, b.row(icell));
 
         for(auto output : outputs)

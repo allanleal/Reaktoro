@@ -34,22 +34,22 @@
 namespace Reaktoro {
 namespace internal {
 
-auto defaultWaterDensityFunction() -> ThermoScalarFunction
+auto defaultWaterDensityFunction() -> std::function<real(const real&, const real&)>
 {
     const auto T = 298.15;
     const auto P = 1.0e5;
     const auto rho = waterLiquidDensityWagnerPruss(T, P);
-    return [=](double T, double P) { return rho; };
+    return [=](const real& T, const real& P) { return rho; };
 }
 
-auto defaultWaterDielectricConstantFunction() -> ThermoScalarFunction
+auto defaultWaterDielectricConstantFunction() -> std::function<real(const real&, const real&)>
 {
     const auto T = 298.15;
     const auto P = 1.0e5;
     const auto wts = waterThermoStateHGK(T, P, StateOfMatter::Liquid);
     const auto wes = waterElectroStateJohnsonNorton(T, P, wts);
     const auto epsilon = wes.epsilon;
-    return [=](double T, double P) { return epsilon; };
+    return [=](const real& T, const real& P) { return epsilon; };
 }
 
 } // namespace internal
@@ -76,12 +76,12 @@ AqueousMixture::AqueousMixture(const std::vector<AqueousSpecies>& species)
 AqueousMixture::~AqueousMixture()
 {}
 
-auto AqueousMixture::setWaterDensity(const ThermoScalarFunction& rho) -> void
+auto AqueousMixture::setWaterDensity(const std::function<real(const real&, const real&)>& rho) -> void
 {
     this->rho = rho;
 }
 
-auto AqueousMixture::setWaterDielectricConstant(const ThermoScalarFunction& epsilon) -> void
+auto AqueousMixture::setWaterDielectricConstant(const std::function<real(const real&, const real&)>& epsilon) -> void
 {
     this->epsilon = epsilon;
 }
@@ -203,84 +203,47 @@ auto AqueousMixture::chargesAnions() const -> Vector
     return rows(chargesSpecies(), indicesAnions());
 }
 
-auto AqueousMixture::molalities(VectorConstRef n) const -> VectorXr
+auto AqueousMixture::molalities(VectorXrConstRef n) const -> VectorXr
 {
-    const unsigned num_species = numSpecies();
-
-    // The molalities of the species and their partial derivatives
-    VectorXr m(num_species);
-
     // The molar amount of water
-    const double nw = n[idx_water];
+    const auto nw = n[idx_water];
 
     // Check if the molar amount of water is zero
     if(nw == 0.0)
-        return m;
+        return zeros(numSpecies());
 
-    const double kgH2O = nw * waterMolarMass;
+    const auto kgH2O = nw * waterMolarMass;
 
-    m.val = n/kgH2O;
-    for(unsigned i = 0; i < num_species; ++i)
-    {
-        m.ddn(i, i) = 1.0/kgH2O;
-        m.ddn(i, idx_water) -= m.val[i]/nw;
-    }
-
-    return m;
+    return n / kgH2O;
 }
 
 auto AqueousMixture::stoichiometricMolalities(const VectorXr& m) const -> VectorXr
 {
-    // Auxiliary variables
-    const unsigned num_species = numSpecies();
-    const unsigned num_charged = numChargedSpecies();
-    const unsigned num_neutral = numNeutralSpecies();
-
     // The molalities of the charged species
-    VectorXr mc(num_charged, num_species);
-    mc.val = rows(m.val, idx_charged_species);
-    mc.ddn = rows(m.ddn, idx_charged_species);
+    const auto mc = m(idx_charged_species);
 
     // The molalities of the neutral species
-    VectorXr mn(num_neutral, num_species);
-    mn.val = rows(m.val, idx_neutral_species);
-    mn.ddn = rows(m.ddn, idx_neutral_species);
+    const auto mn = m(idx_neutral_species);
 
     // The stoichiometric molalities of the charged species
-    VectorXr ms(num_charged, num_species);
-    ms.val = mc.val + tr(dissociation_matrix) * mn.val;
-    ms.ddn = mc.ddn + tr(dissociation_matrix) * mn.ddn;
+    VectorXr ms = mc + tr(dissociation_matrix) * mn;
 
     return ms;
 }
 
 auto AqueousMixture::effectiveIonicStrength(const VectorXr& m) const -> real
 {
-    const unsigned num_species = numSpecies();
-    const Vector z = chargesSpecies();
-
-    real Ie(num_species);
-    Ie.val = 0.5 * sum(z % z % m.val);
-    for(unsigned i = 0; i < num_species; ++i)
-        Ie.ddn[i] = 0.5 * sum(z % z % m.ddn.col(i));
-
-    return Ie;
+    const auto& z = chargesSpecies();
+    return 0.5 * sum(z % z % m);
 }
 
 auto AqueousMixture::stoichiometricIonicStrength(const VectorXr& ms) const -> real
 {
-    const unsigned num_species = numSpecies();
-    const Vector zc = chargesChargedSpecies();
-
-    real Is(num_species);
-    Is.val = 0.5 * sum(zc % zc % ms.val);
-    for(unsigned i = 0; i < num_species; ++i)
-        Is.ddn[i] = 0.5 * sum(zc % zc % ms.ddn.col(i));
-
-    return Is;
+    const auto& zc = chargesChargedSpecies();
+    return 0.5 * sum(zc % zc % ms);
 }
 
-auto AqueousMixture::state(Temperature T, Pressure P, VectorConstRef n) const -> AqueousMixtureState
+auto AqueousMixture::state(const real& T, const real& P, VectorConstRef n) const -> AqueousMixtureState
 {
     AqueousMixtureState res;
     res.T = T;

@@ -32,10 +32,10 @@ namespace Reaktoro {
 struct MixtureState
 {
     /// The temperature of the mixture (in units of K)
-    Temperature T;
+    real T;
 
     /// The pressure of the mixture (in units of Pa)
-    Pressure P;
+    real P;
 
     /// The mole fractions of the species in the mixture and their partial derivatives
     VectorXr x;
@@ -100,13 +100,13 @@ public:
     /// Calculates the mole fractions of the species and their partial derivatives
     /// @param n The molar abundance of the species (in units of mol)
     /// @return The mole fractions and their partial derivatives
-    auto moleFractions(VectorConstRef n) const -> VectorXr;
+    auto moleFractions(VectorXrConstRef n) const -> VectorXr;
 
     /// Calculate the state of the mixture.
     /// @param T The temperature (in units of K)
     /// @param P The pressure (in units of Pa)
     /// @param n The molar amounts of the species in the mixture (in units of mol)
-    auto state(Temperature T, Pressure P, VectorConstRef n) const -> MixtureState;
+    auto state(const real& T, const real& P, VectorXrConstRef n) const -> MixtureState;
 
 private:
     /// The name of mixture
@@ -191,29 +191,24 @@ auto GeneralMixture<SpeciesType>::chargesSpecies() const -> Vector
 }
 
 template<class SpeciesType>
-auto GeneralMixture<SpeciesType>::moleFractions(VectorConstRef n) const -> VectorXr
+auto GeneralMixture<SpeciesType>::moleFractions(VectorXrConstRef n) const -> VectorXr
 {
     const unsigned nspecies = numSpecies();
     if(nspecies == 1)
     {
         VectorXr x(1);
-        x.val[0] = 1.0;
+        x[0] = 1.0;
         return x;
     }
     VectorXr x(nspecies);
-    const double nt = n.sum();
+    const auto nt = n.sum();
     if(nt == 0.0) return x;
-    x.val = n/nt;
-    for(unsigned i = 0; i < nspecies; ++i)
-    {
-        x.ddn.row(i).fill(-x.val[i]/nt);
-        x.ddn(i, i) += 1.0/nt;
-    }
+    x = n/nt;
     return x;
 }
 
 template<class SpeciesType>
-auto GeneralMixture<SpeciesType>::state(Temperature T, Pressure P, VectorConstRef n) const -> MixtureState
+auto GeneralMixture<SpeciesType>::state(const real& T, const real& P, VectorXrConstRef n) const -> MixtureState
 {
     MixtureState res;
     res.T = T;

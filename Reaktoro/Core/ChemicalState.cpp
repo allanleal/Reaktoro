@@ -39,10 +39,10 @@ struct ChemicalState::Impl
     const ChemicalSystem system;
 
     /// The temperature state of the chemical system (in units of K)
-    double T = 298.15;
+    real T = 298.15;
 
     /// The pressure state of the chemical system (in units of Pa)
-    double P = 1.0e+05;
+    real P = 1.0e+05;
 
     /// The molar amounts of the chemical species
     Vector n;
@@ -227,7 +227,7 @@ struct ChemicalState::Impl
         Assert(index < system.numPhases(), "Cannot set the volume of the phase.",
             "The given phase index is out of range.");
         ChemicalProperties properties = system.properties(T, P, n);
-        const Vector v = properties.phaseVolumes().val;
+        const Vector v = properties.phaseVolumes();
         const double scalar = (v[index] != 0.0) ? volume/v[index] : 0.0;
         scaleSpeciesAmountsInPhase(index, scalar);
     }
@@ -253,7 +253,7 @@ struct ChemicalState::Impl
     auto scaleFluidVolume(double volume) -> void
     {
         const auto& fluid_volume = properties().fluidVolume();
-        const auto& factor = fluid_volume.val ? volume/fluid_volume.val : 0.0;
+        const auto& factor = fluid_volume ? volume/fluid_volume : 0.0;
         const auto& ifluidspecies = system.indicesFluidSpecies();
         scaleSpeciesAmounts(factor, ifluidspecies);
     }
@@ -267,7 +267,7 @@ struct ChemicalState::Impl
     auto scaleSolidVolume(double volume) -> void
     {
         const auto& solid_volume = properties().solidVolume();
-        const auto& factor = solid_volume.val ? volume/solid_volume.val : 0.0;
+        const auto& factor = solid_volume ? volume/solid_volume : 0.0;
         const auto& isolidspecies = system.indicesSolidSpecies();
         scaleSpeciesAmounts(factor, isolidspecies);
     }
@@ -283,7 +283,7 @@ struct ChemicalState::Impl
         Assert(volume >= 0.0, "Cannot set the volume of the chemical state.",
             "The given volume is negative.");
         ChemicalProperties properties = system.properties(T, P, n);
-        const Vector v = properties.phaseVolumes().val;
+        const Vector v = properties.phaseVolumes();
         const double vtotal = sum(v);
         const double scalar = (vtotal != 0.0) ? volume/vtotal : 0.0;
         scaleSpeciesAmounts(scalar);
@@ -781,25 +781,25 @@ auto ChemicalState::output(std::string filename) const -> void
 auto operator<<(std::ostream& out, const ChemicalState& state) -> std::ostream&
 {
     const ChemicalSystem& system = state.system();
-    const double& T = state.temperature();
-    const double& P = state.pressure();
-    const double& R = universalGasConstant;
-    const double& F = faradayConstant;
+    const auto& T = state.temperature();
+    const auto& P = state.pressure();
+    const auto& R = universalGasConstant;
+    const auto& F = faradayConstant;
     const auto& n = state.speciesAmounts();
     const auto& y = state.elementDualPotentials();
     const auto& z = state.speciesDualPotentials();
     const ChemicalProperties properties = state.properties();
-    const Vector molar_fractions = properties.moleFractions().val;
-    const Vector activity_coeffs = exp(properties.lnActivityCoefficients().val);
-    const Vector activities = exp(properties.lnActivities().val);
-    const Vector chemical_potentials = properties.chemicalPotentials().val;
-    const Vector phase_moles = properties.phaseAmounts().val;
-    const Vector phase_masses = properties.phaseMasses().val;
-    const Vector phase_molar_volumes = properties.phaseMolarVolumes().val;
-    const Vector phase_volumes = properties.phaseVolumes().val;
-    const Vector phase_volume_fractions = phase_volumes/sum(phase_volumes);
-    const Vector phase_densities = phase_masses/phase_volumes;
-    const Vector phase_stability_indices = state.phaseStabilityIndices();
+    const auto molar_fractions = properties.moleFractions();
+    const auto activity_coeffs = exp(properties.lnActivityCoefficients());
+    const auto activities = exp(properties.lnActivities());
+    const auto chemical_potentials = properties.chemicalPotentials();
+    const auto phase_moles = properties.phaseAmounts();
+    const auto phase_masses = properties.phaseMasses();
+    const auto phase_molar_volumes = properties.phaseMolarVolumes();
+    const auto phase_volumes = properties.phaseVolumes();
+    const auto phase_volume_fractions = phase_volumes/sum(phase_volumes);
+    const auto phase_densities = phase_masses/phase_volumes;
+    const auto phase_stability_indices = state.phaseStabilityIndices();
 
     const unsigned num_phases = system.numPhases();
     const unsigned bar_size = std::max(unsigned(9), num_phases + 2) * 25;
@@ -899,11 +899,11 @@ auto operator<<(std::ostream& out, const ChemicalState& state) -> std::ostream&
     {
         // Calculate pH, pE, and Eh
         const auto Ifn  = ChemicalProperty::ionicStrength(system);
-        const double I  = Ifn(properties).val;
-        const double pH = ChemicalProperty::pH(system)(properties).val;
-        const double pE = ChemicalProperty::pE(system)(properties).val;
+        const double I  = Ifn(properties);
+        const double pH = ChemicalProperty::pH(system)(properties);
+        const double pE = ChemicalProperty::pE(system)(properties);
         const double Eh = std::log(10)*R*T/F*pE;
-        const double alk = ChemicalProperty::alkalinity(system)(properties).val;
+        const double alk = ChemicalProperty::alkalinity(system)(properties);
 
         // Output the table of the aqueous phase related state
         out << bar1 << std::endl;

@@ -130,7 +130,7 @@ auto mineralMechanismFunction(const MineralMechanism& mechanism, const Reaction&
     ReactionRateFunction fn = [=](const ChemicalProperties& properties) mutable
     {
         // The temperature and pressure of the system
-        const Temperature T = properties.temperature();
+        const real T = properties.temperature();
 
         // The result of this function evaluation
         real res(num_species);
@@ -154,7 +154,7 @@ auto mineralMechanismFunction(const MineralMechanism& mechanism, const Reaction&
         f = kappa * qOmega;
 
         // Calculate the function g
-        g = real(num_species, 1.0);
+        g = 1.0;
 
         for(const MineralCatalystFunction& catalyst : catalysts)
             g *= catalyst(properties);
@@ -217,7 +217,7 @@ struct MineralReaction::Impl
     ReactionEquation equation;
 
     /// The equilibrium constant of the mineral reaction
-    ThermoScalarFunction lnk;
+    std::function<real(const real&, const real&)> lnk;
 
     /// The volumetric surface area of the mineral
     double volumetric_surface_area = 0.0;
@@ -253,7 +253,7 @@ struct MineralReaction::Impl
         this->equation = ReactionEquation(equation);
     }
 
-    auto setEquilibriumConstant(const ThermoScalarFunction& lnk) -> void
+    auto setEquilibriumConstant(const std::function<real(const real&, const real&)>& lnk) -> void
     {
         this->lnk = lnk;
     }
@@ -322,7 +322,7 @@ auto MineralReaction::setEquation(std::string equation) -> MineralReaction&
     return *this;
 }
 
-auto MineralReaction::setEquilibriumConstant(const ThermoScalarFunction& lnk) -> MineralReaction&
+auto MineralReaction::setEquilibriumConstant(const std::function<real(const real&, const real&)>& lnk) -> MineralReaction&
 {
     pimpl->setEquilibriumConstant(lnk);
     return *this;
@@ -368,7 +368,7 @@ auto MineralReaction::equation() const -> const ReactionEquation&
     return pimpl->equation;
 }
 
-auto MineralReaction::equilibriumConstant() const -> const ThermoScalarFunction&
+auto MineralReaction::equilibriumConstant() const -> const std::function<real(const real&, const real&)>&
 {
     return pimpl->lnk;
 }
@@ -401,8 +401,8 @@ auto molarSurfaceArea(const MineralReaction& reaction, const ChemicalSystem& sys
 {
     // The temperature and pressure for the calculation of the mineral density
     // Note: These values do not matter much, since the density of the minerals is a constant function
-    const double T = 298.15; // in units of kelvin
-    const double P = 1.0e5;  // in units of pascal
+    const real T = 298.15; // in units of kelvin
+    const real P = 1.0e5;  // in units of pascal
 
     // The index of the mineral species
     const Index ispecies = system.indexSpecies(reaction.mineral());

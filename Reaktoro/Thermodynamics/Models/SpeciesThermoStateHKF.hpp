@@ -31,18 +31,18 @@ struct WaterElectroState;
 struct WaterThermoState;
 
 /// Calculate the thermodynamic state of solvent water using the HKF model.
-auto speciesThermoStateSolventHKF(Temperature T, Pressure P, const WaterThermoState& wts) -> SpeciesThermoState;
+auto speciesThermoStateSolventHKF(const real& T, const real& P, const WaterThermoState& wts) -> SpeciesThermoState;
 
 /// Calculate the thermodynamic state of an aqueous solute using the HKF model.
-auto speciesThermoStateSoluteHKF(Temperature T, Pressure P, const AqueousSpecies& species, const SpeciesElectroState& aes, const WaterElectroState& wes) -> SpeciesThermoState;
+auto speciesThermoStateSoluteHKF(const real& T, const real& P, const AqueousSpecies& species, const SpeciesElectroState& aes, const WaterElectroState& wes) -> SpeciesThermoState;
 
 /// Calculate the thermodynamic state of an aqueous species using the HKF model.
-auto speciesThermoStateHKF(Temperature T, Pressure P, const AqueousSpecies& species) -> SpeciesThermoState;
+auto speciesThermoStateHKF(const real& T, const real& P, const AqueousSpecies& species) -> SpeciesThermoState;
 
 /// Calculate the thermodynamic state of a gaseous species using the HKF model.
-auto speciesThermoStateHKF(Temperature T, Pressure P, const GaseousSpecies& species) -> SpeciesThermoState;
+auto speciesThermoStateHKF(const real& T, const real& P, const GaseousSpecies& species) -> SpeciesThermoState;
 
 /// Calculate the thermodynamic state of a mineral species using the HKF model.
-auto speciesThermoStateHKF(Temperature T, Pressure P, const MineralSpecies& species) -> SpeciesThermoState;
+auto speciesThermoStateHKF(const real& T, const real& P, const MineralSpecies& species) -> SpeciesThermoState;
 
 } // namespace Reaktoro

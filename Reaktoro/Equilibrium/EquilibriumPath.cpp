@@ -80,12 +80,12 @@ struct EquilibriumPath::Impl
         const Indices& ies = partition.indicesEquilibriumSpecies();
 
         /// The temperatures at the initial and final chemical states
-        const double T_i = state_i.temperature();
-        const double T_f = state_f.temperature();
+        const real T_i = state_i.temperature();
+        const real T_f = state_f.temperature();
 
         /// The pressures at the initial and final chemical states
-        const double P_i = state_i.pressure();
-        const double P_f = state_f.pressure();
+        const real P_i = state_i.pressure();
+        const real P_f = state_f.pressure();
 
         /// The molar amounts of the elements in the equilibrium partition at the initial and final chemical states
         const Vector be_i = state_i.elementAmountsInSpecies(ies);
@@ -117,8 +117,8 @@ struct EquilibriumPath::Impl
             if(t >= 1) return 0;
 
             // Calculate T, P, be at current t
-            const double T  = T_i + t * (T_f - T_i);
-            const double P  = P_i + t * (P_f - P_i);
+            const real T  = T_i + t * (T_f - T_i);
+            const real P  = P_i + t * (P_f - P_i);
             const Vector be = be_i + t * (be_f - be_i);
 
             // Perform the equilibrium calculation at T, P, be

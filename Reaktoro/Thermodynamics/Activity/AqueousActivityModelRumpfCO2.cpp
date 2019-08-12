@@ -37,15 +37,12 @@ auto aqueousActivityModelRumpfCO2(const AqueousMixture& mixture) -> AqueousActiv
     const Index iCl  = mixture.indexChargedSpeciesAny(alternativeChargedSpeciesNames("Cl-"));  // Cl-, Cl[-]
 
     // The molalities of some ionic species covered by the model
-    real mNa(nspecies);
-    real mK(nspecies);
-    real mCa(nspecies);
-    real mMg(nspecies);
-    real mCl(nspecies);
-    real mSO4(nspecies);
-
-    // The ln activity coefficient of CO2(aq)
-    real ln_gCO2(nspecies);
+    real mNa = 0.0;
+    real mK = 0.0;
+    real mCa = 0.0;
+    real mMg = 0.0;
+    real mCl = 0.0;
+    real mSO4 = 0.0;
 
     AqueousActivityModel f = [=](const AqueousMixtureState& state) mutable
     {
@@ -64,10 +61,10 @@ auto aqueousActivityModelRumpfCO2(const AqueousMixture& mixture) -> AqueousActiv
 
         // The Pitzer's parameters of the Rumpf et al. (1994) model
         const real B = 0.254 - 76.82/T - 10656.0/(T*T) + 6312.0e+3/(T*T*T);
-        const double Gamma = -0.0028;
+        const real Gamma = -0.0028;
 
         // The ln activity coefficient of CO2(aq)
-        real ln_gCO2 = 2*B*(mNa + mK + 2*mCa + 2*mMg) + 3*Gamma*(mNa + mK + mCa + mMg)*mCl;
+        const real ln_gCO2 = 2*B*(mNa + mK + 2*mCa + 2*mMg) + 3*Gamma*(mNa + mK + mCa + mMg)*mCl;
 
         return ln_gCO2;
     };

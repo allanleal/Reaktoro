@@ -33,7 +33,7 @@ ChemicalProperties::ChemicalProperties(const ChemicalSystem& system)
   tres(num_phases, num_species), cres(num_phases, num_species)
 {}
 
-auto ChemicalProperties::update(double T_, double P_) -> void
+auto ChemicalProperties::update(const real& T_, const real& P_) -> void
 {
     // Update both temperature and pressure
     if(T != T_ || P != P_)
@@ -60,20 +60,19 @@ auto ChemicalProperties::update(VectorConstRef n_) -> void
     {
         const auto size = system.numSpeciesInPhase(iphase);
         const auto np = rows(n, offset, size);
-        const auto npc = Composition(np);
-        auto xp = rows(x, offset, offset, size, size);
-        xp = npc/sum(npc);
+        auto xp = rows(x, offset, size);
+        xp = np/sum(np);
         offset += size;
     }
 }
 
-auto ChemicalProperties::update(double T, double P, VectorConstRef n) -> void
+auto ChemicalProperties::update(const real& T, const real& P, VectorConstRef n) -> void
 {
     update(T, P);
     update(n);
 }
 
-auto ChemicalProperties::update(double T_, double P_, VectorConstRef n_, const ThermoModelResult& tres_, const ChemicalModelResult& cres_) -> void
+auto ChemicalProperties::update(const real& T_, const real& P_, VectorConstRef n_, const ThermoModelResult& tres_, const ChemicalModelResult& cres_) -> void
 {
     T = T_;
     P = P_;
@@ -82,19 +81,19 @@ auto ChemicalProperties::update(double T_, double P_, VectorConstRef n_, const T
     cres = cres_;
 }
 
-auto ChemicalProperties::temperature() const -> Temperature
+auto ChemicalProperties::temperature() const -> real
 {
     return T;
 }
 
-auto ChemicalProperties::pressure() const -> Pressure
+auto ChemicalProperties::pressure() const -> real
 {
     return P;
 }
 
-auto ChemicalProperties::composition() const -> Composition
+auto ChemicalProperties::composition() const -> VectorXrConstRef
 {
-    return Composition(n);
+    return n;
 }
 
 auto ChemicalProperties::thermoModelResult() const -> const ThermoModelResult&
@@ -188,11 +187,11 @@ auto ChemicalProperties::phaseMolarGibbsEnergies() const -> VectorXr
     for(Index iphase = 0; iphase < num_phases; ++iphase)
     {
         const auto nspecies = system.numSpeciesInPhase(iphase);
-        const auto xp = rows(x, ispecies, ispecies, nspecies, nspecies);
+        const auto xp = rows(x, ispecies, nspecies);
         const auto tp = tres.phaseProperties(iphase, ispecies, nspecies);
         const auto cp = cres.phaseProperties(iphase, ispecies, nspecies);
-        row(res, iphase, ispecies, nspecies) = sum(xp % tp.standard_partial_molar_gibbs_energies);
-        row(res, iphase, ispecies, nspecies) += cp.residual_molar_gibbs_energy;
+        res[iphase] = sum(xp % tp.standard_partial_molar_gibbs_energies);
+        res[iphase] += cp.residual_molar_gibbs_energy;
         ispecies += nspecies;
     }
     return res;
@@ -205,11 +204,11 @@ auto ChemicalProperties::phaseMolarEnthalpies() const -> VectorXr
     for(Index iphase = 0; iphase < num_phases; ++iphase)
     {
         const auto nspecies = system.numSpeciesInPhase(iphase);
-        const auto xp = rows(x, ispecies, ispecies, nspecies, nspecies);
+        const auto xp = rows(x, ispecies, nspecies);
         const auto tp = tres.phaseProperties(iphase, ispecies, nspecies);
         const auto cp = cres.phaseProperties(iphase, ispecies, nspecies);
-        row(res, iphase, ispecies, nspecies) = sum(xp % tp.standard_partial_molar_enthalpies);
-        row(res, iphase, ispecies, nspecies) += cp.residual_molar_enthalpy;
+        res[iphase] = sum(xp % tp.standard_partial_molar_enthalpies);
+        res[iphase] += cp.residual_molar_enthalpy;
         ispecies += nspecies;
     }
     return res;
@@ -225,11 +224,11 @@ auto ChemicalProperties::phaseMolarVolumes() const -> VectorXr
         const auto tp = tres.phaseProperties(iphase, ispecies, nspecies);
         const auto cp = cres.phaseProperties(iphase, ispecies, nspecies);
         if(cp.molar_volume > 0.0)
-            row(res, iphase, ispecies, nspecies) = cp.molar_volume;
+            res[iphase] = cp.molar_volume;
         else
         {
-            const auto xp = rows(x, ispecies, ispecies, nspecies, nspecies);
-            row(res, iphase, ispecies, nspecies) = sum(xp % tp.standard_partial_molar_volumes);
+            const auto xp = rows(x, ispecies, nspecies);
+            res[iphase] = sum(xp % tp.standard_partial_molar_volumes);
         }
 
         ispecies += nspecies;
@@ -265,11 +264,11 @@ auto ChemicalProperties::phaseMolarHeatCapacitiesConstP() const -> VectorXr
     for(Index iphase = 0; iphase < num_phases; ++iphase)
     {
         const auto nspecies = system.numSpeciesInPhase(iphase);
-        const auto xp = rows(x, ispecies, ispecies, nspecies, nspecies);
+        const auto xp = rows(x, ispecies, nspecies);
         const auto tp = tres.phaseProperties(iphase, ispecies, nspecies);
         const auto cp = cres.phaseProperties(iphase, ispecies, nspecies);
-        row(res, iphase, ispecies, nspecies) = sum(xp % tp.standard_partial_molar_heat_capacities_cp);
-        row(res, iphase, ispecies, nspecies) += cp.residual_molar_heat_capacity_cp;
+        res[iphase] = sum(xp % tp.standard_partial_molar_heat_capacities_cp);
+        res[iphase] += cp.residual_molar_heat_capacity_cp;
         ispecies += nspecies;
     }
     return res;
@@ -282,11 +281,11 @@ auto ChemicalProperties::phaseMolarHeatCapacitiesConstV() const -> VectorXr
     for(Index iphase = 0; iphase < num_phases; ++iphase)
     {
         const auto nspecies = system.numSpeciesInPhase(iphase);
-        const auto xp = rows(x, ispecies, ispecies, nspecies, nspecies);
+        const auto xp = rows(x, ispecies, nspecies);
         const auto tp = tres.phaseProperties(iphase, ispecies, nspecies);
         const auto cp = cres.phaseProperties(iphase, ispecies, nspecies);
-        row(res, iphase, ispecies, nspecies) = sum(xp % tp.standard_partial_molar_heat_capacities_cv);
-        row(res, iphase, ispecies, nspecies) += cp.residual_molar_heat_capacity_cv;
+        res[iphase] = sum(xp % tp.standard_partial_molar_heat_capacities_cv);
+        res[iphase] += cp.residual_molar_heat_capacity_cv;
         ispecies += nspecies;
     }
     return res;
@@ -339,16 +338,15 @@ auto ChemicalProperties::phaseDensities() const -> VectorXr
 
 auto ChemicalProperties::phaseMasses() const -> VectorXr
 {
-    const auto nc = Composition(n);
     const auto mm = Reaktoro::molarMasses(system.species());
     VectorXr res(num_phases, num_species);
     Index ispecies = 0;
     for(Index iphase = 0; iphase < num_phases; ++iphase)
     {
         const auto nspecies = system.numSpeciesInPhase(iphase);
-        const auto np = rows(nc, ispecies, ispecies, nspecies, nspecies);
+        const auto np = rows(n, ispecies, nspecies);
         auto mmp = rows(mm, ispecies, nspecies);
-        row(res, iphase, ispecies, nspecies) = sum(mmp % np);
+        res[iphase] = sum(mmp % np);
         ispecies += nspecies;
     }
     return res;
@@ -356,14 +354,13 @@ auto ChemicalProperties::phaseMasses() const -> VectorXr
 
 auto ChemicalProperties::phaseAmounts() const -> VectorXr
 {
-    const auto nc = Composition(n);
     VectorXr res(num_phases, num_species);
     Index ispecies = 0;
     for(Index iphase = 0; iphase < num_phases; ++iphase)
     {
         const auto nspecies = system.numSpeciesInPhase(iphase);
-        const auto np = rows(nc, ispecies, ispecies, nspecies, nspecies);
-        row(res, iphase, ispecies, nspecies) = sum(np);
+        const auto np = rows(n, ispecies, nspecies);
+        res[iphase] = sum(np);
         ispecies += nspecies;
     }
     return res;

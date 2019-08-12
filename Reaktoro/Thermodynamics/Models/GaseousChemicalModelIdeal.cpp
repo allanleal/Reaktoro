@@ -29,13 +29,13 @@ auto gaseousChemicalModelIdeal(const GaseousMixture& mixture) -> PhaseChemicalMo
     GaseousMixtureState state;
 
     // Define the chemical model function of the gaseous phase
-    PhaseChemicalModel model = [=](PhaseChemicalModelResult& res, Temperature T, Pressure P, VectorConstRef n) mutable
+    PhaseChemicalModel model = [=](PhaseChemicalModelResult& res, const real& T, const real& P, VectorConstRef n) mutable
     {
         // Evaluate the state of the gaseous mixture
         state = mixture.state(T, P, n);
 
         // Calculate pressure in bar
-        const real Pbar = 1e-5 * Pressure(P);
+        const real Pbar = 1e-5 * P;
 
         // The ln of pressure in units of bar
         const real ln_Pbar = log(Pbar);

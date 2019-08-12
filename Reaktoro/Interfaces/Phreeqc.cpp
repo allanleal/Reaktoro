@@ -82,10 +82,10 @@ struct Phreeqc::Impl
     PHREEQC phreeqc;
 
     // The current temperature in PHREEQC (in units of K)
-    double T;
+    real T;
 
     // The current pressure in PHREEQC (in units of Pa)
-    double P;
+    real P;
 
     // The current ionic strength in PHREEQC (in units of molal)
     double I;
@@ -249,10 +249,10 @@ struct Phreeqc::Impl
     auto initializeChemicalState() -> void;
 
     // Set the temperature and pressure
-    auto set(double T, double P) -> void;
+    auto set(const real& T, const real& P) -> void;
 
     // Set the temperature, pressure and species composition
-    auto set(double T, double P, const Vector& n) -> void;
+    auto set(const real& T, const real& P, const Vector& n) -> void;
 
     // Update the properties with T and P dependency.
     auto updateThermoProperties() -> void;
@@ -684,7 +684,7 @@ void Phreeqc::Impl::initializeChemicalState()
     set(T, P, n);
 }
 
-auto Phreeqc::Impl::set(double T, double P) -> void
+auto Phreeqc::Impl::set(const real& T, const real& P) -> void
 {
     // Set the current temperature and pressure of PHREEQC
     this->T = T;
@@ -703,7 +703,7 @@ auto Phreeqc::Impl::set(double T, double P) -> void
     updateThermoProperties();
 }
 
-auto Phreeqc::Impl::set(double T, double P, const Vector& n) -> void
+auto Phreeqc::Impl::set(const real& T, const real& P, const Vector& n) -> void
 {
     // Set the current temperature and pressure of PHREEQC
     this->T = T;
@@ -855,8 +855,8 @@ auto Phreeqc::Impl::updateGaseousProperties() -> void
         return;
 
     // Define some auxiliary variables
-    const double T = temperature();
-    const double P = pressure();
+    const real T = temperature();
+    const real P = pressure();
     const double Patm = P * pascal_to_atm;
     const double Pbar = P * pascal_to_bar;
 
@@ -1207,12 +1207,12 @@ auto Phreeqc::phaseName(Index iphase) const -> std::string
     return pimpl->phase_names[iphase];
 }
 
-auto Phreeqc::set(double T, double P) -> void
+auto Phreeqc::set(const real& T, const real& P) -> void
 {
     pimpl->set(T, P);
 }
 
-auto Phreeqc::set(double T, double P, VectorConstRef n) -> void
+auto Phreeqc::set(const real& T, const real& P, VectorConstRef n) -> void
 {
     pimpl->set(T, P, n);
 }
@@ -1298,26 +1298,26 @@ auto Phreeqc::phaseMolarVolumes() const -> Vector
     return pimpl->phaseMolarVolumes();
 }
 
-auto Phreeqc::properties(ThermoModelResult& res, double T, double P) -> void
+auto Phreeqc::properties(ThermoModelResult& res, const real& T, const real& P) -> void
 {
     // Update the temperature and pressure of the Phreeqc instance
     set(T, P);
 
     // Set the thermodynamic properties of the phases and species
-    res.standardPartialMolarGibbsEnergies().val = pimpl->standard_molar_gibbs_energies;
-    res.standardPartialMolarVolumes().val = pimpl->standard_molar_volumes;
-    res.lnActivityConstants().val = pimpl->ln_activity_constants;
+    res.standardPartialMolarGibbsEnergies() = pimpl->standard_molar_gibbs_energies;
+    res.standardPartialMolarVolumes() = pimpl->standard_molar_volumes;
+    res.lnActivityConstants() = pimpl->ln_activity_constants;
 }
 
-auto Phreeqc::properties(ChemicalModelResult& res, double T, double P, VectorConstRef n) -> void
+auto Phreeqc::properties(ChemicalModelResult& res, const real& T, const real& P, VectorConstRef n) -> void
 {
     // Update the temperature, pressure, and species amounts of the Phreeqc instance
     set(T, P, n);
 
     // Set the molar volumes of the phases, ln activity coefficients and ln activities of all species
-    res.phaseMolarVolumes().val = pimpl->phase_molar_volumes;
-    res.lnActivityCoefficients().val = pimpl->ln_activity_coefficients;
-    res.lnActivities().val = pimpl->ln_activities;
+    res.phaseMolarVolumes() = pimpl->phase_molar_volumes;
+    res.lnActivityCoefficients() = pimpl->ln_activity_coefficients;
+    res.lnActivities() = pimpl->ln_activities;
 
     // The number of phases
     const Index num_phases = numPhases();
@@ -1331,10 +1331,6 @@ auto Phreeqc::properties(ChemicalModelResult& res, double T, double P, VectorCon
 
         // The species amounts in the current phase
         const auto np = n.segment(offset, size);
-
-        // Set d(ln(a))/dn to d(ln(x))/dn, where x is mole fractions
-        res.lnActivities().ddn.block(offset, offset, size, size) = -1.0/sum(np) * ones(size, size);
-        res.lnActivities().ddn.block(offset, offset, size, size).diagonal() += 1.0/np;
 
         offset += size;
     }

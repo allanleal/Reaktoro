@@ -91,7 +91,7 @@ auto aqueousChemicalModelDebyeHuckel(const AqueousMixture& mixture, const DebyeH
     real A, B, sqrt_rho, T_epsilon, sqrt_T_epsilon;
 
     // Define the intermediate chemical model function of the aqueous mixture
-    PhaseChemicalModel model = [=](PhaseChemicalModelResult& res, Temperature T, Pressure P, VectorConstRef n) mutable
+    PhaseChemicalModel model = [=](PhaseChemicalModelResult& res, const real& T, const real& P, VectorConstRef n) mutable
     {
         // Evaluate the state of the aqueous mixture
         state = mixture.state(T, P, n);
@@ -110,13 +110,13 @@ auto aqueousChemicalModelDebyeHuckel(const AqueousMixture& mixture, const DebyeH
         // Update auxiliary variables
 		ln_m = log(m);
 		xw = x[iwater];
-		ln_xw = log(xw);
+		ln_xw = std::log(xw);
 		mSigma = nwo * (1 - xw)/xw;
 		I2 = I*I;
-		sqrtI = sqrt(I);
-		sqrt_rho = sqrt(rho);
+		sqrtI = std::sqrt(I);
+		sqrt_rho = std::sqrt(rho);
 		T_epsilon = T * epsilon;
-		sqrt_T_epsilon = sqrt(T_epsilon);
+		sqrt_T_epsilon = std::sqrt(T_epsilon);
 		A = 1.824829238e+6 * sqrt_rho/(T_epsilon*sqrt_T_epsilon);
 		B = 50.29158649 * sqrt_rho/sqrt_T_epsilon;
 		sigmacoeff = (2.0/3.0)*A*I*sqrtI;
@@ -140,7 +140,7 @@ auto aqueousChemicalModelDebyeHuckel(const AqueousMixture& mixture, const DebyeH
             Lambda = 1.0 + aions[i]*B*sqrtI;
 
 			// Update the sigma parameter of the current ion
-            if(aions[i] != 0.0) sigma = 3.0*pow(Lambda - 1, -3) * ((Lambda - 1)*(Lambda - 3) + 2*log(Lambda));
+            if(aions[i] != 0.0) sigma = 3.0*std::pow(Lambda - 1, -3) * ((Lambda - 1)*(Lambda - 3) + 2*std::log(Lambda));
             else                sigma = 2.0;
 
             // Calculate the ln activity coefficient of the current charged species

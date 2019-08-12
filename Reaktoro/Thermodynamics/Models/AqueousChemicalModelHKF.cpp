@@ -46,25 +46,25 @@ double effectiveIonicRadius(const AqueousSpecies& species);
 /// @param T The temperature value in units of K)
 /// @param P The pressure value (in units of Pa)
 /// @return The electrostatic Debye-Huckel parameter \f$ A_{\gamma}\f$
-double debyeHuckelParamA(double T, double P);
+double debyeHuckelParamA(const real& T, const real& P);
 
 /// Calculate the electrostatic Debye-Huckel parameter \f$ B_{\gamma}\f$.
 /// @param T The temperature value in units of K)
 /// @param P The pressure value (in units of Pa)
 /// @return The electrostatic Debye-Huckel parameter \f$ B_{\gamma}\f$
-double debyeHuckelParamB(double T, double P);
+double debyeHuckelParamB(const real& T, const real& P);
 
 /// Calculate the HKF solvation parameter \f$ b_{\mathrm{NaCl}}\f$.
 /// @param T The temperature value in units of K)
 /// @param P The pressure value (in units of Pa)
 /// @return The HKF solvation parameter \f$ b_{\mathrm{NaCl}}\f$
-double solventParamNaCl(double T, double P);
+double solventParamNaCl(const real& T, const real& P);
 
 /// Calculate the HKF solvation parameter \f$ b_{\mathrm{Na^{+}Cl^{-}}}\f$.
 /// @param T The temperature value in units of K)
 /// @param P The pressure value (in units of Pa)
 /// @return The HKF solvation parameter \f$ b_{\mathrm{Na^{+}Cl^{-}}}\f$
-double shortRangeInteractionParamNaCl(double T, double P);
+double shortRangeInteractionParamNaCl(const real& T, const real& P);
 
 /// The interpolation data of the electrostatic Debye-Huckel parameter Agamma (in units of sqrt(kg/mol)).
 const std::vector<double> Agamma_data =
@@ -231,28 +231,28 @@ BilinearInterpolator bNaCl(pressure_range, temperature_range, bNaCl_data);
 /// The bilinear interpolator of the HKF parameter bNapClm
 BilinearInterpolator bNapClm(pressure_range, temperature_range, bNapClm_data);
 
-auto debyeHuckelParamA(double T, double P) -> double
+auto debyeHuckelParamA(const real& T, const real& P) -> double
 {
     const double TdegC = convertKelvinToCelsius(T);
     const double Pbar  = convertPascalToBar(P);
     return Agamma(Pbar, TdegC);
 }
 
-auto debyeHuckelParamB(double T, double P) -> double
+auto debyeHuckelParamB(const real& T, const real& P) -> double
 {
     const double TdegC = convertKelvinToCelsius(T);
     const double Pbar  = convertPascalToBar(P);
     return Bgamma(Pbar, TdegC);
 }
 
-auto solventParamNaCl(double T, double P) -> double
+auto solventParamNaCl(const real& T, const real& P) -> double
 {
     const double TdegC = convertKelvinToCelsius(T);
     const double Pbar  = convertPascalToBar(P);
     return 1.0e-07 * bNaCl(Pbar, TdegC);
 }
 
-auto shortRangeInteractionParamNaCl(double T, double P) -> double
+auto shortRangeInteractionParamNaCl(const real& T, const real& P) -> double
 {
     const double TdegC = convertKelvinToCelsius(T);
     const double Pbar  = convertPascalToBar(P);
@@ -327,7 +327,7 @@ auto aqueousChemicalModelHKF(const AqueousMixture& mixture) -> PhaseChemicalMode
     }
 
     // Define the chemical model function of the aqueous phase
-    PhaseChemicalModel model = [=](PhaseChemicalModelResult& res, Temperature T, Pressure P, VectorConstRef n) mutable
+    PhaseChemicalModel model = [=](PhaseChemicalModelResult& res, const real& T, const real& P, VectorConstRef n) mutable
     {
         // Evaluate the state of the aqueous mixture
         state = mixture.state(T, P, n);
@@ -338,30 +338,30 @@ auto aqueousChemicalModelHKF(const AqueousMixture& mixture) -> PhaseChemicalMode
         const auto& m = state.m;
 
         // The square root of the ionic strength
-        const auto sqrtI = sqrt(I);
+        const auto sqrtI = std::sqrt(I);
 
         // The mole fraction of the water species and its molar derivatives
         const auto xw = x[iwater];
 
         // The ln and log10 of water mole fraction
-        const auto ln_xw = log(xw);
-        const auto log10_xw = log10(xw);
+        const auto ln_xw = std::log(xw);
+        const auto log10_xw = std::log10(xw);
 
         // The alpha parameter
         const real alpha = xw/(1.0 - xw) * log10_xw;
 
         // The parameters for the HKF model
-        const double A = debyeHuckelParamA(T.val, P.val);
-        const double B = debyeHuckelParamB(T.val, P.val);
-        const double bNaCl = solventParamNaCl(T.val, P.val);
-        const double bNapClm = shortRangeInteractionParamNaCl(T.val, P.val);
+        const double A = debyeHuckelParamA(T, P);
+        const double B = debyeHuckelParamB(T, P);
+        const double bNaCl = solventParamNaCl(T, P);
+        const double bNapClm = shortRangeInteractionParamNaCl(T, P);
 
         // The osmotic coefficient of the aqueous phase
         real phi(num_species);
 
         // Set the activity coefficients of the neutral species to
         // water mole fraction to convert it to molality scale
-        res.ln_activity_coefficients = 0.0;
+        res.ln_activity_coefficients.fill(0.0);
 //        res.ln_activity_coefficients = ln_xw;
 
         // Loop over all charged species in the mixture
@@ -374,7 +374,7 @@ auto aqueousChemicalModelHKF(const AqueousMixture& mixture) -> PhaseChemicalMode
             const auto mi = m[ispecies];
 
             // Check if the molality of the charged species is zero
-            if(mi.val == 0.0)
+            if(mi == 0.0)
                 continue;
 
             // The electrical charge of the charged species
@@ -409,7 +409,7 @@ auto aqueousChemicalModelHKF(const AqueousMixture& mixture) -> PhaseChemicalMode
             if(xw != 1.0)
             {
                 // The sigma parameter of the current ion and its molar derivatives
-                const auto sigma = 3.0/pow(a*B*sqrtI, 3) * (lambda - 1.0/lambda - 2.0*log(lambda));
+                const auto sigma = 3.0/std::pow(a*B*sqrtI, 3) * (lambda - 1.0/lambda - 2.0*std::log(lambda));
 
                 // The psi contribution of the current ion and its molar derivatives
                 const auto psi = A*z2*sqrtI*sigma/3.0 + alpha - 0.5*(omega*bNaCl + bNapClm - 0.19*(std::abs(z) - 1.0)) * I;

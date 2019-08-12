@@ -87,12 +87,12 @@ public:
         PYBIND11_OVERLOAD_PURE(std::string, Interface, phaseName, iphase);
     }
 
-    auto properties(PhaseThermoModelResult& res, Index iphase, double T, double P) -> void
+    auto properties(PhaseThermoModelResult& res, Index iphase, const real& T, const real& P) -> void
     {
         PYBIND11_OVERLOAD_PURE(void, Interface, properties, res, iphase, T, P);
     }
 
-    auto properties(PhaseChemicalModelResult& res, Index iphase, double T, double P, VectorConstRef n) -> void
+    auto properties(PhaseChemicalModelResult& res, Index iphase, const real& T, const real& P, VectorConstRef n) -> void
     {
         PYBIND11_OVERLOAD_PURE(void, Interface, properties, res, iphase, T, P, n);
     }

@@ -54,10 +54,10 @@
 //    std::map<std::string, double> volume_fractions_solid_phases;
 //
 //    /// The temperature for the equilibrium calculations (in units of K)
-//    double T = 298.15;
+//    real T = 298.15;
 //
 //    /// The pressure for the equilibrium calculations (in units of Pa)
-//    double P = 1e5;
+//    real P = 1e5;
 //
 //    /// The porosity of the solid matrix
 //    double porosity = 1.0;

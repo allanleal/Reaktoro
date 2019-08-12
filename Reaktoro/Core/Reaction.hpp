@@ -77,7 +77,7 @@ public:
     auto setName(std::string name) -> void;
 
     /// Set the equilibrium constant function of the reaction (in natural log scale).
-    auto setEquilibriumConstant(const ThermoScalarFunction& lnk) -> void;
+    auto setEquilibriumConstant(const std::function<real(const real&, const real&)>& lnk) -> void;
 
     /// Set the rate function of the reaction (in units of mol/s).
     auto setRate(const ReactionRateFunction& function) -> void;
@@ -86,7 +86,7 @@ public:
     auto name() const -> std::string;
 
     /// Return the equilibrium constant function of the reaction.
-    auto equilibriumConstant() const -> const ThermoScalarFunction&;
+    auto equilibriumConstant() const -> const std::function<real(const real&, const real&)>&;
 
     /// Return the rate function of the reaction.
     auto rate() const -> const ReactionRateFunction&;
@@ -108,7 +108,7 @@ public:
 
     /// Return the stoichiometry of a species in the reaction equation.
     /// @param species The name of the species.
-    auto stoichiometry(std::string species) const -> double;
+    auto stoichiometry(std::string species) const -> real;
 
     /// Calculate the equilibrium constant of the reaction (in natural log).
     /// @param properties The chemical properties of the system

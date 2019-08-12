@@ -77,14 +77,14 @@ auto equilibrate(ChemicalState& state, const EquilibriumInverseProblem& problem)
 /// For performance critical applications, use class EquilibriumSolver.
 auto equilibrate(ChemicalState& state, const EquilibriumInverseProblem& problem, const EquilibriumOptions& options) -> EquilibriumResult;
 
-/// Equilibrate a chemical state instance with an equilibrium inverse problem.
-/// @warning This function is intended for convenience only!
-/// For performance critical applications, use class EquilibriumSolver.
-auto equilibrate(const EquilibriumInverseProblem& problem) -> ChemicalState;
+// /// Equilibrate a chemical state instance with an equilibrium inverse problem.
+// /// @warning This function is intended for convenience only!
+// /// For performance critical applications, use class EquilibriumSolver.
+// auto equilibrate(const EquilibriumInverseProblem& problem) -> ChemicalState;
 
-/// Equilibrate a chemical state instance with an equilibrium inverse problem.
-/// @warning This function is intended for convenience only!
-/// For performance critical applications, use class EquilibriumSolver.
-auto equilibrate(const EquilibriumInverseProblem& problem, const EquilibriumOptions& options) -> ChemicalState;
+// /// Equilibrate a chemical state instance with an equilibrium inverse problem.
+// /// @warning This function is intended for convenience only!
+// /// For performance critical applications, use class EquilibriumSolver.
+// auto equilibrate(const EquilibriumInverseProblem& problem, const EquilibriumOptions& options) -> ChemicalState;
 
 } // namespace Reaktoro

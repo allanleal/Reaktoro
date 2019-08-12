@@ -27,7 +27,7 @@ ThermoProperties::ThermoProperties(const ChemicalSystem& system)
   tres(num_phases, num_species), T(298.15), P(1e-5)
 {}
 
-auto ThermoProperties::update(double T_, double P_) -> void
+auto ThermoProperties::update(const real& T_, const real& P_) -> void
 {
     // Update both temperature and pressure
     T = T_;
@@ -44,12 +44,12 @@ auto ThermoProperties::update(double T_, double P_) -> void
     }
 }
 
-auto ThermoProperties::temperature() const -> Temperature
+auto ThermoProperties::temperature() const -> real
 {
     return T;
 }
 
-auto ThermoProperties::pressure() const -> Pressure
+auto ThermoProperties::pressure() const -> real
 {
     return P;
 }

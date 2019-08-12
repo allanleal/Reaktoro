@@ -33,7 +33,7 @@ const double eta = 1.66027e+05;
 
 } // namespace
 
-auto functionG(Temperature T, Pressure P, const WaterThermoState& wts) -> FunctionG
+auto functionG(const real& T, const real& P, const WaterThermoState& wts) -> FunctionG
 {
     // The function G
     FunctionG funcG;
@@ -165,7 +165,7 @@ auto speciesElectroStateHKF(const FunctionG& g, const AqueousSpecies& species) -
     return se;
 }
 
-auto speciesElectroStateHKF(Temperature T, Pressure P, const AqueousSpecies& species) -> SpeciesElectroState
+auto speciesElectroStateHKF(const real& T, const real& P, const AqueousSpecies& species) -> SpeciesElectroState
 {
     WaterThermoState wt = waterThermoStateWagnerPruss(T, P, StateOfMatter::Liquid);
 

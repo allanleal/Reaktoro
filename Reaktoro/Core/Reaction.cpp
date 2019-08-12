@@ -59,7 +59,7 @@ struct Reaction::Impl
     Vector stoichiometries;
 
     /// The function for the equilibrium constant of the reaction (in terms of natural log)
-    ThermoScalarFunction lnk;
+    std::function<real(const real&, const real&)> lnk;
 
     /// The function for the kinetic rate of the reaction (in units of mol/s)
     ReactionRateFunction rate;
@@ -111,7 +111,7 @@ auto Reaction::setName(std::string name) -> void
     pimpl->name = name;
 }
 
-auto Reaction::setEquilibriumConstant(const ThermoScalarFunction& lnk) -> void
+auto Reaction::setEquilibriumConstant(const std::function<real(const real&, const real&)>& lnk) -> void
 {
     pimpl->lnk = lnk;
 }
@@ -126,7 +126,7 @@ auto Reaction::name() const -> std::string
     return pimpl->name;
 }
 
-auto Reaction::equilibriumConstant() const -> const ThermoScalarFunction&
+auto Reaction::equilibriumConstant() const -> const std::function<real(const real&, const real&)>&
 {
     return pimpl->lnk;
 }
@@ -161,7 +161,7 @@ auto Reaction::stoichiometries() const -> VectorConstRef
     return pimpl->stoichiometries;
 }
 
-auto Reaction::stoichiometry(std::string species) const -> double
+auto Reaction::stoichiometry(std::string species) const -> real
 {
     return equation().stoichiometry(species);
 }
@@ -169,21 +169,21 @@ auto Reaction::stoichiometry(std::string species) const -> double
 auto Reaction::lnEquilibriumConstant(const ChemicalProperties& properties) const -> real
 {
     // Get the temperature and pressure of the system
-    const double T = properties.temperature();
-    const double P = properties.pressure();
+    const real T = properties.temperature();
+    const real P = properties.pressure();
 
     // Check if a equilibrium constant function was provided
     if(pimpl->lnk) return pimpl->lnk(T, P);
 
     // Calculate the equilibrium constant using the standard Gibbs energies of the species
     const VectorXr G0 = properties.standardPartialMolarGibbsEnergies();
-    const real RT = universalGasConstant * Temperature(T);
+    const real RT = universalGasConstant * T;
 
     real res;
     for(unsigned i = 0; i < indices().size(); ++i)
     {
         const Index ispecies = indices()[i];
-        const double vi = stoichiometries()[i];
+        const real vi = stoichiometries()[i];
         const real G0i = G0[ispecies];
         res += vi * G0i;
     }
@@ -195,11 +195,11 @@ auto Reaction::lnReactionQuotient(const ChemicalProperties& properties) const ->
 {
     const unsigned num_species = system().numSpecies();
     const VectorXr& ln_a = properties.lnActivities();
-    real ln_Q(num_species);
+    real ln_Q = 0.0;
     unsigned counter = 0;
     for(Index i : indices())
     {
-        const double vi = stoichiometries()[counter];
+        const real vi = stoichiometries()[counter];
         ln_Q += vi * ln_a[i];
         ++counter;
     }

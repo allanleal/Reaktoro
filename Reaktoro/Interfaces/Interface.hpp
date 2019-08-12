@@ -22,6 +22,7 @@
 #include <memory>
 
 // Reaktoro includes
+#include <Reaktoro/Common/Real.hpp>
 #include <Reaktoro/Math/Matrix.hpp>
 #include <Reaktoro/Thermodynamics/Models/ChemicalModel.hpp>
 #include <Reaktoro/Thermodynamics/Models/ThermoModel.hpp>
@@ -79,13 +80,13 @@ public:
     /// @param iphase The index of the phase
     /// @param T The temperature (in units of K)
     /// @param P The pressure (in units of Pa)
-    virtual auto properties(ThermoModelResult& res, double T, double P) -> void = 0;
+    virtual auto properties(ThermoModelResult& res, const real& T, const real& P) -> void = 0;
 
     /// Return the chemical properties of the phases and its species.
     /// @param T The temperature (in units of K)
     /// @param P The pressure (in units of Pa)
     /// @param n The amounts of the species (in units of mol)
-    virtual auto properties(ChemicalModelResult& res, double T, double P, VectorConstRef n) -> void = 0;
+    virtual auto properties(ChemicalModelResult& res, const real& T, const real& P, VectorConstRef n) -> void = 0;
 
     /// Return a clone of this Interface instance.
     virtual auto clone() const -> std::shared_ptr<Interface> = 0;

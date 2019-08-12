@@ -70,10 +70,10 @@ public:
     virtual ~AqueousMixture();
 
     /// Set a customized density function for water.
-    auto setWaterDensity(const ThermoScalarFunction& rho) -> void;
+    auto setWaterDensity(const std::function<real(const real&, const real&)>& rho) -> void;
 
     /// Set a customized dielectric constant function for water.
-    auto setWaterDielectricConstant(const ThermoScalarFunction& epsilon) -> void;
+    auto setWaterDielectricConstant(const std::function<real(const real&, const real&)>& epsilon) -> void;
 
     /// Set the temperature and pressure interpolation points for calculation of water density and water dielectric constant.
     /// Use this method if temperature-pressure interpolation should be used for the calculation of water density and
@@ -165,7 +165,7 @@ public:
     /// Calculate the molalities of the aqueous species and its molar derivatives.
     /// @param n The molar abundance of species (in units of mol)
     /// @return The molalities and their partial derivatives
-    auto molalities(VectorConstRef n) const -> VectorXr;
+    auto molalities(VectorXrConstRef n) const -> VectorXr;
 
     /// Calculate the stoichiometric molalities of the ions and its molar derivatives.
     /// @param m The molalities of the aqueous species and their partial derivatives
@@ -186,7 +186,7 @@ public:
     /// @param T The temperature (in units of K)
     /// @param P The pressure (in units of Pa)
     /// @param n The molar amounts of the species in the mixture (in units of mol)
-    auto state(Temperature T, Pressure P, VectorConstRef n) const -> AqueousMixtureState;
+    auto state(const real& T, const real& P, VectorXrConstRef n) const -> AqueousMixtureState;
 
 private:
     /// The index of the water species
@@ -208,10 +208,10 @@ private:
     Matrix dissociation_matrix;
 
     /// The density function for water
-    ThermoScalarFunction rho, rho_default;
+    std::function<real(const real&, const real&)> rho, rho_default;
 
     /// The dielectric constant function for water
-    ThermoScalarFunction epsilon, epsilon_default;
+    std::function<real(const real&, const real&)> epsilon, epsilon_default;
 
     /// Initialize the index related data of the species.
     void initializeIndices(const std::vector<AqueousSpecies>& species);

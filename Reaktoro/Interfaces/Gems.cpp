@@ -99,10 +99,10 @@ struct Gems::Impl
     std::shared_ptr<TNode> node;
 
     // The current temperature in GEMS TNode instance (in units of K)
-    double T;
+    real T;
 
     // The current pressure in GEMS TNode instance (in units of Pa)
-    double P;
+    real P;
 
     // The current molar amounts of all species in GEMS TNode instance (in units of mol)
     Vector n;
@@ -235,7 +235,7 @@ auto Gems::phaseName(Index iphase) const -> std::string
     return node()->pCSD()->PHNL[iphase];
 }
 
-auto Gems::properties(ThermoModelResult& res, double T, double P) -> void
+auto Gems::properties(ThermoModelResult& res, const real& T, const real& P) -> void
 {
     // Update the temperature and pressure of the Gems instance
     set(T, P);
@@ -250,11 +250,11 @@ auto Gems::properties(ThermoModelResult& res, double T, double P) -> void
     // Set the thermodynamic properties of the species
     for(Index i = 0; i < num_species; ++i)
     {
-        res.standardPartialMolarGibbsEnergies().val[i] = node()->DC_G0(i, P, T, false);
-        res.standardPartialMolarEnthalpies().val[i] = node()->DC_H0(i, P, T);
-        res.standardPartialMolarVolumes().val[i] = node()->DC_V0(i, P, T);
-        res.standardPartialMolarHeatCapacitiesConstP().val[i] = node()->DC_Cp0(i, P, T);
-        res.standardPartialMolarHeatCapacitiesConstV().val[i] = node()->DC_Cp0(i, P, T);
+        res.standardPartialMolarGibbsEnergies()[i] = node()->DC_G0(i, P, T, false);
+        res.standardPartialMolarEnthalpies()[i] = node()->DC_H0(i, P, T);
+        res.standardPartialMolarVolumes()[i] = node()->DC_V0(i, P, T);
+        res.standardPartialMolarHeatCapacitiesConstP()[i] = node()->DC_Cp0(i, P, T);
+        res.standardPartialMolarHeatCapacitiesConstV()[i] = node()->DC_Cp0(i, P, T);
     }
 
     Index offset = 0;
@@ -266,17 +266,17 @@ auto Gems::properties(ThermoModelResult& res, double T, double P) -> void
         // Set the ln activity constants of the species (non-zero for aqueous and gaseous species_
         if(ap->PHC[iphase] == PH_AQUEL) // check if aqueous species
         {
-            res.lnActivityConstants().val.segment(offset, size).fill(std::log(55.508472));
-            res.lnActivityConstants().val[ap->LO] = 0.0; // zero for water species
+            res.lnActivityConstants().segment(offset, size).fill(std::log(55.508472));
+            res.lnActivityConstants()[ap->LO] = 0.0; // zero for water species
         }
         else if(ap->PHC[iphase] == PH_GASMIX) // check if gaseous species
-            res.lnActivityConstants().val.segment(offset, size).fill(std::log(1e-5 * P)); // ln(Pbar) for gases
+            res.lnActivityConstants().segment(offset, size).fill(std::log(1e-5 * P)); // ln(Pbar) for gases
 
         offset += size;
     }
 }
 
-auto Gems::properties(ChemicalModelResult& res, double T, double P, VectorConstRef n) -> void
+auto Gems::properties(ChemicalModelResult& res, const real& T, const real& P, VectorConstRef n) -> void
 {
     // Update the temperature, pressure, and species amounts of the Gems instance
     set(T, P, n);
@@ -289,8 +289,8 @@ auto Gems::properties(ChemicalModelResult& res, double T, double P, VectorConstR
     const Index num_phases = numPhases();
 
     // Set the ln activity coefficients and ln activities of the species in current phase
-    res.lnActivityCoefficients().val = Vector::Map(ap->lnGam, num_species);
-    res.lnActivities().val = Vector::Map(ap->lnAct, num_species);
+    res.lnActivityCoefficients() = Vector::Map(ap->lnGam, num_species);
+    res.lnActivities() = Vector::Map(ap->lnAct, num_species);
 
     // Set the molar derivatives of the activities
     Index offset = 0;
@@ -303,13 +303,9 @@ auto Gems::properties(ChemicalModelResult& res, double T, double P, VectorConstR
         const auto np = n.segment(offset, size);
 
         // Set the molar volume of current phase
-        res.phaseMolarVolumes().val[iphase] = (num_species == 1) ?
+        res.phaseMolarVolumes()[iphase] = (num_species == 1) ?
             node()->DC_V0(offset, P, T) :
             node()->Ph_Volume(iphase)/node()->Ph_Mole(iphase);
-
-        // Set d(ln(a))/dn to d(ln(x))/dn, where x is mole fractions
-        res.lnActivities().ddn.block(offset, offset, size, size) = -1.0/sum(np) * ones(size, size);
-        res.lnActivities().ddn.block(offset, offset, size, size).diagonal() += 1.0/np;
 
         offset += size;
     }
@@ -320,7 +316,7 @@ auto Gems::clone() const -> std::shared_ptr<Interface>
     return std::make_shared<Gems>(*this);
 }
 
-auto Gems::set(double T, double P) -> void
+auto Gems::set(const real& T, const real& P) -> void
 {
     pimpl->T = T;
     pimpl->P = P;
@@ -329,7 +325,7 @@ auto Gems::set(double T, double P) -> void
     node()->setPressure(P);
 }
 
-auto Gems::set(double T, double P, VectorConstRef n) -> void
+auto Gems::set(const real& T, const real& P, VectorConstRef n) -> void
 {
     pimpl->T = T;
     pimpl->P = P;
@@ -352,7 +348,7 @@ auto Gems::setOptions(const GemsOptions& options) -> void
     pimpl->options = options;
 }
 
-auto Gems::equilibrate(double T, double P, VectorConstRef b) -> void
+auto Gems::equilibrate(const real& T, const real& P, VectorConstRef b) -> void
 {
     // Start timing
     Time start = time();

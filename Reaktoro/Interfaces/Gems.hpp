@@ -86,13 +86,13 @@ public:
     /// @param iphase The index of the phase
     /// @param T The temperature (in units of K)
     /// @param P The pressure (in units of Pa)
-    virtual auto properties(ThermoModelResult& res, double T, double P) -> void;
+    virtual auto properties(ThermoModelResult& res, const real& T, const real& P) -> void;
 
     /// Return the chemical properties of the phases and its species.
     /// @param T The temperature (in units of K)
     /// @param P The pressure (in units of Pa)
     /// @param n The amounts of the species (in units of mol)
-    virtual auto properties(ChemicalModelResult& res, double T, double P, VectorConstRef n) -> void;
+    virtual auto properties(ChemicalModelResult& res, const real& T, const real& P, VectorConstRef n) -> void;
 
     /// Return a clone of this Gems instance
     virtual auto clone() const -> std::shared_ptr<Interface>;
@@ -100,13 +100,13 @@ public:
     /// Set the temperature and pressure of the Gems instance.
     /// @param T The temperature (in units of K)
     /// @param P The pressure (in units of Pa)
-    auto set(double T, double P) -> void;
+    auto set(const real& T, const real& P) -> void;
 
     /// Set the temperature, pressure and molar composition of the Gems instance.
     /// @param T The temperature (in units of K)
     /// @param P The pressure (in units of Pa)
     /// @param n The composition of the species (in units of mol)
-    auto set(double T, double P, VectorConstRef n) -> void;
+    auto set(const real& T, const real& P, VectorConstRef n) -> void;
 
     /// Set the options of the Gems instance
     auto setOptions(const GemsOptions& options) -> void;
@@ -115,7 +115,7 @@ public:
     /// @param T The temperature for the equilibrium calculation (in units of K)
     /// @param P The pressure for the equilibrium calculation (in units of Pa)
     /// @param n The amounts of the elements (in units of mol)
-    auto equilibrate(double T, double P, VectorConstRef b) -> void;
+    auto equilibrate(const real& T, const real& P, VectorConstRef b) -> void;
 
     /// Return the convergence result of the equilibrium calculation
     auto converged() const -> bool;

@@ -92,10 +92,10 @@ struct KineticSolver::Impl
     Matrix B;
 
     /// The temperature of the chemical system (in units of K)
-    double T;
+    real T;
 
     /// The pressure of the chemical system (in units of Pa)
-    double P;
+    real P;
 
     /// The molar composition of the equilibrium species
     Vector ne;
@@ -197,86 +197,86 @@ struct KineticSolver::Impl
         dqdu.resize(system.numSpecies(), Ee + Nk);
     }
 
-    auto addSource(ChemicalState state, double volumerate, std::string units) -> void
-    {
-        const Index num_species = system.numSpecies();
-        const double volume = units::convert(volumerate, units, "m3/s");
-        state.scaleVolume(volume);
-        const Vector n = state.speciesAmounts();
-        auto old_source_fn = source_fn;
+    // auto addSource(ChemicalState state, double volumerate, std::string units) -> void
+    // {
+    //     const Index num_species = system.numSpecies();
+    //     const double volume = units::convert(volumerate, units, "m3/s");
+    //     state.scaleVolume(volume);
+    //     const Vector n = state.speciesAmounts();
+    //     auto old_source_fn = source_fn;
 
-        source_fn = [=](const ChemicalProperties& properties)
-        {
-            VectorXr q(num_species);
-            q.val = n;
-            if(old_source_fn)
-                q += old_source_fn(properties);
-            return q;
-        };
-    }
+    //     source_fn = [=](const ChemicalProperties& properties)
+    //     {
+    //         VectorXr q(num_species);
+    //         q.val = n;
+    //         if(old_source_fn)
+    //             q += old_source_fn(properties);
+    //         return q;
+    //     };
+    // }
 
-    auto addPhaseSink(std::string phase, double volumerate, std::string units) -> void
-    {
-        const double volume = units::convert(volumerate, units, "m3/s");
-        const Index iphase = system.indexPhaseWithError(phase);
-        const Index ifirst = system.indexFirstSpeciesInPhase(iphase);
-        const Index size = system.numSpeciesInPhase(iphase);
-        auto old_source_fn = source_fn;
-        real phasevolume;
-        VectorXr q(size);
+    // auto addPhaseSink(std::string phase, double volumerate, std::string units) -> void
+    // {
+    //     const double volume = units::convert(volumerate, units, "m3/s");
+    //     const Index iphase = system.indexPhaseWithError(phase);
+    //     const Index ifirst = system.indexFirstSpeciesInPhase(iphase);
+    //     const Index size = system.numSpeciesInPhase(iphase);
+    //     auto old_source_fn = source_fn;
+    //     real phasevolume;
+    //     VectorXr q(size);
 
-        source_fn = [=](const ChemicalProperties& properties) mutable
-        {
-            const auto n = properties.composition();
-            const auto np = rows(n, ifirst, size);
-            auto qp = rows(q, ifirst, size);
-            phasevolume = properties.phaseVolumes()[iphase];
-            qp = -volume*np/phasevolume;
-            if(old_source_fn)
-                q += old_source_fn(properties);
-            return q;
-        };
-    }
+    //     source_fn = [=](const ChemicalProperties& properties) mutable
+    //     {
+    //         const auto n = properties.composition();
+    //         const auto np = rows(n, ifirst, size);
+    //         auto qp = rows(q, ifirst, size);
+    //         phasevolume = properties.phaseVolumes()[iphase];
+    //         qp = -volume*np/phasevolume;
+    //         if(old_source_fn)
+    //             q += old_source_fn(properties);
+    //         return q;
+    //     };
+    // }
 
-    auto addFluidSink(double volumerate, std::string units) -> void
-    {
-        const double volume = units::convert(volumerate, units, "m3/s");
-        const Indices& isolid_species = partition.indicesSolidSpecies();
-        auto old_source_fn = source_fn;
-        real fluidvolume;
-        VectorXr q;
+    // auto addFluidSink(double volumerate, std::string units) -> void
+    // {
+    //     const double volume = units::convert(volumerate, units, "m3/s");
+    //     const Indices& isolid_species = partition.indicesSolidSpecies();
+    //     auto old_source_fn = source_fn;
+    //     real fluidvolume;
+    //     VectorXr q;
 
-        source_fn = [=](const ChemicalProperties& properties) mutable
-        {
-            const auto n = properties.composition();
-            fluidvolume = properties.fluidVolume();
-            q = -volume*n/fluidvolume;
-            rows(q, isolid_species).fill(0.0);
-            if(old_source_fn)
-                q += old_source_fn(properties);
-            return q;
-        };
-    }
+    //     source_fn = [=](const ChemicalProperties& properties) mutable
+    //     {
+    //         const auto n = properties.composition();
+    //         fluidvolume = properties.fluidVolume();
+    //         q = -volume*n/fluidvolume;
+    //         rows(q, isolid_species).fill(0.0);
+    //         if(old_source_fn)
+    //             q += old_source_fn(properties);
+    //         return q;
+    //     };
+    // }
 
-    auto addSolidSink(double volumerate, std::string units) -> void
-    {
-        const double volume = units::convert(volumerate, units, "m3/s");
-        const Indices& ifluid_species = partition.indicesFluidSpecies();
-        auto old_source_fn = source_fn;
-        real solidvolume;
-        VectorXr q;
+    // auto addSolidSink(double volumerate, std::string units) -> void
+    // {
+    //     const double volume = units::convert(volumerate, units, "m3/s");
+    //     const Indices& ifluid_species = partition.indicesFluidSpecies();
+    //     auto old_source_fn = source_fn;
+    //     real solidvolume;
+    //     VectorXr q;
 
-        source_fn = [=](const ChemicalProperties& properties) mutable
-        {
-            const auto n = properties.composition();
-            solidvolume = properties.solidVolume();
-            q = -volume*n/solidvolume;
-            rows(q, ifluid_species).fill(0.0);
-            if(old_source_fn)
-                q += old_source_fn(properties);
-            return q;
-        };
-    }
+    //     source_fn = [=](const ChemicalProperties& properties) mutable
+    //     {
+    //         const auto n = properties.composition();
+    //         solidvolume = properties.solidVolume();
+    //         q = -volume*n/solidvolume;
+    //         rows(q, ifluid_species).fill(0.0);
+    //         if(old_source_fn)
+    //             q += old_source_fn(properties);
+    //         return q;
+    //     };
+    // }
 
     auto initialize(ChemicalState& state, double tstart) -> void
     {
@@ -413,7 +413,7 @@ struct KineticSolver::Impl
         r = reactions.rates(properties);
 
         // Calculate the right-hand side function of the ODE
-        res = A * r.val;
+        res = A * r;
 
         // Add the function contribution from the source rates
         if(source_fn)
@@ -422,7 +422,7 @@ struct KineticSolver::Impl
             q = source_fn(properties);
 
             // Add the contribution of the source rates
-            res += B * q.val;
+            res += B * q;
         }
 
         return 0;
@@ -430,40 +430,43 @@ struct KineticSolver::Impl
 
     auto jacobian(ChemicalState& state, double t, VectorConstRef u, MatrixRef res) -> int
     {
-        // Calculate the sensitivity of the equilibrium state
-        sensitivity = equilibrium.sensitivity();
+        // // Calculate the sensitivity of the equilibrium state
+        // sensitivity = equilibrium.sensitivity();
 
-        // Extract the columns of the kinetic rates derivatives w.r.t. the equilibrium and kinetic species
-        drdne = cols(r.ddn, ies);
-        drdnk = cols(r.ddn, iks);
+        // // Matrix drdn = jacobian(rfun, wrt(n), at(n));
+        // Matrix drdn;
 
-        // Calculate the derivatives of `r` w.r.t. `be` using the equilibrium sensitivity
-        drdbe = drdne * sensitivity.dndb;
+        // // Extract the columns of the kinetic rates derivatives w.r.t. the equilibrium and kinetic species
+        // drdne = cols(drdn, ies);
+        // drdnk = cols(drdn, iks);
 
-        // Assemble the partial derivatives of the reaction rates `r` w.r.t. to `u = [be nk]`
-        drdu << drdbe, drdnk;
+        // // Calculate the derivatives of `r` w.r.t. `be` using the equilibrium sensitivity
+        // drdbe = drdne * sensitivity.dndb;
 
-        // Calculate the Jacobian matrix of the ODE function
-        res = A * drdu;
+        // // Assemble the partial derivatives of the reaction rates `r` w.r.t. to `u = [be nk]`
+        // drdu << drdbe, drdnk;
 
-        // Add the Jacobian contribution from the source rates
-        if(source_fn)
-        {
-            // Extract the columns of the source rates derivatives w.r.t. the equilibrium and kinetic species
-            dqdne = cols(q.ddn, ies);
-            dqdnk = cols(q.ddn, iks);
+        // // Calculate the Jacobian matrix of the ODE function
+        // res = A * drdu;
 
-            // Calculate the derivatives of `q` w.r.t. `be` using the equilibrium sensitivity
-            dqdbe = dqdne * sensitivity.dndb;
+        // // Add the Jacobian contribution from the source rates
+        // if(source_fn)
+        // {
+        //     // Extract the columns of the source rates derivatives w.r.t. the equilibrium and kinetic species
+        //     dqdne = cols(q.ddn, ies);
+        //     dqdnk = cols(q.ddn, iks);
 
-            // Assemble the partial derivatives of the source rates `q` w.r.t. to `u = [be nk]`
-            dqdu << dqdbe, dqdnk;
+        //     // Calculate the derivatives of `q` w.r.t. `be` using the equilibrium sensitivity
+        //     dqdbe = dqdne * sensitivity.dndb;
 
-            // Add the contribution of the source rates
-            res += B * dqdu;
-        }
+        //     // Assemble the partial derivatives of the source rates `q` w.r.t. to `u = [be nk]`
+        //     dqdu << dqdbe, dqdnk;
 
-        return 0;
+        //     // Add the contribution of the source rates
+        //     res += B * dqdu;
+        // }
+
+        // return 0;
     }
 };
 
@@ -492,26 +495,6 @@ auto KineticSolver::setOptions(const KineticOptions& options) -> void
 auto KineticSolver::setPartition(const Partition& partition) -> void
 {
     pimpl->setPartition(partition);
-}
-
-auto KineticSolver::addSource(const ChemicalState& state, double volumerate, std::string units) -> void
-{
-    pimpl->addSource(state, volumerate, units);
-}
-
-auto KineticSolver::addPhaseSink(std::string phase, double volumerate, std::string units) -> void
-{
-    pimpl->addPhaseSink(phase, volumerate, units);
-}
-
-auto KineticSolver::addFluidSink(double volumerate, std::string units) -> void
-{
-    pimpl->addFluidSink(volumerate, units);
-}
-
-auto KineticSolver::addSolidSink(double volumerate, std::string units) -> void
-{
-    pimpl->addSolidSink(volumerate, units);
 }
 
 auto KineticSolver::initialize(ChemicalState& state, double tstart) -> void

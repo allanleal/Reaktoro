@@ -15,32 +15,11 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this library. If not, see <http://www.gnu.org/licenses/>.
 
-#include "MineralChemicalModelIdeal.hpp"
-
-// Reaktoro includes
-#include <Reaktoro/Thermodynamics/Mixtures/MineralMixture.hpp>
+#pragma once
 
 namespace Reaktoro {
 
-auto mineralChemicalModelIdeal(const MineralMixture& mixture) -> PhaseChemicalModel
-{
-    // The state of the mineral mixture
-    MineralMixtureState state;
-
-    // Define the chemical model function of the mineral phase
-    PhaseChemicalModel model = [=](PhaseChemicalModelResult& res, const real& T, const real& P, VectorConstRef n) mutable
-    {
-        // Evaluate the state of the mineral mixture
-        state = mixture.state(T, P, n);
-
-        // Fill the chemical properties of the mineral phase
-        res.ln_activities = log(state.x);
-    };
-
-    return model;
-}
+/// An alias type for double
+using real = double;
 
 } // namespace Reaktoro
-
-
-

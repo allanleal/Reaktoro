@@ -37,7 +37,7 @@ public:
     /// Update the thermodynamic properties of the chemical system.
     /// @param T The temperature in the system (in units of K)
     /// @param P The pressure in the system (in units of Pa)
-    auto update(double T, double P) -> void;
+    auto update(const real& T, const real& P) -> void;
 
     /// Update the chemical properties of the chemical system.
     /// @param n The amounts of the species in the system (in units of mol)
@@ -47,7 +47,7 @@ public:
     /// @param T The temperature in the system (in units of K)
     /// @param P The pressure in the system (in units of Pa)
     /// @param n The amounts of the species in the system (in units of mol)
-    auto update(double T, double P, VectorConstRef n) -> void;
+    auto update(const real& T, const real& P, VectorConstRef n) -> void;
 
     /// Update the thermodynamic and chemical properties of the chemical system.
     /// @param T The temperature in the system (in units of K)
@@ -55,16 +55,16 @@ public:
     /// @param n The amounts of the species in the system (in units of mol)
     /// @param tres The result of the ThermoModel function of the chemical system.
     /// @param cres The result of the ChemicalModel function of the chemical system.
-    auto update(double T, double P, VectorConstRef n, const ThermoModelResult& tres, const ChemicalModelResult& cres) -> void;
+    auto update(const real& T, const real& P, VectorConstRef n, const ThermoModelResult& tres, const ChemicalModelResult& cres) -> void;
 
     /// Return the temperature of the system (in units of K).
-    auto temperature() const -> Temperature;
+    auto temperature() const -> real;
 
     /// Return the pressure of the system (in units of Pa).
-    auto pressure() const -> Pressure;
+    auto pressure() const -> real;
 
     /// Return the molar amounts of the species (in units of mol).
-    auto composition() const -> Composition;
+    auto composition() const -> VectorXrConstRef;
 
     /// Return the result of the PhaseThermoModel function of each phase.
     auto thermoModelResult() const -> const ThermoModelResult&;
@@ -197,10 +197,10 @@ private:
     Index num_phases;
 
     /// The temperature of the system (in units of K)
-    Temperature T;
+    real T;
 
     /// The pressure of the system (in units of Pa)
-    Pressure P;
+    real P;
 
     /// The amounts of the species in the system (in units of mol).
     Vector n;

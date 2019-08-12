@@ -163,10 +163,10 @@ struct ChemicalQuantity::Impl
     double tag;
 
     /// The temperature of the chemical system (in units of K).
-    double T;
+    real T;
 
     /// The pressure of the chemical system (in units of Pa).
-    double P;
+    real P;
 
     /// The molar amounts of the species in the chemical system (in units of mol).
     Vector n;
@@ -398,7 +398,7 @@ auto volume(const ChemicalQuantity& quantity, std::string arguments) -> std::fun
     auto func = [=]() -> double
     {
         const ChemicalProperties& properties = quantity.properties();
-        const double val = properties.volume().val;
+        const double val = properties.volume();
         return factor * val;
     };
     return func;
@@ -413,7 +413,7 @@ auto moleFraction(const ChemicalQuantity& quantity, std::string arguments) -> st
     auto func = [=]() -> double
     {
         const ChemicalProperties& properties = quantity.properties();
-        const double xi = properties.moleFractions().val[ispecies];
+        const double xi = properties.moleFractions()[ispecies];
         return xi;
     };
     return func;
@@ -428,7 +428,7 @@ auto activity(const ChemicalQuantity& quantity, std::string arguments) -> std::f
     auto func = [=]() -> double
     {
         const ChemicalProperties& properties = quantity.properties();
-        const double ln_ai = properties.lnActivities().val[ispecies];
+        const double ln_ai = properties.lnActivities()[ispecies];
         return std::exp(ln_ai);
     };
     return func;
@@ -443,7 +443,7 @@ auto activityCoefficient(const ChemicalQuantity& quantity, std::string arguments
     auto func = [=]() -> double
     {
         const ChemicalProperties& properties = quantity.properties();
-        const double ln_gi = properties.lnActivityCoefficients().val[ispecies];
+        const double ln_gi = properties.lnActivityCoefficients()[ispecies];
         return std::exp(ln_gi);
     };
     return func;
@@ -460,7 +460,7 @@ auto fugacity(const ChemicalQuantity& quantity, std::string arguments) -> std::f
     auto func = [=]() -> double
     {
         const ChemicalProperties& properties = quantity.properties();
-        const double ln_ai = properties.lnActivities().val[ispecies];
+        const double ln_ai = properties.lnActivities()[ispecies];
         const double val = std::exp(ln_ai);
         return factor * val;
     };
@@ -478,7 +478,7 @@ auto chemicalPotential(const ChemicalQuantity& quantity, std::string arguments) 
     auto func = [=]() -> double
     {
         const ChemicalProperties& properties = quantity.properties();
-        const double val = properties.chemicalPotentials().val[ispecies];
+        const double val = properties.chemicalPotentials()[ispecies];
         return factor * val;
     };
     return func;
@@ -593,7 +593,7 @@ auto elementMolarity(const ChemicalQuantity& quantity, std::string arguments) ->
         const ChemicalProperties& properties = quantity.properties();
         const ChemicalState& state = quantity.state();
         const double amount = state.elementAmountInPhase(ielement, iphase);
-        const double volume = properties.phaseVolumes()[iphase].val;
+        const double volume = properties.phaseVolumes()[iphase];
         const double liter = convertCubicMeterToLiter(volume);
         const double ci = liter ? amount/liter : 0.0;
         return factor * ci;
@@ -670,7 +670,7 @@ auto speciesMolarity(const ChemicalQuantity& quantity, std::string arguments) ->
         const ChemicalProperties& properties = quantity.properties();
         const ChemicalState& state = quantity.state();
         const double amount = state.speciesAmount(ispecies);
-        const double volume = properties.phaseVolumes()[iphase].val;
+        const double volume = properties.phaseVolumes()[iphase];
         const double liter = convertCubicMeterToLiter(volume);
         const double ci = liter ? amount/liter : 0.0;
         return factor * ci;
@@ -689,7 +689,7 @@ auto phaseAmount(const ChemicalQuantity& quantity, std::string arguments) -> std
     auto func = [=]() -> double
     {
         const ChemicalProperties& properties = quantity.properties();
-        const double val = properties.phaseAmounts().val[iphase];
+        const double val = properties.phaseAmounts()[iphase];
         return factor * val;
     };
     return func;
@@ -706,7 +706,7 @@ auto phaseMass(const ChemicalQuantity& quantity, std::string arguments) -> std::
     auto func = [=]() -> double
     {
         const ChemicalProperties& properties = quantity.properties();
-        const double val = properties.phaseMasses().val[iphase];
+        const double val = properties.phaseMasses()[iphase];
         return factor * val;
     };
     return func;
@@ -723,7 +723,7 @@ auto phaseVolume(const ChemicalQuantity& quantity, std::string arguments) -> std
     auto func = [=]() -> double
     {
         const ChemicalProperties& properties = quantity.properties();
-        const double val = properties.phaseVolumes().val[iphase];
+        const double val = properties.phaseVolumes()[iphase];
         return factor * val;
     };
     return func;
@@ -735,7 +735,7 @@ auto pH(const ChemicalQuantity& quantity, std::string arguments) -> std::functio
     auto pH = ChemicalProperty::pH(quantity.system());
     auto func = [=]() -> double
     {
-        return pH(quantity.properties()).val;
+        return pH(quantity.properties());
     };
     return func;
 }
@@ -746,7 +746,7 @@ auto pE(const ChemicalQuantity& quantity, std::string arguments) -> std::functio
     const auto pE = ChemicalProperty::pE(quantity.system());
     auto func = [=]() -> double
     {
-        return pE(quantity.properties()).val;
+        return pE(quantity.properties());
     };
     return func;
 }
@@ -759,7 +759,7 @@ auto Eh(const ChemicalQuantity& quantity, std::string arguments) -> std::functio
     const auto factor = units::convert(1.0, "volt", units);
     auto func = [=]() -> double
     {
-        return factor * Eh(quantity.properties()).val;
+        return factor * Eh(quantity.properties());
     };
     return func;
 }
@@ -772,7 +772,7 @@ auto ionicStrength(const ChemicalQuantity& quantity, std::string arguments) -> s
     const auto factor = units::convert(1.0, "molal", units);
     auto func = [=]() -> double
     {
-        return factor * I(quantity.properties()).val;
+        return factor * I(quantity.properties());
     };
     return func;
 }
@@ -785,7 +785,7 @@ auto fluidVolume(const ChemicalQuantity& quantity, std::string arguments) -> std
     auto func = [=]() -> double
     {
         const ChemicalProperties& properties = quantity.properties();
-        const double val = properties.fluidVolume().val;
+        const double val = properties.fluidVolume();
         return factor * val;
     };
     return func;
@@ -797,8 +797,8 @@ auto fluidVolumeFraction(const ChemicalQuantity& quantity, std::string arguments
     auto func = [=]() -> double
     {
         const ChemicalProperties& properties = quantity.properties();
-        const double volume = properties.volume().val;
-        const double fluid_volume = properties.fluidVolume().val;
+        const double volume = properties.volume();
+        const double fluid_volume = properties.fluidVolume();
         return fluid_volume/volume;
     };
     return func;
@@ -812,7 +812,7 @@ auto solidVolume(const ChemicalQuantity& quantity, std::string arguments) -> std
     auto func = [=]() -> double
     {
         const ChemicalProperties& properties = quantity.properties();
-        const double val = properties.solidVolume().val;
+        const double val = properties.solidVolume();
         return factor * val;
     };
     return func;
@@ -824,8 +824,8 @@ auto solidVolumeFraction(const ChemicalQuantity& quantity, std::string arguments
     auto func = [=]() -> double
     {
         const ChemicalProperties& properties = quantity.properties();
-        const double volume = properties.volume().val;
-        const double solid_volume = properties.solidVolume().val;
+        const double volume = properties.volume();
+        const double solid_volume = properties.solidVolume();
         return solid_volume/volume;
     };
     return func;
@@ -842,7 +842,7 @@ auto reactionRate(const ChemicalQuantity& quantity, std::string arguments) -> st
     auto func = [=]() -> double
     {
         const VectorXr& rates = quantity.rates();
-        const double val = rates.val[ireaction];
+        const double val = rates[ireaction];
         return factor * val;
     };
     return func;
@@ -857,7 +857,7 @@ auto reactionEquilibriumIndex(const ChemicalQuantity& quantity, std::string argu
     auto func = [=]() -> double
     {
         const ChemicalProperties& properties = quantity.properties();
-        const double ln_omega = reactions.reaction(ireaction).lnEquilibriumIndex(properties).val;
+        const double ln_omega = reactions.reaction(ireaction).lnEquilibriumIndex(properties);
         return std::exp(ln_omega);
     };
     return func;

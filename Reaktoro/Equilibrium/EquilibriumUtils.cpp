@@ -60,28 +60,28 @@ auto equilibrateAux(ChemicalState& state, const EquilibriumProblem& problem, Equ
     return res;
 }
 
-auto equilibrateAux(ChemicalState& state, const EquilibriumInverseProblem& problem, EquilibriumOptions options) -> EquilibriumResult
-{
-    // Define auxiliary references to problem data
-    const auto& system = problem.system();
-    const auto& partition = problem.partition();
+// auto equilibrateAux(ChemicalState& state, const EquilibriumInverseProblem& problem, EquilibriumOptions options) -> EquilibriumResult
+// {
+//     // Define auxiliary references to problem data
+//     const auto& system = problem.system();
+//     const auto& partition = problem.partition();
 
-    // The result of the equilibrium calculation
-    EquilibriumResult res;
+//     // The result of the equilibrium calculation
+//     EquilibriumResult res;
 
-    // Perform an inverse equilibrium calculation
-    EquilibriumInverseSolver solver(system);
-    solver.setPartition(partition);
-    solver.setOptions(options);
-    res = solver.solve(state, problem);
+//     // Perform an inverse equilibrium calculation
+//     EquilibriumInverseSolver solver(system);
+//     solver.setPartition(partition);
+//     solver.setOptions(options);
+//     res = solver.solve(state, problem);
 
-    // Assert the calculation succeeded
-    Assert(res.optimum.succeeded, "Could not calculate the equilibrium state of the system.",
-        "Convergence could not be established with given equilibrium conditions, "
-        "initial guess, and/or numerical parameters.");
+//     // Assert the calculation succeeded
+//     Assert(res.optimum.succeeded, "Could not calculate the equilibrium state of the system.",
+//         "Convergence could not be established with given equilibrium conditions, "
+//         "initial guess, and/or numerical parameters.");
 
-    return res;
-}
+//     return res;
+// }
 
 } // namespace
 
@@ -138,26 +138,26 @@ auto equilibrate(const EquilibriumProblem& problem, const EquilibriumOptions& op
     return state;
 }
 
-auto equilibrate(ChemicalState& state, const EquilibriumInverseProblem& problem) -> EquilibriumResult
-{
-    return equilibrate(state, problem, {});
-}
+// auto equilibrate(ChemicalState& state, const EquilibriumInverseProblem& problem) -> EquilibriumResult
+// {
+//     return equilibrate(state, problem, {});
+// }
 
-auto equilibrate(ChemicalState& state, const EquilibriumInverseProblem& problem, const EquilibriumOptions& options) -> EquilibriumResult
-{
-    return equilibrateAux(state, problem, options);
-}
+// auto equilibrate(ChemicalState& state, const EquilibriumInverseProblem& problem, const EquilibriumOptions& options) -> EquilibriumResult
+// {
+//     return equilibrateAux(state, problem, options);
+// }
 
-auto equilibrate(const EquilibriumInverseProblem& problem) -> ChemicalState
-{
-    return equilibrate(problem, {});
-}
+// auto equilibrate(const EquilibriumInverseProblem& problem) -> ChemicalState
+// {
+//     return equilibrate(problem, {});
+// }
 
-auto equilibrate(const EquilibriumInverseProblem& problem, const EquilibriumOptions& options) -> ChemicalState
-{
-    ChemicalState state(problem.system());
-    equilibrate(state, problem, options);
-    return state;
-}
+// auto equilibrate(const EquilibriumInverseProblem& problem, const EquilibriumOptions& options) -> ChemicalState
+// {
+//     ChemicalState state(problem.system());
+//     equilibrate(state, problem, options);
+//     return state;
+// }
 
 } // namespace Reaktoro

@@ -17,6 +17,9 @@
 
 #include "PhreeqcUtils.hpp"
 
+// C++ includes
+#include <cmath>
+
 // Reaktoro includes
 #include <Reaktoro/Common/Exception.hpp>
 #include <Reaktoro/Common/ReactionEquation.hpp>
@@ -366,7 +369,7 @@ auto useAnalytic(const double* logk) -> bool
 }
 
 template<typename SpeciesType>
-auto lnEquilibriumConstantHelper(const SpeciesType* species, Temperature T, Pressure P) -> real
+auto lnEquilibriumConstantHelper(const SpeciesType* species, const real& T, const real& P) -> real
 {
     //--------------------------------------------------------------------------------
     // The implementation of this method was inspired by the PHREEQC
@@ -381,18 +384,18 @@ auto lnEquilibriumConstantHelper(const SpeciesType* species, Temperature T, Pres
     // Check if the PHREEQC analytical expression for logk should be used
     if(useAnalytic(logk))
         return (logk[T_A1] + logk[T_A2]*T + logk[T_A3]/T +
-            logk[T_A4]*log10(T) + logk[T_A5]/(T*T) + logk[T_A6]*(T*T)) * ln10;
+            logk[T_A4]*std::log10(T) + logk[T_A5]/(T*T) + logk[T_A6]*(T*T)) * ln10;
 
     // Use the Van't Hoff equation instead
     return logk[logK_T0]*ln10 - logk[delta_h] * (298.15 - T)/(R*T*298.15);
 }
 
-auto lnEquilibriumConstant(const PhreeqcSpecies* species, double T, double P) -> real
+auto lnEquilibriumConstant(const PhreeqcSpecies* species, const real& T, const real& P) -> real
 {
     return lnEquilibriumConstantHelper(species, T, P);
 }
 
-auto lnEquilibriumConstant(const PhreeqcPhase* phase, double T, double P) -> real
+auto lnEquilibriumConstant(const PhreeqcPhase* phase, const real& T, const real& P) -> real
 {
     return lnEquilibriumConstantHelper(phase, T, P);
 }

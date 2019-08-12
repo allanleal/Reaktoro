@@ -156,8 +156,8 @@ auto mineralSpeciesThermoData(const PhreeqcPhase* phase) -> MineralSpeciesThermo
     // Check if the species has reaction info
     if(!params.reaction.equation.empty())
     {
-        const double T = 278.15;
-        const double P = 1e5;
+        const real T = 278.15;
+        const real P = 1e5;
         const double molar_volume = convertCubicCentimeterToCubicMeter(phase->logk[vm0]);
 
         SpeciesThermoInterpolatedProperties props;
@@ -410,7 +410,7 @@ auto PhreeqcDatabase::mineralSpecies(std::string name) const -> MineralSpecies
 
 auto PhreeqcDatabase::mineralSpecies() const -> const std::vector<MineralSpecies>&
 {
-	return pimpl->mineral_species;	
+	return pimpl->mineral_species;
 }
 
 auto PhreeqcDatabase::containsAqueousSpecies(std::string name) const -> bool

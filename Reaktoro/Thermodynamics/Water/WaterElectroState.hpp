@@ -18,7 +18,7 @@
 #pragma once
 
 // Reaktoro includes
-#include<Reaktoro/Common/real.hpp>
+#include<Reaktoro/Common/Real.hpp>
 
 namespace Reaktoro {
 

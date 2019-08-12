@@ -57,7 +57,7 @@ auto collectElementsInCompounds(const std::vector<std::string>& compounds) -> st
     return {elemset.begin(), elemset.end()};
 }
 
-auto lnActivityConstants(const AqueousPhase& phase) -> VectorXrFunction
+auto lnActivityConstants(const AqueousPhase& phase) -> std::function<VectorXr(const real&, const real&)>
 {
     // The ln activity constants of the aqueous species
     VectorXr ln_c(phase.numSpecies());
@@ -66,12 +66,12 @@ auto lnActivityConstants(const AqueousPhase& phase) -> VectorXrFunction
     const Index iH2O = phase.indexSpeciesAnyWithError(alternativeWaterNames());
 
     // Set the ln activity constants of aqueous species to ln(55.508472)
-    ln_c = std::log(1.0/waterMolarMass);
+    ln_c.fill( std::log(1.0/waterMolarMass) );
 
     // Set the ln activity constant of water to zero
     ln_c[iH2O] = 0.0;
 
-    VectorXrFunction f = [=](Temperature T, Pressure P) mutable
+    auto f = [=](const real& T, const real& P) mutable -> VectorXr
     {
         return ln_c;
     };
@@ -79,26 +79,26 @@ auto lnActivityConstants(const AqueousPhase& phase) -> VectorXrFunction
     return f;
 }
 
-auto lnActivityConstants(const GaseousPhase& phase) -> VectorXrFunction
+auto lnActivityConstants(const GaseousPhase& phase) -> std::function<VectorXr(const real&, const real&)>
 {
     // The ln activity constants of the gaseous species
     VectorXr ln_c(phase.numSpecies());
 
-    VectorXrFunction f = [=](Temperature T, Pressure P) mutable
+    auto f = [=](const real& T, const real& P) mutable -> VectorXr
     {
-        ln_c = log(P * 1e-5); // ln(Pbar)
+        ln_c.fill( std::log(P * 1e-5) ); // ln(Pbar)
         return ln_c;
     };
 
     return f;
 }
 
-auto lnActivityConstants(const MineralPhase& phase) -> VectorXrFunction
+auto lnActivityConstants(const MineralPhase& phase) -> std::function<VectorXr(const real&, const real&)>
 {
     // The ln activity constants of the mineral species
-    VectorXr ln_c(phase.numSpecies());
+    VectorXr ln_c = zeros(phase.numSpecies());
 
-    VectorXrFunction f = [=](Temperature T, Pressure P) mutable
+    auto f = [=](const real& T, const real& P) mutable -> VectorXr
     {
         return ln_c;
     };
@@ -127,10 +127,10 @@ private:
     std::vector<MineralReaction> mineral_reactions;
 
     /// The temperatures for constructing interpolation tables of thermodynamic properties (in units of K).
-    std::vector<double> temperatures;
+    std::vector<real> temperatures;
 
     /// The pressures for constructing interpolation tables of thermodynamic properties (in units of Pa).
-    std::vector<double> pressures;
+    std::vector<real> pressures;
 
 public:
     Impl()
@@ -152,14 +152,14 @@ public:
         for(auto& x : pressures)    x = x * 1.0e+5;
     }
 
-    auto setTemperatures(std::vector<double> values, std::string units) -> void
+    auto setTemperatures(std::vector<real> values, std::string units) -> void
     {
         temperatures = values;
         for(auto& x : temperatures)
             x = units::convert(x, units, "kelvin");
     }
 
-    auto setPressures(std::vector<double> values, std::string units) -> void
+    auto setPressures(std::vector<real> values, std::string units) -> void
     {
         pressures = values;
         for(auto& x : pressures)
@@ -361,34 +361,34 @@ public:
         // Define the lambda functions for the calculation of the essential thermodynamic properties
         Thermo thermo(database);
 
-        std::vector<ThermoScalarFunction> standard_gibbs_energy_fns(nspecies);
-        std::vector<ThermoScalarFunction> standard_enthalpy_fns(nspecies);
-        std::vector<ThermoScalarFunction> standard_volume_fns(nspecies);
-        std::vector<ThermoScalarFunction> standard_heat_capacity_cp_fns(nspecies);
-        std::vector<ThermoScalarFunction> standard_heat_capacity_cv_fns(nspecies);
+        std::vector<std::function<real(const real&, const real&)>> standard_gibbs_energy_fns(nspecies);
+        std::vector<std::function<real(const real&, const real&)>> standard_enthalpy_fns(nspecies);
+        std::vector<std::function<real(const real&, const real&)>> standard_volume_fns(nspecies);
+        std::vector<std::function<real(const real&, const real&)>> standard_heat_capacity_cp_fns(nspecies);
+        std::vector<std::function<real(const real&, const real&)>> standard_heat_capacity_cv_fns(nspecies);
 
-        // Create the ThermoScalarFunction instances for each thermodynamic properties of each species
+        // Create the std::function<real(const real&, const real&)> instances for each thermodynamic properties of each species
         for(unsigned i = 0; i < nspecies; ++i)
         {
             const std::string name = phase.species(i).name();
 
-            standard_gibbs_energy_fns[i]     = [=](double T, double P) { return thermo.standardPartialMolarGibbsEnergy(T, P, name); };
-            standard_enthalpy_fns[i]         = [=](double T, double P) { return thermo.standardPartialMolarEnthalpy(T, P, name); };
-            standard_volume_fns[i]           = [=](double T, double P) { return thermo.standardPartialMolarVolume(T, P, name); };
-            standard_heat_capacity_cp_fns[i] = [=](double T, double P) { return thermo.standardPartialMolarHeatCapacityConstP(T, P, name); };
-            standard_heat_capacity_cv_fns[i] = [=](double T, double P) { return thermo.standardPartialMolarHeatCapacityConstV(T, P, name); };
+            standard_gibbs_energy_fns[i]     = [=](const real& T, const real& P) { return thermo.standardPartialMolarGibbsEnergy(T, P, name); };
+            standard_enthalpy_fns[i]         = [=](const real& T, const real& P) { return thermo.standardPartialMolarEnthalpy(T, P, name); };
+            standard_volume_fns[i]           = [=](const real& T, const real& P) { return thermo.standardPartialMolarVolume(T, P, name); };
+            standard_heat_capacity_cp_fns[i] = [=](const real& T, const real& P) { return thermo.standardPartialMolarHeatCapacityConstP(T, P, name); };
+            standard_heat_capacity_cv_fns[i] = [=](const real& T, const real& P) { return thermo.standardPartialMolarHeatCapacityConstV(T, P, name); };
         }
 
         // Create the interpolation functions for thermodynamic properties of the species
-        VectorXrFunction standard_gibbs_energies_interp     = interpolate(temperatures, pressures, standard_gibbs_energy_fns);
-        VectorXrFunction standard_enthalpies_interp         = interpolate(temperatures, pressures, standard_enthalpy_fns);
-        VectorXrFunction standard_volumes_interp            = interpolate(temperatures, pressures, standard_volume_fns);
-        VectorXrFunction standard_heat_capacities_cp_interp = interpolate(temperatures, pressures, standard_heat_capacity_cp_fns);
-        VectorXrFunction standard_heat_capacities_cv_interp = interpolate(temperatures, pressures, standard_heat_capacity_cv_fns);
-        VectorXrFunction ln_activity_constants_func         = lnActivityConstants(phase);
+        const auto standard_gibbs_energies_interp     = interpolate(temperatures, pressures, standard_gibbs_energy_fns);
+        const auto standard_enthalpies_interp         = interpolate(temperatures, pressures, standard_enthalpy_fns);
+        const auto standard_volumes_interp            = interpolate(temperatures, pressures, standard_volume_fns);
+        const auto standard_heat_capacities_cp_interp = interpolate(temperatures, pressures, standard_heat_capacity_cp_fns);
+        const auto standard_heat_capacities_cv_interp = interpolate(temperatures, pressures, standard_heat_capacity_cv_fns);
+        const auto ln_activity_constants_func         = lnActivityConstants(phase);
 
         // Define the thermodynamic model function of the species
-        PhaseThermoModel thermo_model = [=](PhaseThermoModelResult& res, Temperature T, Pressure P)
+        PhaseThermoModel thermo_model = [=](PhaseThermoModelResult& res, const real& T, const real& P)
         {
             // Calculate the standard thermodynamic properties of each species
             res.standard_partial_molar_gibbs_energies     = standard_gibbs_energies_interp(T, P);
@@ -458,12 +458,12 @@ auto ChemicalEditor::operator=(const ChemicalEditor& other) -> ChemicalEditor&
     return *this;
 }
 
-auto ChemicalEditor::setTemperatures(std::vector<double> values, std::string units) -> void
+auto ChemicalEditor::setTemperatures(std::vector<real> values, std::string units) -> void
 {
     pimpl->setTemperatures(values, units);
 }
 
-auto ChemicalEditor::setPressures(std::vector<double> values, std::string units) -> void
+auto ChemicalEditor::setPressures(std::vector<real> values, std::string units) -> void
 {
     pimpl->setPressures(values, units);
 }

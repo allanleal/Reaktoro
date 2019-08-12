@@ -17,6 +17,9 @@
 
 #include "AqueousActivityModelDuanSunCO2.hpp"
 
+// C++ includes
+#include <cmath>
+
 // Reaktoro includes
 #include <Reaktoro/Common/NamingUtils.hpp>
 #include <Reaktoro/Thermodynamics/Mixtures/AqueousMixture.hpp>
@@ -74,8 +77,8 @@ auto paramDuanSun(const real& T, const real& P, const double coeffs[]) -> real
     const double c11 = coeffs[10];
 
     return c1 + c2*T + c3/T + c4*T*T + c5/(630 - T) +
-        c6*Pbar + c7*Pbar*log(T) + c8*Pbar/T + c9*Pbar/(630 - T) +
-        c10*Pbar*Pbar/(630 - T)/(630 - T) + c11*T*log(Pbar);
+        c6*Pbar + c7*Pbar*std::log(T) + c8*Pbar/T + c9*Pbar/(630 - T) +
+        c10*Pbar*Pbar/(630 - T)/(630 - T) + c11*T*std::log(Pbar);
 }
 
 } // namespace
@@ -95,15 +98,12 @@ auto aqueousActivityModelDuanSunCO2(const AqueousMixture& mixture) -> AqueousAct
     const Index iSO4 = mixture.indexChargedSpeciesAny(alternativeChargedSpeciesNames("SO4--")); // SO4--, SO4-2, SO4[-2]
 
     // The molalities of some ionic species covered by the model
-    real mNa(nspecies);
-    real mK(nspecies);
-    real mCa(nspecies);
-    real mMg(nspecies);
-    real mCl(nspecies);
-    real mSO4(nspecies);
-
-    // The ln activity coefficient of CO2(aq)
-    real ln_gCO2(nspecies);
+    real mNa = 0.0;
+    real mK = 0.0;
+    real mCa = 0.0;
+    real mMg = 0.0;
+    real mCl = 0.0;
+    real mSO4 = 0.0;
 
     AqueousActivityModel f = [=](const AqueousMixtureState& state) mutable
     {
@@ -127,7 +127,7 @@ auto aqueousActivityModelDuanSunCO2(const AqueousMixture& mixture) -> AqueousAct
         if(iSO4 < nions) mSO4 = ms[iSO4];
 
         // The ln activity coefficient of CO2(aq)
-        ln_gCO2 = 2*lambda*(mNa + mK + 2*mCa + 2*mMg) +
+        const real ln_gCO2 = 2*lambda*(mNa + mK + 2*mCa + 2*mMg) +
             zeta*(mNa + mK + mCa + mMg)*mCl - 0.07*mSO4;
 
         return ln_gCO2;
