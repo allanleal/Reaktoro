@@ -51,12 +51,12 @@ struct PhaseChemicalModelResultBase
 };
 
 /// The chemical properties of the species in a phase.
-using PhaseChemicalModelResult = PhaseChemicalModelResultBase<ChemicalScalarRef, VectorXrRef>;
+using PhaseChemicalModelResult = PhaseChemicalModelResultBase<real&, VectorXrRef>;
 
 /// The chemical properties of the species in a phase (constant).
-using PhaseChemicalModelResultConst = PhaseChemicalModelResultBase<ChemicalScalarConstRef, VectorXrConstRef>;
+using PhaseChemicalModelResultConst = PhaseChemicalModelResultBase<const real&, VectorXrConstRef>;
 
 /// The signature of the chemical model function that calculates the chemical properties of the species in a phase.
-using PhaseChemicalModel = std::function<void(PhaseChemicalModelResult&, Temperature, Pressure, VectorConstRef)>;
+using PhaseChemicalModel = std::function<void(PhaseChemicalModelResult&, real, real, VectorConstRef)>;
 
 } // namespace Reaktoro

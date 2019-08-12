@@ -95,15 +95,15 @@ auto aqueousActivityModelDuanSunCO2(const AqueousMixture& mixture) -> AqueousAct
     const Index iSO4 = mixture.indexChargedSpeciesAny(alternativeChargedSpeciesNames("SO4--")); // SO4--, SO4-2, SO4[-2]
 
     // The molalities of some ionic species covered by the model
-    ChemicalScalar mNa(nspecies);
-    ChemicalScalar mK(nspecies);
-    ChemicalScalar mCa(nspecies);
-    ChemicalScalar mMg(nspecies);
-    ChemicalScalar mCl(nspecies);
-    ChemicalScalar mSO4(nspecies);
+    real mNa(nspecies);
+    real mK(nspecies);
+    real mCa(nspecies);
+    real mMg(nspecies);
+    real mCl(nspecies);
+    real mSO4(nspecies);
 
     // The ln activity coefficient of CO2(aq)
-    ChemicalScalar ln_gCO2(nspecies);
+    real ln_gCO2(nspecies);
 
     AqueousActivityModel f = [=](const AqueousMixtureState& state) mutable
     {

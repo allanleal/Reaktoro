@@ -86,7 +86,7 @@ auto aqueousChemicalModelDebyeHuckel(const AqueousMixture& mixture, const DebyeH
     AqueousMixtureState state;
 
     // Auxiliary variables
-    ChemicalScalar xw, ln_xw, I2, sqrtI, mSigma, sigma(num_species), sigmacoeff, Lambda;
+    real xw, ln_xw, I2, sqrtI, mSigma, sigma(num_species), sigmacoeff, Lambda;
     VectorXr ln_m;
     real A, B, sqrt_rho, T_epsilon, sqrt_T_epsilon;
 

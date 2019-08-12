@@ -35,7 +35,7 @@ auto aqueousActivityModelDrummondCO2(const AqueousMixture& mixture) -> AqueousAc
         const auto& I = state.Is;
 
         // The ln activity coefficient of CO2(aq)
-        ChemicalScalar ln_gCO2 = c1 * I - c2 * I/(I + 1);
+        real ln_gCO2 = c1 * I - c2 * I/(I + 1);
 
         return ln_gCO2;
     };

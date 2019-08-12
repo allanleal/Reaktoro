@@ -34,10 +34,10 @@ struct AqueousMixtureState : public MixtureState
     real epsilon;
 
     /// The effective ionic strength of the aqueous mixture and their partial derivatives (in units of mol/kg)
-    ChemicalScalar Ie;
+    real Ie;
 
     /// The stoichiometric ionic strength of the aqueous mixture and their partial derivatives (in units of mol/kg)
-    ChemicalScalar Is;
+    real Is;
 
     /// The molalities of the aqueous species and their partial derivatives (in units of mol/kg)
     VectorXr m;
@@ -175,12 +175,12 @@ public:
     /// Calculate the effective ionic strength of the aqueous mixture and its molar derivatives.
     /// @param m The molalities of the aqueous species and their partial derivatives
     /// @return The effective ionic strength of the aqueous mixture and its molar derivatives
-    auto effectiveIonicStrength(const VectorXr& m) const -> ChemicalScalar;
+    auto effectiveIonicStrength(const VectorXr& m) const -> real;
 
     /// Calculate the stoichiometric ionic strength of the aqueous mixture and its molar derivatives.
     /// @param ms The stoichiometric molalities of the ions and their partial derivatives
     /// @return The stoichiometric ionic strength of the aqueous mixture and its molar derivatives
-    auto stoichiometricIonicStrength(const VectorXr& ms) const -> ChemicalScalar;
+    auto stoichiometricIonicStrength(const VectorXr& ms) const -> real;
 
     /// Calculate the state of the aqueous mixture.
     /// @param T The temperature (in units of K)

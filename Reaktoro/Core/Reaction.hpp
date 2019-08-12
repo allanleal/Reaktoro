@@ -40,7 +40,7 @@ class ChemicalProperties;
 /// @return The rate of the reaction and its partial derivatives (in units of mol/s)
 /// @see Reaction
 /// @ingroup Core
-using ReactionRateFunction = std::function<ChemicalScalar(const ChemicalProperties&)>;
+using ReactionRateFunction = std::function<real(const ChemicalProperties&)>;
 
 /// The function signature of the rates of a collection of reactions (in units of mol/s).
 /// @param properties The thermodynamic properties of the chemical system at (*T*, *P*, **n**)
@@ -125,14 +125,14 @@ public:
     /// convention for the stoichiometric coefficients is: *positive* for
     /// products, *negative* for reactants.
     /// @param properties The chemical properties of the system
-    auto lnReactionQuotient(const ChemicalProperties& properties) const -> ChemicalScalar;
+    auto lnReactionQuotient(const ChemicalProperties& properties) const -> real;
 
     /// Calculate the equilibrium index of the reaction as @f$\ln(Q/K)@f$.
-    auto lnEquilibriumIndex(const ChemicalProperties& properties) const -> ChemicalScalar;
+    auto lnEquilibriumIndex(const ChemicalProperties& properties) const -> real;
 
     /// Calculate the rate of the reaction (in units of mol/s).
     /// @param properties The thermodynamic properties of the chemical system at (*T*, *P*, **n**)
-    auto rate(const ChemicalProperties& properties) const -> ChemicalScalar;
+    auto rate(const ChemicalProperties& properties) const -> real;
 
 private:
     struct Impl;

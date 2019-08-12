@@ -374,23 +374,23 @@ auto ChemicalProperties::phaseVolumes() const -> VectorXr
     return phaseAmounts() % phaseMolarVolumes();
 }
 
-auto ChemicalProperties::volume() const -> ChemicalScalar
+auto ChemicalProperties::volume() const -> real
 {
     return sum(phaseVolumes());
 }
 
-auto ChemicalProperties::subvolume(const Indices& iphases) const -> ChemicalScalar
+auto ChemicalProperties::subvolume(const Indices& iphases) const -> real
 {
     return sum(rows(phaseVolumes(), iphases));
 }
 
-auto ChemicalProperties::fluidVolume() const -> ChemicalScalar
+auto ChemicalProperties::fluidVolume() const -> real
 {
     const Indices iphases = system.indicesFluidPhases();
     return sum(rows(phaseVolumes(), iphases));
 }
 
-auto ChemicalProperties::solidVolume() const -> ChemicalScalar
+auto ChemicalProperties::solidVolume() const -> real
 {
     const Indices iphases = system.indicesSolidPhases();
     return sum(rows(phaseVolumes(), iphases));

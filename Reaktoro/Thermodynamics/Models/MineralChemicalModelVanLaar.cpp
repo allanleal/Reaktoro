@@ -31,11 +31,11 @@
 //
 //    VectorXr phi;
 //
-//    ChemicalScalar avg;
+//    real avg;
 //
 //    const Index nspecies = mixture.numSpecies();
 //
-//    Table2D<ChemicalScalar> B = table2D<ChemicalScalar>(nspecies, nspecies);
+//    Table2D<real> B = table2D<real>(nspecies, nspecies);
 //
 //    PhaseChemicalModel f = [=](double T, double P, VectorConstRef n) mutable
 //    {

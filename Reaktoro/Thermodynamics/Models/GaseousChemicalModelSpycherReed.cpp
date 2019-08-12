@@ -227,8 +227,8 @@ auto gaseousChemicalModelSpycherReed(const GaseousMixture& mixture) -> PhaseChem
     // The number of species in the mixture
     const unsigned nspecies = mixture.numSpecies();
 
-    // An auxiliary zero ChemicalScalar instance
-    const ChemicalScalar zero(nspecies);
+    // An auxiliary zero real instance
+    const real zero(nspecies);
 
     // The universal gas constant of the phase (in units of J/(mol*K))
     const double R = universalGasConstant;
@@ -255,7 +255,7 @@ auto gaseousChemicalModelSpycherReed(const GaseousMixture& mixture) -> PhaseChem
         const auto ln_x = log(x);
 
         // The mole fractions of the gaseous species H2O(g), CO2(g) and CH4(g)
-        ChemicalScalar y[3];
+        real y[3];
         if(iH2O < nspecies) y[0] = x[iH2O]; else y[0] = zero;
         if(iCO2 < nspecies) y[1] = x[iCO2]; else y[1] = zero;
         if(iCH4 < nspecies) y[2] = x[iCH4]; else y[2] = zero;
@@ -279,7 +279,7 @@ auto gaseousChemicalModelSpycherReed(const GaseousMixture& mixture) -> PhaseChem
         }
 
         // Calculate the coefficient Bmix, BmixT, and BmixTT
-        ChemicalScalar Bmix(nspecies), BmixT(nspecies), BmixTT(nspecies);
+        real Bmix(nspecies), BmixT(nspecies), BmixTT(nspecies);
         for(int i = 0; i < 3; ++i) for(int k = 0; k < 3; ++k)
         {
             Bmix += y[i]*y[k]*B[i][k];
@@ -288,7 +288,7 @@ auto gaseousChemicalModelSpycherReed(const GaseousMixture& mixture) -> PhaseChem
         }
 
         // Calculate the coefficient Cmix, CmixT, and CmixTT
-        ChemicalScalar Cmix(nspecies), CmixT(nspecies), CmixTT(nspecies);
+        real Cmix(nspecies), CmixT(nspecies), CmixTT(nspecies);
         for(int i = 0; i < 3; ++i) for(int k = 0; k < 3; ++k) for(int l = 0; l < 3; ++l)
         {
             Cmix += y[i]*y[k]*y[l]*C[i][k][l];
@@ -297,11 +297,11 @@ auto gaseousChemicalModelSpycherReed(const GaseousMixture& mixture) -> PhaseChem
         }
 
         // Calculate the compressibility factor Zmix and its temperature derivative ZmixT
-        const ChemicalScalar Zmix = 1.0 + Bmix*Pbar + Cmix*Pbar*Pbar;
-        const ChemicalScalar ZmixT = BmixT*Pbar + CmixT*Pbar*Pbar;
+        const real Zmix = 1.0 + Bmix*Pbar + Cmix*Pbar*Pbar;
+        const real ZmixT = BmixT*Pbar + CmixT*Pbar*Pbar;
 
         // Calculate the ln fugacity coefficients of the gaseous species
-        ChemicalScalar ln_phi[3];
+        real ln_phi[3];
         for(int i = 0; i < 3; ++i)
         {
             ln_phi[i] = 1 - Zmix;
@@ -326,8 +326,8 @@ auto gaseousChemicalModelSpycherReed(const GaseousMixture& mixture) -> PhaseChem
         V = R*T*Zmix/P;
 
         // Calculate the derivatives dP/dT and dV/dT
-        const ChemicalScalar dPdT = P*(1.0/T + ZmixT/Zmix);
-        const ChemicalScalar dVdT = V*(1.0/T + ZmixT/Zmix);
+        const real dPdT = P*(1.0/T + ZmixT/Zmix);
+        const real dVdT = V*(1.0/T + ZmixT/Zmix);
 
         // Calculate the residual molar Gibbs energy of the phase
         GR = R*T*(Bmix + 0.5*Cmix*Pbar)*Pbar;

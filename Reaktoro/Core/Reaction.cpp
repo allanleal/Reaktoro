@@ -191,11 +191,11 @@ auto Reaction::lnEquilibriumConstant(const ChemicalProperties& properties) const
     return -res/RT;
 }
 
-auto Reaction::lnReactionQuotient(const ChemicalProperties& properties) const -> ChemicalScalar
+auto Reaction::lnReactionQuotient(const ChemicalProperties& properties) const -> real
 {
     const unsigned num_species = system().numSpecies();
     const VectorXr& ln_a = properties.lnActivities();
-    ChemicalScalar ln_Q(num_species);
+    real ln_Q(num_species);
     unsigned counter = 0;
     for(Index i : indices())
     {
@@ -207,12 +207,12 @@ auto Reaction::lnReactionQuotient(const ChemicalProperties& properties) const ->
     return ln_Q;
 }
 
-auto Reaction::lnEquilibriumIndex(const ChemicalProperties& properties) const -> ChemicalScalar
+auto Reaction::lnEquilibriumIndex(const ChemicalProperties& properties) const -> real
 {
 	return lnReactionQuotient(properties) - lnEquilibriumConstant(properties);
 }
 
-auto Reaction::rate(const ChemicalProperties& properties) const -> ChemicalScalar
+auto Reaction::rate(const ChemicalProperties& properties) const -> real
 {
     if(!pimpl->rate)
         errorFunctionNotInitialized("rate", "rate");

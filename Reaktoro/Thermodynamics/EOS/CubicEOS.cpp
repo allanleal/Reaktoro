@@ -241,9 +241,9 @@ struct CubicEOS::Impl
             kres = calculate_interaction_params(kargs);
 
         // Calculate the parameter `amix` of the phase and the partial molar parameters `abar` of each species
-        ChemicalScalar amix(nspecies);
-        ChemicalScalar amixT(nspecies);
-        ChemicalScalar amixTT(nspecies);
+        real amix(nspecies);
+        real amixT(nspecies);
+        real amixTT(nspecies);
         VectorXr abar(nspecies);
         VectorXr abarT(nspecies);
         for(unsigned i = 0; i < nspecies; ++i)
@@ -279,7 +279,7 @@ struct CubicEOS::Impl
         }
 
         // Calculate the parameter `bmix` of the cubic equation of state
-        ChemicalScalar bmix(nspecies);
+        real bmix(nspecies);
         Vector bbar(nspecies);
         for(unsigned i = 0; i < nspecies; ++i)
         {
@@ -293,22 +293,22 @@ struct CubicEOS::Impl
         const double bmixT = 0.0; // no temperature dependence
 
         // Calculate auxiliary quantities `beta` and `q`
-        const ChemicalScalar beta = P*bmix/(R*T);
-        const ChemicalScalar betaT = beta * (bmixT/bmix - 1.0/T);
+        const real beta = P*bmix/(R*T);
+        const real betaT = beta * (bmixT/bmix - 1.0/T);
 
-        const ChemicalScalar q = amix/(bmix*R*T);
-        const ChemicalScalar qT = q*(amixT/amix - 1.0/T);
-        const ChemicalScalar qTT = qT*qT/q + q*(1.0/(T*T) + amixTT/amix - amixT*amixT/(amix*amix));
+        const real q = amix/(bmix*R*T);
+        const real qT = q*(amixT/amix - 1.0/T);
+        const real qTT = qT*qT/q + q*(1.0/(T*T) + amixTT/amix - amixT*amixT/(amix*amix));
 
         // Calculate the coefficients A, B, C of the cubic equation of state
-        const ChemicalScalar A = (epsilon + sigma - 1)*beta - 1;
-        const ChemicalScalar B = (epsilon*sigma - epsilon - sigma)*beta*beta - (epsilon + sigma - q)*beta;
-        const ChemicalScalar C = -epsilon*sigma*beta*beta*beta - (epsilon*sigma + q)*beta*beta;
+        const real A = (epsilon + sigma - 1)*beta - 1;
+        const real B = (epsilon*sigma - epsilon - sigma)*beta*beta - (epsilon + sigma - q)*beta;
+        const real C = -epsilon*sigma*beta*beta*beta - (epsilon*sigma + q)*beta*beta;
 
         // Calculate the partial temperature derivative of the coefficients A, B, C
-        const ChemicalScalar AT = (epsilon + sigma - 1)*betaT;
-        const ChemicalScalar BT = 2*(epsilon*sigma - epsilon - sigma)*beta*betaT + qT*beta - (epsilon + sigma - q)*betaT;
-        const ChemicalScalar CT = -3*epsilon*sigma*beta*beta*betaT - qT*beta*beta - 2*(epsilon*sigma + q)*beta*betaT;
+        const real AT = (epsilon + sigma - 1)*betaT;
+        const real BT = 2*(epsilon*sigma - epsilon - sigma)*beta*betaT + qT*beta - (epsilon + sigma - q)*betaT;
+        const real CT = -3*epsilon*sigma*beta*beta*betaT - qT*beta*beta - 2*(epsilon*sigma + q)*beta*betaT;
 
         // Define the non-linear function and its derivative for calculation of its root
         const auto f = [&](double Z) -> std::tuple<double, double>
@@ -326,7 +326,7 @@ struct CubicEOS::Impl
         const double Z0 = isvapor ? 1.0 : beta.val;
 
         // Calculate the compressibility factor Z using Newton's method
-        ChemicalScalar Z(nspecies);
+        real Z(nspecies);
         Z.val = newton(f, Z0, tolerance, maxiter);
 
         // Calculate the partial derivatives of Z (dZdT, dZdP, dZdn)
@@ -337,23 +337,23 @@ struct CubicEOS::Impl
             Z.ddn[i] = factor * (A.ddn[i]*Z.val*Z.val + B.ddn[i]*Z.val + C.ddn[i]);
 
         // Calculate the partial temperature derivative of Z
-        const ChemicalScalar ZT = -(AT*Z*Z + BT*Z + CT)/(3*Z*Z + 2*A*Z + B);
+        const real ZT = -(AT*Z*Z + BT*Z + CT)/(3*Z*Z + 2*A*Z + B);
 
         // Calculate the integration factor I and its temperature derivative IT
-        ChemicalScalar I;
+        real I;
         if(epsilon != sigma) I = log((Z + sigma*beta)/(Z + epsilon*beta))/(sigma - epsilon);
                         else I = beta/(Z + epsilon*beta);
 
         // Calculate the temperature derivative IT of the integration factor I
-        ChemicalScalar IT;
+        real IT;
         if(epsilon != sigma) IT = ((ZT + sigma*betaT)/(Z + sigma*beta) - (ZT + epsilon*betaT)/(Z + epsilon*beta))/(sigma - epsilon);
                         else IT = I*(betaT/beta - (ZT + epsilon*betaT)/(Z + epsilon*beta));
 
-        ChemicalScalar& V = result.molar_volume;
-        ChemicalScalar& G_res = result.residual_molar_gibbs_energy;
-        ChemicalScalar& H_res = result.residual_molar_enthalpy;
-        ChemicalScalar& Cp_res = result.residual_molar_heat_capacity_cp;
-        ChemicalScalar& Cv_res = result.residual_molar_heat_capacity_cv;
+        real& V = result.molar_volume;
+        real& G_res = result.residual_molar_gibbs_energy;
+        real& H_res = result.residual_molar_enthalpy;
+        real& Cp_res = result.residual_molar_heat_capacity_cp;
+        real& Cv_res = result.residual_molar_heat_capacity_cv;
         VectorXr& Vi = result.partial_molar_volumes;
         VectorXr& Gi_res = result.residual_partial_molar_gibbs_energies;
         VectorXr& Hi_res = result.residual_partial_molar_enthalpies;
@@ -365,8 +365,8 @@ struct CubicEOS::Impl
         H_res = R*T*(Z - 1 + T*qT*I);
         Cp_res = R*T*(ZT + qT*I + T*qTT + T*qT*IT) + H_res/T;
 
-        const ChemicalScalar dPdT = P*(1.0/T + ZT/Z);
-        const ChemicalScalar dVdT = V*(1.0/T + ZT/Z);
+        const real dPdT = P*(1.0/T + ZT/Z);
+        const real dVdT = V*(1.0/T + ZT/Z);
 
         Cv_res = Cp_res - T*dPdT*dVdT + R;
 
@@ -374,15 +374,15 @@ struct CubicEOS::Impl
         {
             const double bi = bbar[i];
             const real betai = P*bi/(R*T);
-            const ChemicalScalar ai = abar[i];
-            const ChemicalScalar aiT = abarT[i];
-            const ChemicalScalar qi = q*(1 + ai/amix - bi/bmix);
-            const ChemicalScalar qiT = qi*qT/q + q*(aiT - ai*amixT/amix)/amix;
+            const real ai = abar[i];
+            const real aiT = abarT[i];
+            const real qi = q*(1 + ai/amix - bi/bmix);
+            const real qiT = qi*qT/q + q*(aiT - ai*amixT/amix)/amix;
             const real Ai = (epsilon + sigma - 1.0)*betai - 1.0;
-            const ChemicalScalar Bi = (epsilon*sigma - epsilon - sigma)*(2*beta*betai - beta*beta) - (epsilon + sigma - q)*(betai - beta) - (epsilon + sigma - qi)*beta;
-            const ChemicalScalar Ci = -3*sigma*epsilon*beta*beta*betai + 2*epsilon*sigma*beta*beta*beta - (epsilon*sigma + qi)*beta*beta - 2*(epsilon*sigma + q)*(beta*betai - beta*beta);
-            const ChemicalScalar Zi = -(Ai*Z*Z + (Bi + B)*Z + Ci + 2*C)/(3*Z*Z + 2*A*Z + B);
-            ChemicalScalar Ii;
+            const real Bi = (epsilon*sigma - epsilon - sigma)*(2*beta*betai - beta*beta) - (epsilon + sigma - q)*(betai - beta) - (epsilon + sigma - qi)*beta;
+            const real Ci = -3*sigma*epsilon*beta*beta*betai + 2*epsilon*sigma*beta*beta*beta - (epsilon*sigma + qi)*beta*beta - 2*(epsilon*sigma + q)*(beta*betai - beta*beta);
+            const real Zi = -(Ai*Z*Z + (Bi + B)*Z + Ci + 2*C)/(3*Z*Z + 2*A*Z + B);
+            real Ii;
             if(epsilon != sigma) Ii = I + ((Zi + sigma*betai)/(Z + sigma*beta) - (Zi + epsilon*betai)/(Z + epsilon*beta))/(sigma - epsilon);
                             else Ii = I * (1 + betai/beta - (Zi + epsilon*betai)/(Z + epsilon*beta));
 

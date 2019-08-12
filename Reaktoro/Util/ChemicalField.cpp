@@ -65,8 +65,8 @@
 //      ddnk(partition.numKineticSpecies(), zeros(npoints))
 //    {}
 //
-//    /// Set the field at the i-th point with a ChemicalScalar instance.
-//    auto set(Index i, const ChemicalScalar& scalar, const EquilibriumSensitivity& sensitivity) -> void
+//    /// Set the field at the i-th point with a real instance.
+//    auto set(Index i, const real& scalar, const EquilibriumSensitivity& sensitivity) -> void
 //    {
 //        // The indices of the equilibrium and kinetic species
 //        const Indices& ispecies_e = partition.indicesEquilibriumSpecies();
@@ -126,7 +126,7 @@
 //    return *this;
 //}
 //
-//auto ChemicalField::set(Index i, const ChemicalScalar& scalar, const EquilibriumSensitivity& sensitivity) -> void
+//auto ChemicalField::set(Index i, const real& scalar, const EquilibriumSensitivity& sensitivity) -> void
 //{
 //    pimpl->set(i, scalar, sensitivity);
 //}

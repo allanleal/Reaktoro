@@ -47,11 +47,11 @@
 //    /// Construct a copy of a ChemicalField instance.
 //    auto operator=(ChemicalField other) -> ChemicalField&;
 //
-//    /// Set the field at the i-th point with a ChemicalScalar instance.
+//    /// Set the field at the i-th point with a real instance.
 //    /// @param i The index of the field point.
 //    /// @param scalar The chemical scalar to be set at the i-th point.
 //    /// @param sensitivity The equilibrium sensitivity at the i-th point.
-//    auto set(Index i, const ChemicalScalar& scalar, const EquilibriumSensitivity& sensitivity) -> void;
+//    auto set(Index i, const real& scalar, const EquilibriumSensitivity& sensitivity) -> void;
 //
 //    /// Return the partition of the chemical system.
 //    auto partition() const -> const Partition&;

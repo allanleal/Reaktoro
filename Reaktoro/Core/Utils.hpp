@@ -45,7 +45,7 @@ inline auto moleFractions(Composition n) -> VectorXr
     const auto nspecies = n.size();
     if(nspecies == 1)
         return ones(n);
-    const ChemicalScalar nt = sum(n);
+    const real nt = sum(n);
     if(nt != 0.0) return n/nt;
     else return zeros(n);
 }

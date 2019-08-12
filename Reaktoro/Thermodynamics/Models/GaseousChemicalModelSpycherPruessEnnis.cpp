@@ -97,8 +97,8 @@ auto gaseousChemicalModelSpycherPruessEnnis(const GaseousMixture& mixture) -> Ph
     const unsigned nspecies = mixture.numSpecies();
 
     // The ln of H2O(g) and CO2(g) mole fractions
-    ChemicalScalar ln_xH2O(nspecies);
-    ChemicalScalar ln_xCO2(nspecies);
+    real ln_xH2O(nspecies);
+    real ln_xCO2(nspecies);
 
     // The state of the gaseous mixture
     GaseousMixtureState state;

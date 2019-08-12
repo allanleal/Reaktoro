@@ -172,19 +172,19 @@ public:
     auto phaseVolumes() const -> VectorXr;
 
     /// Return the volume of the system (in units of m3).
-    auto volume() const -> ChemicalScalar;
+    auto volume() const -> real;
 
     /// Return the total volume occupied by given phases (in units of m3).
     /// @param iphases The indices of the phases.
-    auto subvolume(const Indices& iphases) const -> ChemicalScalar;
+    auto subvolume(const Indices& iphases) const -> real;
 
     /// Return the total fluid volume of the system (in units of m3).
     /// The fluid volume is defined as the sum of volumes of all fluid phases.
-    auto fluidVolume() const -> ChemicalScalar;
+    auto fluidVolume() const -> real;
 
     /// Return the total solid volume of the system (in units of m3).
     /// The solid volume is defined as the sum of volumes of all solid phases.
-    auto solidVolume() const -> ChemicalScalar;
+    auto solidVolume() const -> real;
 
 private:
     /// The chemical system

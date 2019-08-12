@@ -76,14 +76,14 @@ struct AqueousPhase::Impl
 
             // Evaluate the aqueous chemical model
 			base_model(res, T, P, n);
-            
+
             // Update the activity coefficients and activities of selected species
             for(auto pair : ln_activity_coeff_functions)
             {
                 const Index& i = pair.first; // the index of the selected species
                 const AqueousActivityModel& func = pair.second; // the ln activity coefficient function of the selected species
-                const ChemicalScalar ln_gi = func(state); // evaluate the ln activity coefficient function
-                const ChemicalScalar ln_mi = log(state.m[i]); // get the molality of the selected species
+                const real ln_gi = func(state); // evaluate the ln activity coefficient function
+                const real ln_mi = log(state.m[i]); // get the molality of the selected species
                 res.ln_activity_coefficients[i] = ln_gi; // update the ln activity coefficient selected species
                 res.ln_activities[i] = ln_gi + ln_mi; // update the ln activity of the selected species
             }

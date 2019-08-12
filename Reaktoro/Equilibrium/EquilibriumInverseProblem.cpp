@@ -49,8 +49,8 @@ struct ResidualEquilibriumConstraint
     ResidualEquilibriumConstraint()
     : val(0.0) {};
 
-    /// Construct an EquilibriumConstraintResult instance from a ChemicalScalar instance
-    ResidualEquilibriumConstraint(const ChemicalScalar& scalar)
+    /// Construct an EquilibriumConstraintResult instance from a real instance
+    ResidualEquilibriumConstraint(const real& scalar)
     : val(scalar.val), ddn(scalar.ddn) {}
 
     /// The residual value of the equilibrium constraint.
@@ -216,7 +216,7 @@ struct EquilibriumInverseProblem::Impl
         const Index num_species = system.numSpecies();
 
         // Auxiliary chemical scalar to avoid memory reallocation
-        ChemicalScalar ni(num_species);
+        real ni(num_species);
 
         // Set the parial molar derivative of `ni`
         ni.ddn[ispecies] = 1.0;
@@ -242,7 +242,7 @@ struct EquilibriumInverseProblem::Impl
         const double ln_val = std::log(value);
 
         // Auxiliary chemical scalar to avoid memory reallocation
-        ChemicalScalar ln_ai;
+        real ln_ai;
 
         // Define the activity constraint function
         EquilibriumConstraint f = [=](VectorConstRef x, const ChemicalState& state) mutable
@@ -310,7 +310,7 @@ struct EquilibriumInverseProblem::Impl
         const Index iphase = system.indexPhaseWithError(phase);
 
         // Auxiliary chemical scalar to avoid memory reallocation
-        ChemicalScalar np;
+        real np;
 
         // Define the phase volume constraint function
         EquilibriumConstraint f = [=](VectorConstRef x, const ChemicalState& state) mutable
@@ -330,7 +330,7 @@ struct EquilibriumInverseProblem::Impl
         const Index iphase = system.indexPhaseWithError(phase);
 
         // Auxiliary chemical scalar to avoid memory reallocation
-        ChemicalScalar mass;
+        real mass;
 
         // Define the phase volume constraint function
         EquilibriumConstraint f = [=](VectorConstRef x, const ChemicalState& state) mutable
@@ -350,7 +350,7 @@ struct EquilibriumInverseProblem::Impl
         const Index iphase = system.indexPhaseWithError(phase);
 
         // Auxiliary chemical scalar to avoid memory reallocation
-        ChemicalScalar Vp;
+        real Vp;
 
         // Define the phase volume constraint function
         EquilibriumConstraint f = [=](VectorConstRef x, const ChemicalState& state) mutable
@@ -370,7 +370,7 @@ struct EquilibriumInverseProblem::Impl
         const Indices iphases = system.indicesPhases(phases);
 
         // Auxiliary chemical scalar to avoid memory reallocation
-        ChemicalScalar Vp;
+        real Vp;
 
         // Define the phase volume constraint function
         EquilibriumConstraint f = [=](VectorConstRef x, const ChemicalState& state) mutable

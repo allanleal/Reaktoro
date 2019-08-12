@@ -254,12 +254,12 @@ auto AqueousMixture::stoichiometricMolalities(const VectorXr& m) const -> Vector
     return ms;
 }
 
-auto AqueousMixture::effectiveIonicStrength(const VectorXr& m) const -> ChemicalScalar
+auto AqueousMixture::effectiveIonicStrength(const VectorXr& m) const -> real
 {
     const unsigned num_species = numSpecies();
     const Vector z = chargesSpecies();
 
-    ChemicalScalar Ie(num_species);
+    real Ie(num_species);
     Ie.val = 0.5 * sum(z % z % m.val);
     for(unsigned i = 0; i < num_species; ++i)
         Ie.ddn[i] = 0.5 * sum(z % z % m.ddn.col(i));
@@ -267,12 +267,12 @@ auto AqueousMixture::effectiveIonicStrength(const VectorXr& m) const -> Chemical
     return Ie;
 }
 
-auto AqueousMixture::stoichiometricIonicStrength(const VectorXr& ms) const -> ChemicalScalar
+auto AqueousMixture::stoichiometricIonicStrength(const VectorXr& ms) const -> real
 {
     const unsigned num_species = numSpecies();
     const Vector zc = chargesChargedSpecies();
 
-    ChemicalScalar Is(num_species);
+    real Is(num_species);
     Is.val = 0.5 * sum(zc % zc % ms.val);
     for(unsigned i = 0; i < num_species; ++i)
         Is.ddn[i] = 0.5 * sum(zc % zc % ms.ddn.col(i));
