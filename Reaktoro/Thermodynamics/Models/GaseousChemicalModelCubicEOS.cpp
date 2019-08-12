@@ -69,7 +69,7 @@ auto gaseousChemicalModelCubicEOS(const GaseousMixture& mixture, CubicEOS::Model
         const VectorXr ln_x = log(x);
 
         // The ln of pressure in bar units
-        const ThermoScalar ln_Pbar = log(1e-5 * P);
+        const real ln_Pbar = log(1e-5 * P);
 
         // Create an alias to the ln fugacity coefficients
         const auto& ln_phi = eosres.ln_fugacity_coefficients;

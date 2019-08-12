@@ -166,7 +166,7 @@ auto Reaction::stoichiometry(std::string species) const -> double
     return equation().stoichiometry(species);
 }
 
-auto Reaction::lnEquilibriumConstant(const ChemicalProperties& properties) const -> ThermoScalar
+auto Reaction::lnEquilibriumConstant(const ChemicalProperties& properties) const -> real
 {
     // Get the temperature and pressure of the system
     const double T = properties.temperature();
@@ -177,14 +177,14 @@ auto Reaction::lnEquilibriumConstant(const ChemicalProperties& properties) const
 
     // Calculate the equilibrium constant using the standard Gibbs energies of the species
     const VectorXr G0 = properties.standardPartialMolarGibbsEnergies();
-    const ThermoScalar RT = universalGasConstant * Temperature(T);
+    const real RT = universalGasConstant * Temperature(T);
 
-    ThermoScalar res;
+    real res;
     for(unsigned i = 0; i < indices().size(); ++i)
     {
         const Index ispecies = indices()[i];
         const double vi = stoichiometries()[i];
-        const ThermoScalar G0i = G0[ispecies];
+        const real G0i = G0[ispecies];
         res += vi * G0i;
     }
 

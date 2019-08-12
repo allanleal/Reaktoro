@@ -164,32 +164,32 @@ const double f[][3][3] =
      {f133, f233, f333}},
 };
 
-inline auto computeB(const ThermoScalar& T, int i, int j) -> ThermoScalar
+inline auto computeB(const real& T, int i, int j) -> real
 {
     return a[i][j]/(T*T) + b[i][j]/T + c[i][j];
 }
 
-inline auto computeBT(const ThermoScalar& T, int i, int j) -> ThermoScalar
+inline auto computeBT(const real& T, int i, int j) -> real
 {
     return -(2*a[i][j]/T + b[i][j])/(T*T);
 }
 
-inline auto computeBTT(const ThermoScalar& T, int i, int j) -> ThermoScalar
+inline auto computeBTT(const real& T, int i, int j) -> real
 {
     return (6*a[i][j]/T + 2*b[i][j])/(T*T*T);
 }
 
-inline auto computeC(const ThermoScalar& T, int i, int j, int k) -> ThermoScalar
+inline auto computeC(const real& T, int i, int j, int k) -> real
 {
     return d[i][j][k]/(T*T) + e[i][j][k]/T + f[i][j][k];
 }
 
-inline auto computeCT(const ThermoScalar& T, int i, int j, int k) -> ThermoScalar
+inline auto computeCT(const real& T, int i, int j, int k) -> real
 {
     return -(2*d[i][j][k]/T + e[i][j][k])/(T*T);
 }
 
-inline auto computeCTT(const ThermoScalar& T, int i, int j, int k) -> ThermoScalar
+inline auto computeCTT(const real& T, int i, int j, int k) -> real
 {
     return (6*d[i][j][k]/T + 2*e[i][j][k])/(T*T*T);
 }
@@ -261,7 +261,7 @@ auto gaseousChemicalModelSpycherReed(const GaseousMixture& mixture) -> PhaseChem
         if(iCH4 < nspecies) y[2] = x[iCH4]; else y[2] = zero;
 
         // Calculate the Bij, BijT, BijTT coefficients
-        ThermoScalar B[3][3], BT[3][3], BTT[3][3];
+        real B[3][3], BT[3][3], BTT[3][3];
         for(int i = 0; i < 3; ++i) for(int k = 0; k < 3; ++k)
         {
             B[i][k] = computeB(T, i, k);
@@ -270,7 +270,7 @@ auto gaseousChemicalModelSpycherReed(const GaseousMixture& mixture) -> PhaseChem
         }
 
         // Calculate the Cijk, CijkT, CijkTT coefficients
-        ThermoScalar C[3][3][3], CT[3][3][3], CTT[3][3][3];
+        real C[3][3][3], CT[3][3][3], CTT[3][3][3];
         for(int i = 0; i < 3; ++i) for(int k = 0; k < 3; ++k) for(int l = 0; l < 3; ++l)
         {
             C[i][k][l] = computeC(T, i, k, l);

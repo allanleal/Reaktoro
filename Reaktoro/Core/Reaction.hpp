@@ -112,7 +112,7 @@ public:
 
     /// Calculate the equilibrium constant of the reaction (in natural log).
     /// @param properties The chemical properties of the system
-    auto lnEquilibriumConstant(const ChemicalProperties& properties) const -> ThermoScalar;
+    auto lnEquilibriumConstant(const ChemicalProperties& properties) const -> real;
 
     /// Calculate the reaction quotient of the reaction (in natural log scale).
     /// The reaction quotient of a reaction is defined as:

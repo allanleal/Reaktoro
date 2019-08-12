@@ -366,7 +366,7 @@ auto useAnalytic(const double* logk) -> bool
 }
 
 template<typename SpeciesType>
-auto lnEquilibriumConstantHelper(const SpeciesType* species, Temperature T, Pressure P) -> ThermoScalar
+auto lnEquilibriumConstantHelper(const SpeciesType* species, Temperature T, Pressure P) -> real
 {
     //--------------------------------------------------------------------------------
     // The implementation of this method was inspired by the PHREEQC
@@ -387,12 +387,12 @@ auto lnEquilibriumConstantHelper(const SpeciesType* species, Temperature T, Pres
     return logk[logK_T0]*ln10 - logk[delta_h] * (298.15 - T)/(R*T*298.15);
 }
 
-auto lnEquilibriumConstant(const PhreeqcSpecies* species, double T, double P) -> ThermoScalar
+auto lnEquilibriumConstant(const PhreeqcSpecies* species, double T, double P) -> real
 {
     return lnEquilibriumConstantHelper(species, T, P);
 }
 
-auto lnEquilibriumConstant(const PhreeqcPhase* phase, double T, double P) -> ThermoScalar
+auto lnEquilibriumConstant(const PhreeqcPhase* phase, double T, double P) -> real
 {
     return lnEquilibriumConstantHelper(phase, T, P);
 }

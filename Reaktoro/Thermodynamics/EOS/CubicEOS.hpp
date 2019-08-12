@@ -42,16 +42,16 @@ public:
 
     struct InteractionParamsResult
     {
-        Table2D<ThermoScalar> k;
+        Table2D<real> k;
 
-        Table2D<ThermoScalar> kT;
+        Table2D<real> kT;
 
-        Table2D<ThermoScalar> kTT;
+        Table2D<real> kTT;
     };
 
     struct InteractionParamsArgs
     {
-        const ThermoScalar& T;
+        const real& T;
 
         const VectorXr& a;
 
@@ -145,7 +145,7 @@ public:
     /// @param T The temperature of the phase (in units of K)
     /// @param P The pressure of the phase (in units of Pa)
     /// @param x The mole fractions of the species in the phase (in units of mol/mol)
-    auto operator()(const ThermoScalar& T, const ThermoScalar& P, const VectorXr& x) -> Result;
+    auto operator()(const real& T, const real& P, const VectorXr& x) -> Result;
 
 private:
     struct Impl;

@@ -50,7 +50,7 @@ auto aqueousActivityModelRumpfCO2(const AqueousMixture& mixture) -> AqueousActiv
     AqueousActivityModel f = [=](const AqueousMixtureState& state) mutable
     {
         // Extract temperature from the parameters
-        const ThermoScalar& T = state.T;
+        const real& T = state.T;
 
         // The stoichiometric molalities of the ions in the aqueous mixture and their molar derivatives
         const VectorXr& ms = state.ms;
@@ -63,7 +63,7 @@ auto aqueousActivityModelRumpfCO2(const AqueousMixture& mixture) -> AqueousActiv
         if(iCl < nions) mCl = ms[iCl];
 
         // The Pitzer's parameters of the Rumpf et al. (1994) model
-        const ThermoScalar B = 0.254 - 76.82/T - 10656.0/(T*T) + 6312.0e+3/(T*T*T);
+        const real B = 0.254 - 76.82/T - 10656.0/(T*T) + 6312.0e+3/(T*T*T);
         const double Gamma = -0.0028;
 
         // The ln activity coefficient of CO2(aq)
