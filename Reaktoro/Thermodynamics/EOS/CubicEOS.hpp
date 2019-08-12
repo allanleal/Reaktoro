@@ -53,11 +53,11 @@ public:
     {
         const ThermoScalar& T;
 
-        const ThermoVector& a;
+        const VectorXr& a;
 
-        const ThermoVector& aT;
+        const VectorXr& aT;
 
-        const ThermoVector& aTT;
+        const VectorXr& aTT;
 
         VectorConstRef b;
     };

@@ -79,7 +79,7 @@ public:
     auto lnActivityCoefficients() const -> VectorXrConstRef;
 
     /// Return the ln activity constants of the species.
-    auto lnActivityConstants() const -> ThermoVectorConstRef;
+    auto lnActivityConstants() const -> VectorXrConstRef;
 
     /// Return the ln activities of the species.
     auto lnActivities() const -> VectorXrConstRef;
@@ -88,28 +88,28 @@ public:
     auto chemicalPotentials() const -> VectorXr;
 
     /// Return the standard partial molar Gibbs energies of the species (in units of J/mol).
-    auto standardPartialMolarGibbsEnergies() const -> ThermoVectorConstRef;
+    auto standardPartialMolarGibbsEnergies() const -> VectorXrConstRef;
 
     /// Return the standard partial molar enthalpies of the species (in units of J/mol).
-    auto standardPartialMolarEnthalpies() const -> ThermoVectorConstRef;
+    auto standardPartialMolarEnthalpies() const -> VectorXrConstRef;
 
     /// Return the standard partial molar volumes of the species (in units of m3/mol).
-    auto standardPartialMolarVolumes() const -> ThermoVectorConstRef;
+    auto standardPartialMolarVolumes() const -> VectorXrConstRef;
 
     /// Return the standard partial molar entropies of the species (in units of J/(mol*K)).
-    auto standardPartialMolarEntropies() const -> ThermoVector;
+    auto standardPartialMolarEntropies() const -> VectorXr;
 
     /// Return the standard partial molar internal energies of the species (in units of J/mol).
-    auto standardPartialMolarInternalEnergies() const -> ThermoVector;
+    auto standardPartialMolarInternalEnergies() const -> VectorXr;
 
     /// Return the standard partial molar Helmholtz energies of the species (in units of J/mol).
-    auto standardPartialMolarHelmholtzEnergies() const -> ThermoVector;
+    auto standardPartialMolarHelmholtzEnergies() const -> VectorXr;
 
     /// Return the standard partial molar isobaric heat capacities of the species (in units of J/(mol*K)).
-    auto standardPartialMolarHeatCapacitiesConstP() const -> ThermoVectorConstRef;
+    auto standardPartialMolarHeatCapacitiesConstP() const -> VectorXrConstRef;
 
     /// Return the standard partial molar isochoric heat capacities of the species (in units of J/(mol*K)).
-    auto standardPartialMolarHeatCapacitiesConstV() const -> ThermoVectorConstRef;
+    auto standardPartialMolarHeatCapacitiesConstV() const -> VectorXrConstRef;
 
     /// Return the molar Gibbs energies of the phases (in units of J/mol).
     auto phaseMolarGibbsEnergies() const -> VectorXr;

@@ -135,7 +135,7 @@ auto ChemicalProperty::pE(const ChemicalSystem& system) -> ChemicalPropertyFunct
         const auto RT = universalGasConstant * T;
 
         // The normalized standard chemical potentials of the aqueous species
-        const ThermoVector u0a = rows(properties.standardPartialMolarGibbsEnergies(), ifirst, num_aqueous)/RT;
+        const VectorXr u0a = rows(properties.standardPartialMolarGibbsEnergies(), ifirst, num_aqueous)/RT;
 
         // The ln activities of the aqueous species
         const VectorXr ln_aa = rows(properties.lnActivities(), ifirst, num_aqueous);

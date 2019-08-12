@@ -417,7 +417,7 @@ auto molarSurfaceArea(const MineralReaction& reaction, const ChemicalSystem& sys
     if(specific_surface_area) return specific_surface_area * molar_mass;
 
     // The standard partial molar volumes at 25 C and 1 bar of all species
-    const ThermoVector V = system.properties(T, P).standardPartialMolarVolumes();
+    const VectorXr V = system.properties(T, P).standardPartialMolarVolumes();
 
     // The molar volume of the mineral species (in units of m3/mol)
     const double molar_volume = V.val[ispecies];

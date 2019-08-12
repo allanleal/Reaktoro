@@ -57,10 +57,10 @@ auto collectElementsInCompounds(const std::vector<std::string>& compounds) -> st
     return {elemset.begin(), elemset.end()};
 }
 
-auto lnActivityConstants(const AqueousPhase& phase) -> ThermoVectorFunction
+auto lnActivityConstants(const AqueousPhase& phase) -> VectorXrFunction
 {
     // The ln activity constants of the aqueous species
-    ThermoVector ln_c(phase.numSpecies());
+    VectorXr ln_c(phase.numSpecies());
 
     // The index of solvent water species
     const Index iH2O = phase.indexSpeciesAnyWithError(alternativeWaterNames());
@@ -71,7 +71,7 @@ auto lnActivityConstants(const AqueousPhase& phase) -> ThermoVectorFunction
     // Set the ln activity constant of water to zero
     ln_c[iH2O] = 0.0;
 
-    ThermoVectorFunction f = [=](Temperature T, Pressure P) mutable
+    VectorXrFunction f = [=](Temperature T, Pressure P) mutable
     {
         return ln_c;
     };
@@ -79,12 +79,12 @@ auto lnActivityConstants(const AqueousPhase& phase) -> ThermoVectorFunction
     return f;
 }
 
-auto lnActivityConstants(const GaseousPhase& phase) -> ThermoVectorFunction
+auto lnActivityConstants(const GaseousPhase& phase) -> VectorXrFunction
 {
     // The ln activity constants of the gaseous species
-    ThermoVector ln_c(phase.numSpecies());
+    VectorXr ln_c(phase.numSpecies());
 
-    ThermoVectorFunction f = [=](Temperature T, Pressure P) mutable
+    VectorXrFunction f = [=](Temperature T, Pressure P) mutable
     {
         ln_c = log(P * 1e-5); // ln(Pbar)
         return ln_c;
@@ -93,12 +93,12 @@ auto lnActivityConstants(const GaseousPhase& phase) -> ThermoVectorFunction
     return f;
 }
 
-auto lnActivityConstants(const MineralPhase& phase) -> ThermoVectorFunction
+auto lnActivityConstants(const MineralPhase& phase) -> VectorXrFunction
 {
     // The ln activity constants of the mineral species
-    ThermoVector ln_c(phase.numSpecies());
+    VectorXr ln_c(phase.numSpecies());
 
-    ThermoVectorFunction f = [=](Temperature T, Pressure P) mutable
+    VectorXrFunction f = [=](Temperature T, Pressure P) mutable
     {
         return ln_c;
     };
@@ -380,12 +380,12 @@ public:
         }
 
         // Create the interpolation functions for thermodynamic properties of the species
-        ThermoVectorFunction standard_gibbs_energies_interp     = interpolate(temperatures, pressures, standard_gibbs_energy_fns);
-        ThermoVectorFunction standard_enthalpies_interp         = interpolate(temperatures, pressures, standard_enthalpy_fns);
-        ThermoVectorFunction standard_volumes_interp            = interpolate(temperatures, pressures, standard_volume_fns);
-        ThermoVectorFunction standard_heat_capacities_cp_interp = interpolate(temperatures, pressures, standard_heat_capacity_cp_fns);
-        ThermoVectorFunction standard_heat_capacities_cv_interp = interpolate(temperatures, pressures, standard_heat_capacity_cv_fns);
-        ThermoVectorFunction ln_activity_constants_func         = lnActivityConstants(phase);
+        VectorXrFunction standard_gibbs_energies_interp     = interpolate(temperatures, pressures, standard_gibbs_energy_fns);
+        VectorXrFunction standard_enthalpies_interp         = interpolate(temperatures, pressures, standard_enthalpy_fns);
+        VectorXrFunction standard_volumes_interp            = interpolate(temperatures, pressures, standard_volume_fns);
+        VectorXrFunction standard_heat_capacities_cp_interp = interpolate(temperatures, pressures, standard_heat_capacity_cp_fns);
+        VectorXrFunction standard_heat_capacities_cv_interp = interpolate(temperatures, pressures, standard_heat_capacity_cv_fns);
+        VectorXrFunction ln_activity_constants_func         = lnActivityConstants(phase);
 
         // Define the thermodynamic model function of the species
         PhaseThermoModel thermo_model = [=](PhaseThermoModelResult& res, Temperature T, Pressure P)

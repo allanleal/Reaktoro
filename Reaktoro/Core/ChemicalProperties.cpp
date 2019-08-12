@@ -117,7 +117,7 @@ auto ChemicalProperties::lnActivityCoefficients() const -> VectorXrConstRef
     return cres.lnActivityCoefficients();
 }
 
-auto ChemicalProperties::lnActivityConstants() const -> ThermoVectorConstRef
+auto ChemicalProperties::lnActivityConstants() const -> VectorXrConstRef
 {
     return tres.lnActivityConstants();
 }
@@ -135,48 +135,48 @@ auto ChemicalProperties::chemicalPotentials() const -> VectorXr
     return G + R*T*lna;
 }
 
-auto ChemicalProperties::standardPartialMolarGibbsEnergies() const -> ThermoVectorConstRef
+auto ChemicalProperties::standardPartialMolarGibbsEnergies() const -> VectorXrConstRef
 {
     return tres.standardPartialMolarGibbsEnergies();
 }
 
-auto ChemicalProperties::standardPartialMolarEnthalpies() const -> ThermoVectorConstRef
+auto ChemicalProperties::standardPartialMolarEnthalpies() const -> VectorXrConstRef
 {
     return tres.standardPartialMolarEnthalpies();
 }
 
-auto ChemicalProperties::standardPartialMolarVolumes() const -> ThermoVectorConstRef
+auto ChemicalProperties::standardPartialMolarVolumes() const -> VectorXrConstRef
 {
     return tres.standardPartialMolarVolumes();
 }
 
-auto ChemicalProperties::standardPartialMolarEntropies() const -> ThermoVector
+auto ChemicalProperties::standardPartialMolarEntropies() const -> VectorXr
 {
     const auto& G = standardPartialMolarGibbsEnergies();
     const auto& H = standardPartialMolarEnthalpies();
     return (H - G)/T;
 }
 
-auto ChemicalProperties::standardPartialMolarInternalEnergies() const -> ThermoVector
+auto ChemicalProperties::standardPartialMolarInternalEnergies() const -> VectorXr
 {
     const auto& H = standardPartialMolarEnthalpies();
     const auto& V = standardPartialMolarVolumes();
     return H - P*V;
 }
 
-auto ChemicalProperties::standardPartialMolarHelmholtzEnergies() const -> ThermoVector
+auto ChemicalProperties::standardPartialMolarHelmholtzEnergies() const -> VectorXr
 {
     const auto& G = standardPartialMolarGibbsEnergies();
     const auto& V = standardPartialMolarVolumes();
     return G - P*V;
 }
 
-auto ChemicalProperties::standardPartialMolarHeatCapacitiesConstP() const -> ThermoVectorConstRef
+auto ChemicalProperties::standardPartialMolarHeatCapacitiesConstP() const -> VectorXrConstRef
 {
     return tres.standardPartialMolarHeatCapacitiesConstP();
 }
 
-auto ChemicalProperties::standardPartialMolarHeatCapacitiesConstV() const -> ThermoVectorConstRef
+auto ChemicalProperties::standardPartialMolarHeatCapacitiesConstV() const -> VectorXrConstRef
 {
     return tres.standardPartialMolarHeatCapacitiesConstV();
 }

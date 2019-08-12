@@ -207,9 +207,9 @@ struct CubicEOS::Impl
         const auto alpha = internal::alpha(model);
 
         // Calculate the parameters `a` of the cubic equation of state for each species
-        ThermoVector a(nspecies);
-        ThermoVector aT(nspecies);
-        ThermoVector aTT(nspecies);
+        VectorXr a(nspecies);
+        VectorXr aT(nspecies);
+        VectorXr aTT(nspecies);
         for(unsigned i = 0; i < nspecies; ++i)
         {
             const double Tc = critical_temperatures[i];

@@ -90,7 +90,7 @@ auto interpolate(
         ddP[i] = BilinearInterpolator(temperatures, pressures, ddP_func);
     }
 
-    ThermoVector res(size);
+    VectorXr res(size);
 
     auto func = [=](double T, double P) mutable
     {

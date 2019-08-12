@@ -78,7 +78,7 @@ public:
 
     /// Calculate the equilibrium constants of the reactions.
     /// @param properties The chemical properties of the system
-    auto lnEquilibriumConstants(const ChemicalProperties& properties) const -> ThermoVector;
+    auto lnEquilibriumConstants(const ChemicalProperties& properties) const -> VectorXr;
 
     /// Calculate the reaction quotients of the reactions.
     /// @param properties The chemical properties of the system

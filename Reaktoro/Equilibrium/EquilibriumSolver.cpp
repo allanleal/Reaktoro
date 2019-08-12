@@ -77,7 +77,7 @@ struct EquilibriumSolver::Impl
     Vector be;
 
     /// The standard chemical potentials of the species
-    ThermoVector u0;
+    VectorXr u0;
 
     /// The chemical potentials of the species
     VectorXr u;

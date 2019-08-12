@@ -176,7 +176,7 @@ auto Reaction::lnEquilibriumConstant(const ChemicalProperties& properties) const
     if(pimpl->lnk) return pimpl->lnk(T, P);
 
     // Calculate the equilibrium constant using the standard Gibbs energies of the species
-    const ThermoVector G0 = properties.standardPartialMolarGibbsEnergies();
+    const VectorXr G0 = properties.standardPartialMolarGibbsEnergies();
     const ThermoScalar RT = universalGasConstant * Temperature(T);
 
     ThermoScalar res;
