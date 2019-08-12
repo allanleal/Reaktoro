@@ -18,7 +18,6 @@
 #include <PyReaktoro/PyReaktoro.hpp>
 
 // Reaktoro includes
-#include <Reaktoro/Common/ChemicalVector.hpp>
 #include <Reaktoro/Core/ChemicalProperties.hpp>
 #include <Reaktoro/Core/ChemicalQuantity.hpp>
 #include <Reaktoro/Core/ChemicalState.hpp>

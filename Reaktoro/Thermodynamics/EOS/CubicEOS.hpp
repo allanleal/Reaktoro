@@ -25,12 +25,8 @@
 #include <vector>
 
 // Reaktoro includes
-#include <Reaktoro/Common/ChemicalScalar.hpp>
-#include <Reaktoro/Common/ChemicalVector.hpp>
 #include <Reaktoro/Common/Index.hpp>
 #include <Reaktoro/Common/TableUtils.hpp>
-#include <Reaktoro/Common/ThermoScalar.hpp>
-#include <Reaktoro/Common/ThermoVector.hpp>
 
 namespace Reaktoro {
 

@@ -22,8 +22,6 @@
 #include <vector>
 
 // Reaktoro includes
-#include <Reaktoro/Common/ChemicalScalar.hpp>
-#include <Reaktoro/Common/ChemicalVector.hpp>
 #include <Reaktoro/Common/Index.hpp>
 #include <Reaktoro/Math/Matrix.hpp>
 

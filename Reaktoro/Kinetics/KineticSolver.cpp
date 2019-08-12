@@ -22,7 +22,6 @@
 using namespace std::placeholders;
 
 // Reaktoro includes
-#include <Reaktoro/Common/ChemicalVector.hpp>
 #include <Reaktoro/Common/Exception.hpp>
 #include <Reaktoro/Math/Matrix.hpp>
 #include <Reaktoro/Common/StringUtils.hpp>

@@ -18,7 +18,6 @@
 #include "EquilibriumSolver.hpp"
 
 // Reaktoro includes
-#include <Reaktoro/Common/ChemicalVector.hpp>
 #include <Reaktoro/Common/Constants.hpp>
 #include <Reaktoro/Common/ConvertUtils.hpp>
 #include <Reaktoro/Common/Exception.hpp>

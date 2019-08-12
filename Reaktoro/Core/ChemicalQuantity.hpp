@@ -23,7 +23,6 @@
 
 // Reaktoro includes
 #include <Reaktoro/Common/Index.hpp>
-#include <Reaktoro/Common/ChemicalVector.hpp>
 
 namespace Reaktoro {
 

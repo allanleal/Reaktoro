@@ -25,7 +25,6 @@
 
 // Reaktoro includes
 #include <Reaktoro/Common/ConvertUtils.hpp>
-#include <Reaktoro/Common/ChemicalScalar.hpp>
 #include <Reaktoro/Common/Exception.hpp>
 #include <Reaktoro/Common/ReactionEquation.hpp>
 #include <Reaktoro/Common/SetUtils.hpp>

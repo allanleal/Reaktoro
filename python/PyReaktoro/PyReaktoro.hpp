@@ -26,7 +26,6 @@ namespace py = pybind11;
 namespace Reaktoro {
 
 // Common module
-void exportAutoDiff(py::module& m);
 void exportEigen(py::module& m);
 void exportIndex(py::module& m);
 void exportMatrix(py::module& m);

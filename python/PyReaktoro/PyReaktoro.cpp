@@ -21,7 +21,6 @@ using namespace Reaktoro;
 PYBIND11_MODULE(PyReaktoro, m)
 {
     // Common module
-    exportAutoDiff(m);
     exportIndex(m);
     exportMatrix(m);
     exportOutputter(m);
