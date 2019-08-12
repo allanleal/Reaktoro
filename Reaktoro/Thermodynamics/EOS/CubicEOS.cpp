@@ -185,14 +185,14 @@ struct CubicEOS::Impl
     : nspecies(nspecies)
     {
         // Initialize the dimension of the chemical vector quantities
-        ChemicalVector vec(nspecies);
+        VectorXdual vec(nspecies);
         result.partial_molar_volumes = vec;
         result.residual_partial_molar_enthalpies = vec;
         result.residual_partial_molar_gibbs_energies = vec;
         result.ln_fugacity_coefficients = vec;
     }
 
-    auto operator()(const ThermoScalar& T, const ThermoScalar& P, const ChemicalVector& x) -> Result
+    auto operator()(const ThermoScalar& T, const ThermoScalar& P, const VectorXdual& x) -> Result
     {
         // Check if the mole fractions are zero or non-initialized
         if(x.val.size() == 0 || min(x.val) <= 0.0)
@@ -244,8 +244,8 @@ struct CubicEOS::Impl
         ChemicalScalar amix(nspecies);
         ChemicalScalar amixT(nspecies);
         ChemicalScalar amixTT(nspecies);
-        ChemicalVector abar(nspecies);
-        ChemicalVector abarT(nspecies);
+        VectorXdual abar(nspecies);
+        VectorXdual abarT(nspecies);
         for(unsigned i = 0; i < nspecies; ++i)
         {
             for(unsigned j = 0; j < nspecies; ++j)
@@ -354,10 +354,10 @@ struct CubicEOS::Impl
         ChemicalScalar& H_res = result.residual_molar_enthalpy;
         ChemicalScalar& Cp_res = result.residual_molar_heat_capacity_cp;
         ChemicalScalar& Cv_res = result.residual_molar_heat_capacity_cv;
-        ChemicalVector& Vi = result.partial_molar_volumes;
-        ChemicalVector& Gi_res = result.residual_partial_molar_gibbs_energies;
-        ChemicalVector& Hi_res = result.residual_partial_molar_enthalpies;
-        ChemicalVector& ln_phi = result.ln_fugacity_coefficients;
+        VectorXdual& Vi = result.partial_molar_volumes;
+        VectorXdual& Gi_res = result.residual_partial_molar_gibbs_energies;
+        VectorXdual& Hi_res = result.residual_partial_molar_enthalpies;
+        VectorXdual& ln_phi = result.ln_fugacity_coefficients;
 
         // Calculate the partial molar Zi for each species
         V = Z*R*T/P;
@@ -491,7 +491,7 @@ auto CubicEOS::setInteractionParamsFunction(const InteractionParamsFunction& fun
     pimpl->calculate_interaction_params = func;
 }
 
-auto CubicEOS::operator()(const ThermoScalar& T, const ThermoScalar& P, const ChemicalVector& x) -> Result
+auto CubicEOS::operator()(const ThermoScalar& T, const ThermoScalar& P, const VectorXdual& x) -> Result
 {
     return pimpl->operator()(T, P, x);
 }

@@ -66,7 +66,7 @@ auto gaseousChemicalModelCubicEOS(const GaseousMixture& mixture, CubicEOS::Model
         const CubicEOS::Result eosres = eos(T, P, x);
 
         // The ln of mole fractions
-        const ChemicalVector ln_x = log(x);
+        const VectorXdual ln_x = log(x);
 
         // The ln of pressure in bar units
         const ThermoScalar ln_Pbar = log(1e-5 * P);

@@ -194,7 +194,7 @@ auto Reaction::lnEquilibriumConstant(const ChemicalProperties& properties) const
 auto Reaction::lnReactionQuotient(const ChemicalProperties& properties) const -> ChemicalScalar
 {
     const unsigned num_species = system().numSpecies();
-    const ChemicalVector& ln_a = properties.lnActivities();
+    const VectorXdual& ln_a = properties.lnActivities();
     ChemicalScalar ln_Q(num_species);
     unsigned counter = 0;
     for(Index i : indices())

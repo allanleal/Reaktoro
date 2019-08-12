@@ -113,19 +113,19 @@ struct KineticSolver::Impl
     ChemicalProperties properties;
 
     /// The vector with the values of the reaction rates
-    ChemicalVector r;
+    VectorXdual r;
 
     /// The partial derivatives of the reaction rates `r` w.r.t. to `be`, `ne`, `nk`, `and `u = [be nk]`
     Matrix drdbe, drdne, drdnk, drdu;
 
     /// The source term
-    ChemicalVector q;
+    VectorXdual q;
 
     /// The partial derivatives of the source rates `q` w.r.t. to `be`, `ne`, `nk`, `and `u = [be nk]`
     Matrix dqdbe, dqdne, dqdnk, dqdu;
 
     /// The function that calculates the source term in the problem
-    std::function<ChemicalVector(const ChemicalProperties&)> source_fn;
+    std::function<VectorXdual(const ChemicalProperties&)> source_fn;
 
     Impl()
     {}
@@ -207,7 +207,7 @@ struct KineticSolver::Impl
 
         source_fn = [=](const ChemicalProperties& properties)
         {
-            ChemicalVector q(num_species);
+            VectorXdual q(num_species);
             q.val = n;
             if(old_source_fn)
                 q += old_source_fn(properties);
@@ -223,7 +223,7 @@ struct KineticSolver::Impl
         const Index size = system.numSpeciesInPhase(iphase);
         auto old_source_fn = source_fn;
         ChemicalScalar phasevolume;
-        ChemicalVector q(size);
+        VectorXdual q(size);
 
         source_fn = [=](const ChemicalProperties& properties) mutable
         {
@@ -244,7 +244,7 @@ struct KineticSolver::Impl
         const Indices& isolid_species = partition.indicesSolidSpecies();
         auto old_source_fn = source_fn;
         ChemicalScalar fluidvolume;
-        ChemicalVector q;
+        VectorXdual q;
 
         source_fn = [=](const ChemicalProperties& properties) mutable
         {
@@ -264,7 +264,7 @@ struct KineticSolver::Impl
         const Indices& ifluid_species = partition.indicesFluidSpecies();
         auto old_source_fn = source_fn;
         ChemicalScalar solidvolume;
-        ChemicalVector q;
+        VectorXdual q;
 
         source_fn = [=](const ChemicalProperties& properties) mutable
         {

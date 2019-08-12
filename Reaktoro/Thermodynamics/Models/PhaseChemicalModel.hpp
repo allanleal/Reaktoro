@@ -51,10 +51,10 @@ struct PhaseChemicalModelResultBase
 };
 
 /// The chemical properties of the species in a phase.
-using PhaseChemicalModelResult = PhaseChemicalModelResultBase<ChemicalScalarRef, ChemicalVectorRef>;
+using PhaseChemicalModelResult = PhaseChemicalModelResultBase<ChemicalScalarRef, VectorXdualRef>;
 
 /// The chemical properties of the species in a phase (constant).
-using PhaseChemicalModelResultConst = PhaseChemicalModelResultBase<ChemicalScalarConstRef, ChemicalVectorConstRef>;
+using PhaseChemicalModelResultConst = PhaseChemicalModelResultBase<ChemicalScalarConstRef, VectorXdualConstRef>;
 
 /// The signature of the chemical model function that calculates the chemical properties of the species in a phase.
 using PhaseChemicalModel = std::function<void(PhaseChemicalModelResult&, Temperature, Pressure, VectorConstRef)>;

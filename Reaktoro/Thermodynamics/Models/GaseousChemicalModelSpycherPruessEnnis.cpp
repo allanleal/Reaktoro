@@ -138,7 +138,7 @@ auto gaseousChemicalModelSpycherPruessEnnis(const GaseousMixture& mixture) -> Ph
             bCO2*aux3*(log((v + bCO2)/v) - bmix/(v + bmix)) - aux4;
 
         // The ln mole fractions of all gaseous species
-        const ChemicalVector ln_x = log(state.x);
+        const VectorXdual ln_x = log(state.x);
 
         // The mole fractions of the gaseous species H2O(g) and CO2(g) and their molar derivatives
         if(iH2O < nspecies) ln_xH2O = ln_x[iH2O];

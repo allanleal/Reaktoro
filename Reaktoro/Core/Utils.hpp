@@ -40,7 +40,7 @@ template<typename SpeciesValues>
 auto molarMasses(const SpeciesValues& species) -> Vector;
 
 /// Return the mole fractions of the species.
-inline auto moleFractions(Composition n) -> ChemicalVector
+inline auto moleFractions(Composition n) -> VectorXdual
 {
     const auto nspecies = n.size();
     if(nspecies == 1)
