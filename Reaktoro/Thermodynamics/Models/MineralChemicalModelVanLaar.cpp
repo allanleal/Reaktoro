@@ -31,13 +31,13 @@
 //
 //    VectorXr phi;
 //
-//    real avg;
+//    real avg = 0.0;
 //
 //    const Index nspecies = mixture.numSpecies();
 //
 //    Table2D<real> B = table2D<real>(nspecies, nspecies);
 //
-//    PhaseChemicalModel f = [=](const real& T, const real& P, VectorConstRef n) mutable
+//    PhaseChemicalModel f = [=](const real& T, const real& P, VectorXrConstRef n) mutable
 //    {
 //        state = mixture.state(T, P, n);
 //

@@ -77,19 +77,19 @@ public:
         explicit Result(unsigned nspecies);
 
         /// The molar volume of the phase (in units of m3/mol).
-        real molar_volume;
+        real molar_volume = 0.0;
 
         /// The residual molar Gibbs energy of the phase (in units of J/mol).
-        real residual_molar_gibbs_energy;
+        real residual_molar_gibbs_energy = 0.0;
 
         /// The residual molar enthalpy of the phase (in units of J/mol).
-        real residual_molar_enthalpy;
+        real residual_molar_enthalpy = 0.0;
 
         /// The residual molar heat capacity at constant pressure of the phase (in units of J/(mol*K)).
-        real residual_molar_heat_capacity_cp;
+        real residual_molar_heat_capacity_cp = 0.0;
 
         /// The residual molar heat capacity at constant volume of the phase (in units of J/(mol*K)).
-        real residual_molar_heat_capacity_cv;
+        real residual_molar_heat_capacity_cv = 0.0;
 
         /// The partial molar volumes of the speies in the phase (in units of m3/mol).
         VectorXr partial_molar_volumes;

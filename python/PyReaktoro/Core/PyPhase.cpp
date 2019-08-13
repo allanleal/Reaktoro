@@ -39,8 +39,8 @@ void exportPhase(py::module& m)
     auto species2 = static_cast<std::vector<Species>&(Phase::*)()>(&Phase::species);
     auto species3 = static_cast<const Species&(Phase::*)(Index) const>(&Phase::species);
 
-    auto properties1 = static_cast<void(Phase::*)(PhaseThermoModelResult&, double, double) const>(&Phase::properties);
-    auto properties2 = static_cast<void(Phase::*)(PhaseChemicalModelResult&, double, double, VectorConstRef) const>(&Phase::properties);
+    auto properties1 = static_cast<void(Phase::*)(PhaseThermoModelResult&, const real&, const real&) const>(&Phase::properties);
+    auto properties2 = static_cast<void(Phase::*)(PhaseChemicalModelResult&, const real&, const real&, VectorConstRef) const>(&Phase::properties);
 
     py::class_<Phase>(m, "Phase")
         .def(py::init<>())

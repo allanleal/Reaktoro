@@ -39,10 +39,10 @@ void exportEquilibriumUtils(py::module& m)
     auto equilibrate6  = static_cast<EquilibriumResult (*)(ChemicalState&, const EquilibriumProblem&, const EquilibriumOptions&)>(equilibrate);
     auto equilibrate7  = static_cast<ChemicalState (*)(const EquilibriumProblem&)>(equilibrate);
     auto equilibrate8  = static_cast<ChemicalState (*)(const EquilibriumProblem&, const EquilibriumOptions&)>(equilibrate);
-    auto equilibrate9  = static_cast<EquilibriumResult (*)(ChemicalState&, const EquilibriumInverseProblem&)>(equilibrate);
-    auto equilibrate10 = static_cast<EquilibriumResult (*)(ChemicalState&, const EquilibriumInverseProblem&, const EquilibriumOptions&)>(equilibrate);
-    auto equilibrate11 = static_cast<ChemicalState (*)(const EquilibriumInverseProblem&)>(equilibrate);
-    auto equilibrate12 = static_cast<ChemicalState (*)(const EquilibriumInverseProblem&, const EquilibriumOptions&)>(equilibrate);
+    // auto equilibrate9  = static_cast<EquilibriumResult (*)(ChemicalState&, const EquilibriumInverseProblem&)>(equilibrate);
+    // auto equilibrate10 = static_cast<EquilibriumResult (*)(ChemicalState&, const EquilibriumInverseProblem&, const EquilibriumOptions&)>(equilibrate);
+    // auto equilibrate11 = static_cast<ChemicalState (*)(const EquilibriumInverseProblem&)>(equilibrate);
+    // auto equilibrate12 = static_cast<ChemicalState (*)(const EquilibriumInverseProblem&, const EquilibriumOptions&)>(equilibrate);
 
     m.def("equilibrate", equilibrate1);
     m.def("equilibrate", equilibrate2);
@@ -52,10 +52,10 @@ void exportEquilibriumUtils(py::module& m)
     m.def("equilibrate", equilibrate6);
     m.def("equilibrate", equilibrate7);
     m.def("equilibrate", equilibrate8);
-    m.def("equilibrate", equilibrate9);
-    m.def("equilibrate", equilibrate10);
-    m.def("equilibrate", equilibrate11);
-    m.def("equilibrate", equilibrate12);
+    // m.def("equilibrate", equilibrate9);
+    // m.def("equilibrate", equilibrate10);
+    // m.def("equilibrate", equilibrate11);
+    // m.def("equilibrate", equilibrate12);
 }
 
 } // namespace Reaktoro

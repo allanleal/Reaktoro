@@ -179,7 +179,7 @@ auto Reaction::lnEquilibriumConstant(const ChemicalProperties& properties) const
     const VectorXr G0 = properties.standardPartialMolarGibbsEnergies();
     const real RT = universalGasConstant * T;
 
-    real res;
+    real res = 0.0;
     for(unsigned i = 0; i < indices().size(); ++i)
     {
         const Index ispecies = indices()[i];

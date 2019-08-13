@@ -25,10 +25,10 @@ namespace Reaktoro {
 
 void exportChemicalProperties(py::module& m)
 {
-    auto update1 = static_cast<void (ChemicalProperties::*)(double, double)>(&ChemicalProperties::update);
-    auto update2 = static_cast<void (ChemicalProperties::*)(VectorConstRef)>(&ChemicalProperties::update);
-    auto update3 = static_cast<void (ChemicalProperties::*)(double, double, VectorConstRef)>(&ChemicalProperties::update);
-    auto update4 = static_cast<void (ChemicalProperties::*)(double, double, VectorConstRef, const ThermoModelResult&, const ChemicalModelResult&)>(&ChemicalProperties::update);
+    auto update1 = static_cast<void (ChemicalProperties::*)(const real&, const real&)>(&ChemicalProperties::update);
+    auto update2 = static_cast<void (ChemicalProperties::*)(VectorXrConstRef)>(&ChemicalProperties::update);
+    auto update3 = static_cast<void (ChemicalProperties::*)(const real&, const real&, VectorXrConstRef)>(&ChemicalProperties::update);
+    auto update4 = static_cast<void (ChemicalProperties::*)(const real&, const real&, VectorXrConstRef, const ThermoModelResult&, const ChemicalModelResult&)>(&ChemicalProperties::update);
 
     py::class_<ChemicalProperties>(m, "ChemicalProperties")
         .def(py::init<>())

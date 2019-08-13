@@ -497,7 +497,7 @@ auto ChemicalSystem::properties(const real& T, const real& P) const -> ThermoPro
     return prop;
 }
 
-auto ChemicalSystem::properties(const real& T, const real& P, VectorConstRef n) const -> ChemicalProperties
+auto ChemicalSystem::properties(const real& T, const real& P, VectorXrConstRef n) const -> ChemicalProperties
 {
     ChemicalProperties prop(*this);
     prop.update(T, P, n);

@@ -28,17 +28,13 @@ namespace Reaktoro {
 
 void exportKineticSolver(py::module& m)
 {
-    auto step1 = static_cast<double(KineticSolver::*)(ChemicalState&, double)>(&KineticSolver::step);
-    auto step2 = static_cast<double(KineticSolver::*)(ChemicalState&, double, double)>(&KineticSolver::step);
+    auto step1 = static_cast<double(KineticSolver::*)(ChemicalState&, const real&)>(&KineticSolver::step);
+    auto step2 = static_cast<double(KineticSolver::*)(ChemicalState&, const real&, const real&)>(&KineticSolver::step);
 
     py::class_<KineticSolver>(m, "KineticSolver")
         .def(py::init<const ReactionSystem&>())
         .def("setOptions", &KineticSolver::setOptions)
         .def("setPartition", &KineticSolver::setPartition)
-        .def("addSource", &KineticSolver::addSource)
-        .def("addPhaseSink", &KineticSolver::addPhaseSink)
-        .def("addFluidSink", &KineticSolver::addFluidSink)
-        .def("addSolidSink", &KineticSolver::addSolidSink)
         .def("initialize", &KineticSolver::initialize)
         .def("step", step1)
         .def("step", step2)

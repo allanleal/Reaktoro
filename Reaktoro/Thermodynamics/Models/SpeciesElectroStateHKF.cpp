@@ -35,6 +35,9 @@ const double eta = 1.66027e+05;
 
 auto functionG(const real& T, const real& P, const WaterThermoState& wts) -> FunctionG
 {
+    using std::log;
+    using std::pow;
+
     // The function G
     FunctionG funcG;
 
@@ -125,6 +128,8 @@ auto functionG(const real& T, const real& P, const WaterThermoState& wts) -> Fun
 
 auto speciesElectroStateHKF(const FunctionG& g, const AqueousSpecies& species) -> SpeciesElectroState
 {
+    using std::pow;
+
     // Get the HKF thermodynamic parameters of the aqueous species
     const auto& hkf = species.thermoData().hkf();
 

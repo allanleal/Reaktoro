@@ -43,8 +43,8 @@ void exportChemicalSystem(py::module& m)
     auto indicesElementsInSpecies1 = static_cast<Indices(ChemicalSystem::*)(Index) const>(&ChemicalSystem::indicesElementsInSpecies);
     auto indicesElementsInSpecies2 = static_cast<Indices(ChemicalSystem::*)(const Indices&) const>(&ChemicalSystem::indicesElementsInSpecies);
 
-    auto properties1 = static_cast<ThermoProperties(ChemicalSystem::*)(double,double) const>(&ChemicalSystem::properties);
-    auto properties2 = static_cast<ChemicalProperties(ChemicalSystem::*)(double,double,VectorConstRef) const>(&ChemicalSystem::properties);
+    auto properties1 = static_cast<ThermoProperties(ChemicalSystem::*)(const real&, const real&) const>(&ChemicalSystem::properties);
+    auto properties2 = static_cast<ChemicalProperties(ChemicalSystem::*)(const real&, const real&, VectorXrConstRef) const>(&ChemicalSystem::properties);
 
     py::class_<ChemicalSystem>(m, "ChemicalSystem")
         .def(py::init<>())

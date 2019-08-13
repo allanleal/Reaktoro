@@ -179,7 +179,7 @@ auto Phase::properties(PhaseThermoModelResult& res, const real& T, const real& P
     pimpl->thermo_model(res, T, P);
 }
 
-auto Phase::properties(PhaseChemicalModelResult& res, const real& T, const real& P, VectorConstRef n) const -> void
+auto Phase::properties(PhaseChemicalModelResult& res, const real& T, const real& P, VectorXrConstRef n) const -> void
 {
     pimpl->chemical_model(res, T, P, n);
 }

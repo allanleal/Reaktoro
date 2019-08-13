@@ -18,6 +18,7 @@
 #pragma once
 
 // Reaktoro includes
+#include <Reaktoro/Common/Real.hpp>
 
 namespace Reaktoro {
 
@@ -29,6 +30,6 @@ struct WaterHelmholtzState;
 /// @param D The density of water (in units of kg/m3)
 /// @return The Helmholtz free energy state of water
 /// @see WaterHelmholtzState
-auto waterHelmholtzStateHGK(real T, real D) -> WaterHelmholtzState;
+auto waterHelmholtzStateHGK(const real& T, const real& D) -> WaterHelmholtzState;
 
 } // namespace Reaktoro

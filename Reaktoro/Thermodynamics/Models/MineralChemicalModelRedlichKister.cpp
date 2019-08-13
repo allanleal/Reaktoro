@@ -33,7 +33,7 @@ auto mineralChemicalModelRedlichKister(const MineralMixture& mixture, double a0,
     MineralMixtureState state;
 
     // Define the chemical model function of the mineral phase
-    PhaseChemicalModel model = [=](PhaseChemicalModelResult& res, const real& T, const real& P, VectorConstRef n) mutable
+    PhaseChemicalModel model = [=](PhaseChemicalModelResult& res, const real& T, const real& P, VectorXrConstRef n) mutable
     {
         // Evaluate the state of the mineral mixture
         state = mixture.state(T, P, n);
@@ -48,7 +48,7 @@ auto mineralChemicalModelRedlichKister(const MineralMixture& mixture, double a0,
 
         res.ln_activities = res.ln_activity_coefficients + log(state.x);
 
-        res.residual_molar_gibbs_energy = (x1*x2*(a0 + a1*(x1 - x2) + a2*pow((x1 - x2), 2))) * RT;
+        res.residual_molar_gibbs_energy = (x1*x2*(a0 + a1*(x1 - x2) + a2*std::pow((x1 - x2), 2))) * RT;
         res.residual_molar_enthalpy = res.residual_molar_gibbs_energy;
     };
 

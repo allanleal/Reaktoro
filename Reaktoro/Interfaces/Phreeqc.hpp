@@ -87,7 +87,7 @@ public:
     /// @param T The temperature (in units of K)
     /// @param P The pressure (in units of Pa)
     /// @param n The amounts of the species (in units of mol)
-    virtual auto properties(ChemicalModelResult& res, const real& T, const real& P, VectorConstRef n) -> void;
+    virtual auto properties(ChemicalModelResult& res, const real& T, const real& P, VectorXrConstRef n) -> void;
 
     /// Return a clone of this Phreeqc instance
     virtual auto clone() const -> std::shared_ptr<Interface>;
@@ -108,7 +108,7 @@ public:
     /// @param T The temperature (in units of K)
     /// @param P The pressure (in units of Pa)
     /// @param n The composition of the species (in units of mol)
-    auto set(const real& T, const real& P, VectorConstRef n) -> void;
+    auto set(const real& T, const real& P, VectorXrConstRef n) -> void;
 
     /// Load a PHREEQC database.
     /// This method will initialize the Phreeqc instance with all species and reactions

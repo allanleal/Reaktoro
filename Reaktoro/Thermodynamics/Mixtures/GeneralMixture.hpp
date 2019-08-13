@@ -32,10 +32,10 @@ namespace Reaktoro {
 struct MixtureState
 {
     /// The temperature of the mixture (in units of K)
-    real T;
+    real T = 298.15;
 
     /// The pressure of the mixture (in units of Pa)
-    real P;
+    real P = 1.0e+5;
 
     /// The mole fractions of the species in the mixture and their partial derivatives
     VectorXr x;
@@ -193,18 +193,12 @@ auto GeneralMixture<SpeciesType>::chargesSpecies() const -> Vector
 template<class SpeciesType>
 auto GeneralMixture<SpeciesType>::moleFractions(VectorXrConstRef n) const -> VectorXr
 {
-    const unsigned nspecies = numSpecies();
+    const auto nspecies = numSpecies();
     if(nspecies == 1)
-    {
-        VectorXr x(1);
-        x[0] = 1.0;
-        return x;
-    }
-    VectorXr x(nspecies);
+        return ones(1);
     const auto nt = n.sum();
-    if(nt == 0.0) return x;
-    x = n/nt;
-    return x;
+    if(nt == 0.0) return zeros(nspecies);
+    return n /nt;
 }
 
 template<class SpeciesType>

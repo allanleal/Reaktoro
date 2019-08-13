@@ -1439,7 +1439,7 @@ auto aqueousChemicalModelPitzerHMW(const AqueousMixture& mixture) -> PhaseChemic
         res.ln_activities[iwater] = ln_aw;
 
         // Set the activity coefficient of water (mole fraction scale)
-        res.ln_activity_coefficients[iwater] = ln_aw - log(xw);
+        res.ln_activity_coefficients[iwater] = ln_aw - std::log(xw);
     };
 
     return model;

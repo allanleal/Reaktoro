@@ -25,67 +25,67 @@ namespace Reaktoro {
 struct WaterThermoState
 {
 	/// The temperature of water (in units of K)
-	real temperature;
+	real temperature = 0.0;
 
 	/// The specific volume of water (in units of m3/kg)
-	real volume;
+	real volume = 0.0;
 
 	/// The specific entropy of water (in units of J/(kg*K))
-	real entropy;
+	real entropy = 0.0;
 
 	/// The specific Helmholtz free energy of water (in units of J/kg)
-	real helmholtz;
+	real helmholtz = 0.0;
 
 	/// The specific internal energy of water (in units of J/kg)
-	real internal_energy;
+	real internal_energy = 0.0;
 
 	/// The specific enthalpy of water (in units of J/kg)
-	real enthalpy;
+	real enthalpy = 0.0;
 
 	/// The specific Gibbs free energy of water (in units of J/kg)
-	real gibbs;
+	real gibbs = 0.0;
 
 	/// The specific isochoric heat capacity of water (in units of J/(kg*K))
-	real cv;
+	real cv = 0.0;
 
 	/// The specific isobaric heat capacity of water (in units of J/(kg*K))
-	real cp;
+	real cp = 0.0;
 
 	/// The specific density of water (in units of kg/m3)
-	real density;
+	real density = 0.0;
 
 	/// The first-order partial derivative of density with respect to temperature (in units of (kg/m3)/K)
-	real densityT;
+	real densityT = 0.0;
 
 	/// The first-order partial derivative of density with respect to pressure (in units of (kg/m3)/Pa)
-	real densityP;
+	real densityP = 0.0;
 
 	/// The second-order partial derivative of density with respect to temperature (in units of (kg/m3)/(K*K))
-	real densityTT;
+	real densityTT = 0.0;
 
 	/// The second-order partial derivative of density with respect to temperature and pressure (in units of (kg/m3)/(K*Pa))
-	real densityTP;
+	real densityTP = 0.0;
 
 	/// The second-order partial derivative of density with respect to pressure (in units of (kg/m3)/(Pa*Pa))
-	real densityPP;
+	real densityPP = 0.0;
 
 	/// The pressure of water (in units of Pa)
-	real pressure;
+	real pressure = 0.0;
 
 	/// The first-order partial derivative of pressure with respect to temperature (in units of Pa/K)
-	real pressureT;
+	real pressureT = 0.0;
 
 	/// The first-order partial derivative of pressure with respect to density (in units of Pa/(kg/m3))
-	real pressureD;
+	real pressureD = 0.0;
 
 	/// The second-order partial derivative of pressure with respect to temperature (in units of Pa/(K*K))
-	real pressureTT;
+	real pressureTT = 0.0;
 
 	/// The second-order partial derivative of pressure with respect to temperature and density (in units of Pa/(K*kg/m3))
-	real pressureTD;
+	real pressureTD = 0.0;
 
 	/// The second-order partial derivative of pressure with respect to density (in units of Pa/((kg/m3)*(kg/m3)))
-	real pressureDD;
+	real pressureDD = 0.0;
 };
 
 } // namespace Reaktoro

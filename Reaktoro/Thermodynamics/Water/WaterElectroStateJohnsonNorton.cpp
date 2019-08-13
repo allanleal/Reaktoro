@@ -17,6 +17,9 @@
 
 #include "WaterElectroStateJohnsonNorton.hpp"
 
+// C++ includes
+#include <cmath>
+
 // Reaktoro includes
 #include <Reaktoro/Thermodynamics/Water/WaterElectroState.hpp>
 #include <Reaktoro/Thermodynamics/Water/WaterThermoState.hpp>
@@ -34,8 +37,8 @@ namespace {
 
 // The reference temperature (in K) and density (in kg/m3) for the calculation of
 // the dielectric constant of water and its partial derivatives
-const double kReferenceTemperature = 298.15;
-const double kReferenceDensity = 1000.0;
+const auto kReferenceTemperature = 298.15;
+const auto kReferenceDensity = 1000.0;
 
 const double a[] =
 {
@@ -52,27 +55,27 @@ const double a[] =
 	-0.2729401652e+02
 };
 
-inline auto k0(real t)    -> real { return {1.0, 0.0, 0.0}; }
-inline auto k1(real t)    -> real { return a[1]/t; }
-inline auto k2(real t)    -> real { return a[2]/t + a[3] + a[4]*t; }
-inline auto k3(real t)    -> real { return a[5]/t + a[6]*t + a[7]*t*t; }
-inline auto k4(real t)    -> real { return a[8]/t/t + a[9]/t + a[10]; }
+inline auto k0(const real& t)    -> real { return 1.0; }
+inline auto k1(const real& t)    -> real { return a[1]/t; }
+inline auto k2(const real& t)    -> real { return a[2]/t + a[3] + a[4]*t; }
+inline auto k3(const real& t)    -> real { return a[5]/t + a[6]*t + a[7]*t*t; }
+inline auto k4(const real& t)    -> real { return a[8]/t/t + a[9]/t + a[10]; }
 
-inline auto k0_t(real t)  -> real { return {0.0, 0.0, 0.0}; }
-inline auto k1_t(real t)  -> real { return -a[1]/(t*t); }
-inline auto k2_t(real t)  -> real { return -a[2]/(t*t) + a[4]; }
-inline auto k3_t(real t)  -> real { return -a[5]/(t*t) + a[6] + 2*a[7]*t; }
-inline auto k4_t(real t)  -> real { return -2*a[8]/(t*t*t) - a[9]/(t*t); }
+inline auto k0_t(const real& t)  -> real { return 0.0; }
+inline auto k1_t(const real& t)  -> real { return -a[1]/(t*t); }
+inline auto k2_t(const real& t)  -> real { return -a[2]/(t*t) + a[4]; }
+inline auto k3_t(const real& t)  -> real { return -a[5]/(t*t) + a[6] + 2*a[7]*t; }
+inline auto k4_t(const real& t)  -> real { return -2*a[8]/(t*t*t) - a[9]/(t*t); }
 
-inline auto k0_tt(real t) -> real { return {0.0, 0.0, 0.0}; }
-inline auto k1_tt(real t) -> real { return 2*a[1]/(t*t*t); }
-inline auto k2_tt(real t) -> real { return 2*a[2]/(t*t*t); }
-inline auto k3_tt(real t) -> real { return 2*a[5]/(t*t*t) + 2*a[7]; }
-inline auto k4_tt(real t) -> real { return 6*a[8]/(t*t*t*t) + 2*a[9]/(t*t*t); }
+inline auto k0_tt(const real& t) -> real { return 0.0; }
+inline auto k1_tt(const real& t) -> real { return 2*a[1]/(t*t*t); }
+inline auto k2_tt(const real& t) -> real { return 2*a[2]/(t*t*t); }
+inline auto k3_tt(const real& t) -> real { return 2*a[5]/(t*t*t) + 2*a[7]; }
+inline auto k4_tt(const real& t) -> real { return 6*a[8]/(t*t*t*t) + 2*a[9]/(t*t*t); }
 
-real (*k[5])(real)    = {k0, k1, k2, k3, k4};
-real (*k_t[5])(real)  = {k0_t, k1_t, k2_t, k3_t, k4_t};
-real (*k_tt[5])(real) = {k0_tt, k1_tt, k2_tt, k3_tt, k4_tt};
+real (*k[5])(const real&)    = {k0, k1, k2, k3, k4};
+real (*k_t[5])(const real&)  = {k0_t, k1_t, k2_t, k3_t, k4_t};
+real (*k_tt[5])(const real&) = {k0_tt, k1_tt, k2_tt, k3_tt, k4_tt};
 
 } // namespace
 
@@ -94,7 +97,7 @@ auto waterElectroStateJohnsonNorton(const real& T, const real& P, const WaterThe
 
 	for(int i = 0; i <= 4; ++i)
 	{
-		const auto ri    = pow(r, i);
+		const auto ri    = std::pow(r, i);
 		const auto ki    = k[i](t);
 		const auto ki_t  = k_t[i](t)/Tr;
 		const auto ki_tt = k_tt[i](t)/Tr/Tr;

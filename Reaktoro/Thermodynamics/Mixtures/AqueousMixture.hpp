@@ -28,16 +28,16 @@ namespace Reaktoro {
 struct AqueousMixtureState : public MixtureState
 {
     /// The density of water (in units of kg/m3)
-    real rho;
+    real rho = 0.0;
 
     /// The relative dielectric constant of water (no units)
-    real epsilon;
+    real epsilon = 0.0;
 
     /// The effective ionic strength of the aqueous mixture and their partial derivatives (in units of mol/kg)
-    real Ie;
+    real Ie = 0.0;
 
     /// The stoichiometric ionic strength of the aqueous mixture and their partial derivatives (in units of mol/kg)
-    real Is;
+    real Is = 0.0;
 
     /// The molalities of the aqueous species and their partial derivatives (in units of mol/kg)
     VectorXr m;

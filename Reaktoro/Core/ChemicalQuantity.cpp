@@ -163,10 +163,10 @@ struct ChemicalQuantity::Impl
     double tag;
 
     /// The temperature of the chemical system (in units of K).
-    real T;
+    real T = 298.15;
 
     /// The pressure of the chemical system (in units of Pa).
-    real P;
+    real P = 1.0e+5;
 
     /// The molar amounts of the species in the chemical system (in units of mol).
     Vector n;

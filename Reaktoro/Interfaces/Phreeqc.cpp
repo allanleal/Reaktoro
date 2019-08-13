@@ -1212,7 +1212,7 @@ auto Phreeqc::set(const real& T, const real& P) -> void
     pimpl->set(T, P);
 }
 
-auto Phreeqc::set(const real& T, const real& P, VectorConstRef n) -> void
+auto Phreeqc::set(const real& T, const real& P, VectorXrConstRef n) -> void
 {
     pimpl->set(T, P, n);
 }
@@ -1309,7 +1309,7 @@ auto Phreeqc::properties(ThermoModelResult& res, const real& T, const real& P) -
     res.lnActivityConstants() = pimpl->ln_activity_constants;
 }
 
-auto Phreeqc::properties(ChemicalModelResult& res, const real& T, const real& P, VectorConstRef n) -> void
+auto Phreeqc::properties(ChemicalModelResult& res, const real& T, const real& P, VectorXrConstRef n) -> void
 {
     // Update the temperature, pressure, and species amounts of the Phreeqc instance
     set(T, P, n);

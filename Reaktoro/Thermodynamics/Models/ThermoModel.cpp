@@ -44,24 +44,24 @@ auto ThermoModelResult::resize(Index nphases, Index nspecies) -> void
 auto ThermoModelResult::phaseProperties(Index iphase, Index ispecies, Index nspecies) -> PhaseThermoModelResult
 {
     return {
-        rows(standard_partial_molar_gibbs_energies, ispecies, nspecies),
-        rows(standard_partial_molar_enthalpies, ispecies, nspecies),
-        rows(standard_partial_molar_volumes, ispecies, nspecies),
-        rows(standard_partial_molar_heat_capacities_cp, ispecies, nspecies),
-        rows(standard_partial_molar_heat_capacities_cv, ispecies, nspecies),
-        rows(ln_activity_constants, ispecies, nspecies),
+        standard_partial_molar_gibbs_energies.segment(ispecies, nspecies),
+        standard_partial_molar_enthalpies.segment(ispecies, nspecies),
+        standard_partial_molar_volumes.segment(ispecies, nspecies),
+        standard_partial_molar_heat_capacities_cp.segment(ispecies, nspecies),
+        standard_partial_molar_heat_capacities_cv.segment(ispecies, nspecies),
+        ln_activity_constants.segment(ispecies, nspecies),
     };
 }
 
 auto ThermoModelResult::phaseProperties(Index iphase, Index ispecies, Index nspecies) const -> PhaseThermoModelResultConst
 {
     return {
-        rows(standard_partial_molar_gibbs_energies, ispecies, nspecies),
-        rows(standard_partial_molar_enthalpies, ispecies, nspecies),
-        rows(standard_partial_molar_volumes, ispecies, nspecies),
-        rows(standard_partial_molar_heat_capacities_cp, ispecies, nspecies),
-        rows(standard_partial_molar_heat_capacities_cv, ispecies, nspecies),
-        rows(ln_activity_constants, ispecies, nspecies),
+        standard_partial_molar_gibbs_energies.segment(ispecies, nspecies),
+        standard_partial_molar_enthalpies.segment(ispecies, nspecies),
+        standard_partial_molar_volumes.segment(ispecies, nspecies),
+        standard_partial_molar_heat_capacities_cp.segment(ispecies, nspecies),
+        standard_partial_molar_heat_capacities_cv.segment(ispecies, nspecies),
+        ln_activity_constants.segment(ispecies, nspecies),
     };
 }
 

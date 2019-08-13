@@ -327,7 +327,7 @@ auto aqueousChemicalModelHKF(const AqueousMixture& mixture) -> PhaseChemicalMode
     }
 
     // Define the chemical model function of the aqueous phase
-    PhaseChemicalModel model = [=](PhaseChemicalModelResult& res, const real& T, const real& P, VectorConstRef n) mutable
+    PhaseChemicalModel model = [=](PhaseChemicalModelResult& res, const real& T, const real& P, VectorXrConstRef n) mutable
     {
         // Evaluate the state of the aqueous mixture
         state = mixture.state(T, P, n);
@@ -357,7 +357,7 @@ auto aqueousChemicalModelHKF(const AqueousMixture& mixture) -> PhaseChemicalMode
         const double bNapClm = shortRangeInteractionParamNaCl(T, P);
 
         // The osmotic coefficient of the aqueous phase
-        real phi(num_species);
+        real phi = 0.0;
 
         // Set the activity coefficients of the neutral species to
         // water mole fraction to convert it to molality scale

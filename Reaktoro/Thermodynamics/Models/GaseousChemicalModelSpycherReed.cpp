@@ -227,9 +227,6 @@ auto gaseousChemicalModelSpycherReed(const GaseousMixture& mixture) -> PhaseChem
     // The number of species in the mixture
     const unsigned nspecies = mixture.numSpecies();
 
-    // An auxiliary zero real instance
-    const real zero(nspecies);
-
     // The universal gas constant of the phase (in units of J/(mol*K))
     const double R = universalGasConstant;
 
@@ -237,7 +234,7 @@ auto gaseousChemicalModelSpycherReed(const GaseousMixture& mixture) -> PhaseChem
     GaseousMixtureState state;
 
     // Define the chemical model function of the gaseous phase
-    PhaseChemicalModel model = [=](PhaseChemicalModelResult& res, const real& T, const real& P, VectorConstRef n) mutable
+    PhaseChemicalModel model = [=](PhaseChemicalModelResult& res, const real& T, const real& P, VectorXrConstRef n) mutable
     {
         // Evaluate the state of the gaseous mixture
         state = mixture.state(T, P, n);
@@ -249,16 +246,16 @@ auto gaseousChemicalModelSpycherReed(const GaseousMixture& mixture) -> PhaseChem
         const auto Pbar = 1e-5 * P;
 
         // The ln of pressure in units of bar
-        const auto ln_Pbar = log(Pbar);
+        const auto ln_Pbar = std::log(Pbar);
 
         // The ln of mole fractions of the species
         const auto ln_x = log(x);
 
         // The mole fractions of the gaseous species H2O(g), CO2(g) and CH4(g)
         real y[3];
-        if(iH2O < nspecies) y[0] = x[iH2O]; else y[0] = zero;
-        if(iCO2 < nspecies) y[1] = x[iCO2]; else y[1] = zero;
-        if(iCH4 < nspecies) y[2] = x[iCH4]; else y[2] = zero;
+        if(iH2O < nspecies) y[0] = x[iH2O]; else y[0] = 0.0;
+        if(iCO2 < nspecies) y[1] = x[iCO2]; else y[1] = 0.0;
+        if(iCH4 < nspecies) y[2] = x[iCH4]; else y[2] = 0.0;
 
         // Calculate the Bij, BijT, BijTT coefficients
         real B[3][3], BT[3][3], BTT[3][3];
@@ -279,7 +276,7 @@ auto gaseousChemicalModelSpycherReed(const GaseousMixture& mixture) -> PhaseChem
         }
 
         // Calculate the coefficient Bmix, BmixT, and BmixTT
-        real Bmix(nspecies), BmixT(nspecies), BmixTT(nspecies);
+        real Bmix = 0.0, BmixT = 0.0, BmixTT = 0.0;
         for(int i = 0; i < 3; ++i) for(int k = 0; k < 3; ++k)
         {
             Bmix += y[i]*y[k]*B[i][k];
@@ -288,7 +285,7 @@ auto gaseousChemicalModelSpycherReed(const GaseousMixture& mixture) -> PhaseChem
         }
 
         // Calculate the coefficient Cmix, CmixT, and CmixTT
-        real Cmix(nspecies), CmixT(nspecies), CmixTT(nspecies);
+        real Cmix = 0.0, CmixT = 0.0, CmixTT = 0.0;
         for(int i = 0; i < 3; ++i) for(int k = 0; k < 3; ++k) for(int l = 0; l < 3; ++l)
         {
             Cmix += y[i]*y[k]*y[l]*C[i][k][l];

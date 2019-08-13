@@ -85,13 +85,8 @@ auto aqueousChemicalModelDebyeHuckel(const AqueousMixture& mixture, const DebyeH
     // The state of the aqueous mixture
     AqueousMixtureState state;
 
-    // Auxiliary variables
-    real xw, ln_xw, I2, sqrtI, mSigma, sigma(num_species), sigmacoeff, Lambda;
-    VectorXr ln_m;
-    real A, B, sqrt_rho, T_epsilon, sqrt_T_epsilon;
-
     // Define the intermediate chemical model function of the aqueous mixture
-    PhaseChemicalModel model = [=](PhaseChemicalModelResult& res, const real& T, const real& P, VectorConstRef n) mutable
+    PhaseChemicalModel model = [=](PhaseChemicalModelResult& res, const real& T, const real& P, VectorXrConstRef n) mutable
     {
         // Evaluate the state of the aqueous mixture
         state = mixture.state(T, P, n);
@@ -108,18 +103,18 @@ auto aqueousChemicalModelDebyeHuckel(const AqueousMixture& mixture, const DebyeH
         auto& ln_a = res.ln_activities;
 
         // Update auxiliary variables
-		ln_m = log(m);
-		xw = x[iwater];
-		ln_xw = std::log(xw);
-		mSigma = nwo * (1 - xw)/xw;
-		I2 = I*I;
-		sqrtI = std::sqrt(I);
-		sqrt_rho = std::sqrt(rho);
-		T_epsilon = T * epsilon;
-		sqrt_T_epsilon = std::sqrt(T_epsilon);
-		A = 1.824829238e+6 * sqrt_rho/(T_epsilon*sqrt_T_epsilon);
-		B = 50.29158649 * sqrt_rho/sqrt_T_epsilon;
-		sigmacoeff = (2.0/3.0)*A*I*sqrtI;
+		const auto ln_m = log(m);
+		const auto xw = x[iwater];
+		const auto ln_xw = std::log(xw);
+		const auto mSigma = nwo * (1 - xw)/xw;
+		const auto I2 = I*I;
+		const auto sqrtI = std::sqrt(I);
+		const auto sqrt_rho = std::sqrt(rho);
+		const auto T_epsilon = T * epsilon;
+		const auto sqrt_T_epsilon = std::sqrt(T_epsilon);
+		const auto A = 1.824829238e+6 * sqrt_rho/(T_epsilon*sqrt_T_epsilon);
+		const auto B = 50.29158649 * sqrt_rho/sqrt_T_epsilon;
+		const auto sigmacoeff = (2.0/3.0)*A*I*sqrtI;
 
         // Set the first contribution to the activity of water
         ln_a[iwater] = mSigma;
@@ -137,9 +132,10 @@ auto aqueousChemicalModelDebyeHuckel(const AqueousMixture& mixture, const DebyeH
             const auto z = charges[i];
 
             // Update the Lambda parameter of the Debye-Huckel activity coefficient model
-            Lambda = 1.0 + aions[i]*B*sqrtI;
+            const auto Lambda = 1.0 + aions[i]*B*sqrtI;
 
 			// Update the sigma parameter of the current ion
+            real sigma = 0.0;
             if(aions[i] != 0.0) sigma = 3.0*std::pow(Lambda - 1, -3) * ((Lambda - 1)*(Lambda - 3) + 2*std::log(Lambda));
             else                sigma = 2.0;
 

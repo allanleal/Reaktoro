@@ -243,7 +243,7 @@ auto AqueousMixture::stoichiometricIonicStrength(const VectorXr& ms) const -> re
     return 0.5 * sum(zc % zc % ms);
 }
 
-auto AqueousMixture::state(const real& T, const real& P, VectorConstRef n) const -> AqueousMixtureState
+auto AqueousMixture::state(const real& T, const real& P, VectorXrConstRef n) const -> AqueousMixtureState
 {
     AqueousMixtureState res;
     res.T = T;

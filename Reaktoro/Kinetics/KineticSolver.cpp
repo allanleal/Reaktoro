@@ -222,7 +222,7 @@ struct KineticSolver::Impl
     //     const Index ifirst = system.indexFirstSpeciesInPhase(iphase);
     //     const Index size = system.numSpeciesInPhase(iphase);
     //     auto old_source_fn = source_fn;
-    //     real phasevolume;
+    //     real phasevolume = 0.0;
     //     VectorXr q(size);
 
     //     source_fn = [=](const ChemicalProperties& properties) mutable
@@ -243,7 +243,7 @@ struct KineticSolver::Impl
     //     const double volume = units::convert(volumerate, units, "m3/s");
     //     const Indices& isolid_species = partition.indicesSolidSpecies();
     //     auto old_source_fn = source_fn;
-    //     real fluidvolume;
+    //     real fluidvolume = 0.0;
     //     VectorXr q;
 
     //     source_fn = [=](const ChemicalProperties& properties) mutable
@@ -263,7 +263,7 @@ struct KineticSolver::Impl
     //     const double volume = units::convert(volumerate, units, "m3/s");
     //     const Indices& ifluid_species = partition.indicesFluidSpecies();
     //     auto old_source_fn = source_fn;
-    //     real solidvolume;
+    //     real solidvolume = 0.0;
     //     VectorXr q;
 
     //     source_fn = [=](const ChemicalProperties& properties) mutable

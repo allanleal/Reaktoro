@@ -17,8 +17,12 @@
 
 #include "GaseousChemicalModelSpycherPruessEnnis.hpp"
 
+// C++ includes
+#include <cmath>
+
 // Reaktoro includes
 #include <Reaktoro/Common/ConvertUtils.hpp>
+#include <Reaktoro/Common/Real.hpp>
 #include <Reaktoro/Math/Roots.hpp>
 #include <Reaktoro/Thermodynamics/Mixtures/GaseousMixture.hpp>
 
@@ -26,7 +30,7 @@ namespace Reaktoro {
 namespace {
 
 // The universal gas constant in units of (bar*cm3)/(mol*K)
-const double R = 83.1447;
+const auto R = 83.1447;
 
 // Calculates the parameter aCO2 as a function of temperature
 inline auto aCO2(real T) -> real
@@ -35,9 +39,9 @@ inline auto aCO2(real T) -> real
 }
 
 // Parameters from the Table 1 of Spycher et al. (2003)
-const double bCO2    = 27.80; // in units of cm3/mol
-const double bH2O    = 18.18; // in units of cm3/mol
-const double aH2OCO2 = 7.89e+07;
+const auto bCO2    = 27.80; // in units of cm3/mol
+const auto bH2O    = 18.18; // in units of cm3/mol
+const auto aH2OCO2 = 7.89e+07;
 
 /// Calculates the molar volume of the CO2-rich phase (in units of cm3/mol)
 auto volumeCO2(real T, real Pb, real sqrtT) -> real
@@ -47,15 +51,15 @@ auto volumeCO2(real T, real Pb, real sqrtT) -> real
     const auto bmix = bCO2;
 
     // The coefficients of the cubic equation
-    const real a(1.0);
-    const real b = -R*T/Pb;
-    const real c = -(R*T*bmix/Pb - amix/(Pb*sqrtT) + bmix*bmix);
-    const real d = -amix*bmix/(Pb*sqrtT);
+    const auto a = 1.0;
+    const auto b = -R*T/Pb;
+    const auto c = -(R*T*bmix/Pb - amix/(Pb*sqrtT) + bmix*bmix);
+    const auto d = -amix*bmix/(Pb*sqrtT);
 
-    std::complex<double> x1, x2, x3;
-    std::tie(x1, x2, x3) = cardano(a.val, b.val, c.val, d.val);
+    std::complex<real> x1, x2, x3;
+    std::tie(x1, x2, x3) = cardano(a, b, c, d);
 
-    double vol = 0;
+    real vol = 0.0;
 
     if(x2.imag() != 0.0) // there is only one real root
     {
@@ -73,14 +77,7 @@ auto volumeCO2(real T, real Pb, real sqrtT) -> real
         vol = (w2 < w1) ? Vliq : Vgas;
     }
 
-    const double den = 3*a.val*vol*vol + 2*b.val*vol + c.val;
-
-    real V;
-    V.val = vol;
-    V.ddT = -(a.ddT*vol*vol*vol + b.ddT*vol*vol + c.ddT*vol + d.ddT)/den;
-    V.ddP = -(a.ddP*vol*vol*vol + b.ddP*vol*vol + c.ddP*vol + d.ddP)/den;
-
-    return V;
+    return vol;
 }
 
 } // namespace
@@ -97,24 +94,24 @@ auto gaseousChemicalModelSpycherPruessEnnis(const GaseousMixture& mixture) -> Ph
     const unsigned nspecies = mixture.numSpecies();
 
     // The ln of H2O(g) and CO2(g) mole fractions
-    real ln_xH2O(nspecies);
-    real ln_xCO2(nspecies);
+    real ln_xH2O = 0.0;
+    real ln_xCO2 = 0.0;
 
     // The state of the gaseous mixture
     GaseousMixtureState state;
 
     // Define the chemical model function of the gaseous phase
-    PhaseChemicalModel model = [=](PhaseChemicalModelResult& res, const real& T, const real& P, VectorConstRef n) mutable
+    PhaseChemicalModel model = [=](PhaseChemicalModelResult& res, const real& T, const real& P, VectorXrConstRef n) mutable
     {
         // Evaluate the state of the gaseous mixture
         state = mixture.state(T, P, n);
 
         // Calculate the pressure in bar
         const auto Pb = convertPascalToBar(P);
-        const auto ln_Pb = log(Pb);
+        const auto ln_Pb = std::log(Pb);
 
         // Auxiliary variables
-        const auto T05 = sqrt(T);
+        const auto T05 = std::sqrt(T);
         const auto T15 = T * T05;
 
         // Calculate the mixing parameters
@@ -125,17 +122,17 @@ auto gaseousChemicalModelSpycherPruessEnnis(const GaseousMixture& mixture) -> Ph
         const real v = volumeCO2(T, Pb, T05);
 
         // Auxiliary values for the fugacity coefficients
-        const auto aux1 = log(v/(v - bmix));
-        const auto aux2 = log((v + bmix)/v) * 2.0/(R*T15*bmix);
+        const auto aux1 = std::log(v/(v - bmix));
+        const auto aux2 = std::log((v + bmix)/v) * 2.0/(R*T15*bmix);
         const auto aux3 = amix/(R*T15*bmix*bmix);
-        const auto aux4 = log(Pb*v/(R*T));
+        const auto aux4 = std::log(Pb*v/(R*T));
 
         // Calculate the fugacity coefficients of H2O(g) and CO2(g) (in natural log scale)
         const auto ln_phiH2O = aux1 + bH2O/(v - bmix) - aH2OCO2*aux2 +
-            bH2O*aux3*(log((v + bH2O)/v) - bmix/(v + bmix)) - aux4;
+            bH2O*aux3*(std::log((v + bH2O)/v) - bmix/(v + bmix)) - aux4;
 
         const auto ln_phiCO2 = aux1 + bCO2/(v - bmix) - amix*aux2 +
-            bCO2*aux3*(log((v + bCO2)/v) - bmix/(v + bmix)) - aux4;
+            bCO2*aux3*(std::log((v + bCO2)/v) - bmix/(v + bmix)) - aux4;
 
         // The ln mole fractions of all gaseous species
         const VectorXr ln_x = log(state.x);

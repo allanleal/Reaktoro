@@ -231,7 +231,7 @@ public:
     /// @param T The temperature of the system (in units of K)
     /// @param P The pressure of the system (in units of Pa)
     /// @param n The molar amounts of the species (in units of mol)
-    auto properties(const real& T, const real& P, VectorConstRef n) const -> ChemicalProperties;
+    auto properties(const real& T, const real& P, VectorXrConstRef n) const -> ChemicalProperties;
 
 private:
     struct Impl;

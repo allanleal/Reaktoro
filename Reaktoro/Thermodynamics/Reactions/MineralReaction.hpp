@@ -18,11 +18,13 @@
 #pragma once
 
 // C++ includes
+#include <functional>
 #include <string>
 #include <vector>
 #include <memory>
 
 // Reaktoro includes
+#include <Reaktoro/Common/Real.hpp>
 #include <Reaktoro/Thermodynamics/Reactions/MineralCatalyst.hpp>
 #include <Reaktoro/Thermodynamics/Reactions/MineralMechanism.hpp>
 
@@ -67,13 +69,13 @@ public:
     /// converted to a molar surface area with units of m<sup>2</sup>/mol.
     /// @param value The value of the specific surface area
     /// @param unit The units of the specific surface area (must be convertible to either m2/g or m2/m3)
-    auto setSpecificSurfaceArea(double value, std::string unit) -> MineralReaction&;
+    auto setSpecificSurfaceArea(const real& value, std::string unit) -> MineralReaction&;
 
     /// Set the surface area of the mineral.
     /// The surface area of the mineral can be set using units that are convertible to m<sup>2</sup>.
     /// @param value The value of the surface area
     /// @param unit The unit of the surface area (must be convertible to m2)
-    auto setSurfaceArea(double value, std::string unit) -> MineralReaction&;
+    auto setSurfaceArea(const real& value, std::string unit) -> MineralReaction&;
 
     /// Adds a mineral mechanism to the kinetic rate model of the mineral reaction
     /// @see MineralMechanism

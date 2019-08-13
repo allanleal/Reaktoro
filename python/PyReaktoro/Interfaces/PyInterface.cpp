@@ -92,7 +92,7 @@ public:
         PYBIND11_OVERLOAD_PURE(void, Interface, properties, res, iphase, T, P);
     }
 
-    auto properties(PhaseChemicalModelResult& res, Index iphase, const real& T, const real& P, VectorConstRef n) -> void
+    auto properties(PhaseChemicalModelResult& res, Index iphase, const real& T, const real& P, VectorXrConstRef n) -> void
     {
         PYBIND11_OVERLOAD_PURE(void, Interface, properties, res, iphase, T, P, n);
     }
@@ -105,8 +105,8 @@ public:
 
 void exportInterface(py::module& m)
 {
-    auto properties1 = static_cast<void (Interface::*)(ThermoModelResult&, double, double)>(&Interface::properties);
-    auto properties2 = static_cast<void (Interface::*)(ChemicalModelResult&, double, double, VectorConstRef)>(&Interface::properties);
+    auto properties1 = static_cast<void (Interface::*)(ThermoModelResult&, const real&, const real&)>(&Interface::properties);
+    auto properties2 = static_cast<void (Interface::*)(ChemicalModelResult&, const real&, const real&, VectorXrConstRef)>(&Interface::properties);
 
     py::class_<Interface, PyInterface>(m, "Interface")
         .def("temperature", &Interface::temperature)

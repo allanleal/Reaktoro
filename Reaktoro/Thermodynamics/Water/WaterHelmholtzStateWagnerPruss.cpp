@@ -17,6 +17,11 @@
 
 #include "WaterHelmholtzStateWagnerPruss.hpp"
 
+// C++ includes
+#include <cmath>
+using std::log;
+using std::pow;
+
 // Reaktoro includes
 #include <Reaktoro/Thermodynamics/Water/WaterHelmholtzState.hpp>
 #include <Reaktoro/Thermodynamics/Water/WaterConstants.hpp>
@@ -169,16 +174,16 @@ auto waterHelmholtzStateWagnerPruss(real T, real D) -> WaterHelmholtzState
 		phio_ttt += no[i] * ee * (1 + ee) * pow((gammao[j]/(ee - 1)), 3);
 	}
 
-	real phir;
-	real phir_d;
-	real phir_t;
-	real phir_dd;
-	real phir_tt;
-	real phir_dt;
-	real phir_ddd;
-	real phir_ttt;
-	real phir_dtt;
-	real phir_ddt;
+	real phir = 0.0;
+	real phir_d = 0.0;
+	real phir_t = 0.0;
+	real phir_dd = 0.0;
+	real phir_tt = 0.0;
+	real phir_dt = 0.0;
+	real phir_ddd = 0.0;
+	real phir_ttt = 0.0;
+	real phir_dtt = 0.0;
+	real phir_ddt = 0.0;
 
 	for(int i = 1; i <= 7; ++i)
 	{

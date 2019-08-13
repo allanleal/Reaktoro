@@ -177,14 +177,8 @@ struct CubicEOS::Impl
 
     /// Construct a CubicEOS::Impl instance.
     Impl(unsigned nspecies)
-    : nspecies(nspecies)
+    : nspecies(nspecies), result(nspecies)
     {
-        // Initialize the dimension of the chemical vector quantities
-        VectorXr vec(nspecies);
-        result.partial_molar_volumes = vec;
-        result.residual_partial_molar_enthalpies = vec;
-        result.residual_partial_molar_gibbs_energies = vec;
-        result.ln_fugacity_coefficients = vec;
     }
 
     auto operator()(const real& T, const real& P, const VectorXr& x) -> Result
@@ -329,12 +323,12 @@ struct CubicEOS::Impl
         const real ZT = -(AT*Z*Z + BT*Z + CT)/(3*Z*Z + 2*A*Z + B);
 
         // Calculate the integration factor I and its temperature derivative IT
-        real I;
+        real I = 0.0;
         if(epsilon != sigma) I = std::log((Z + sigma*beta)/(Z + epsilon*beta))/(sigma - epsilon);
                         else I = beta/(Z + epsilon*beta);
 
         // Calculate the temperature derivative IT of the integration factor I
-        real IT;
+        real IT = 0.0;
         if(epsilon != sigma) IT = ((ZT + sigma*betaT)/(Z + sigma*beta) - (ZT + epsilon*betaT)/(Z + epsilon*beta))/(sigma - epsilon);
                         else IT = I*(betaT/beta - (ZT + epsilon*betaT)/(Z + epsilon*beta));
 
@@ -371,7 +365,7 @@ struct CubicEOS::Impl
             const auto Bi = (epsilon*sigma - epsilon - sigma)*(2*beta*betai - beta*beta) - (epsilon + sigma - q)*(betai - beta) - (epsilon + sigma - qi)*beta;
             const auto Ci = -3*sigma*epsilon*beta*beta*betai + 2*epsilon*sigma*beta*beta*beta - (epsilon*sigma + qi)*beta*beta - 2*(epsilon*sigma + q)*(beta*betai - beta*beta);
             const auto Zi = -(Ai*Z*Z + (Bi + B)*Z + Ci + 2*C)/(3*Z*Z + 2*A*Z + B);
-            real Ii;
+            real Ii = 0.0;
             if(epsilon != sigma) Ii = I + ((Zi + sigma*betai)/(Z + sigma*beta) - (Zi + epsilon*betai)/(Z + epsilon*beta))/(sigma - epsilon);
                             else Ii = I * (1 + betai/beta - (Zi + epsilon*betai)/(Z + epsilon*beta));
 
@@ -389,15 +383,10 @@ CubicEOS::Result::Result()
 {}
 
 CubicEOS::Result::Result(unsigned nspecies)
-: molar_volume(nspecies),
-  residual_molar_gibbs_energy(nspecies),
-  residual_molar_enthalpy(nspecies),
-  residual_molar_heat_capacity_cp(nspecies),
-  residual_molar_heat_capacity_cv(nspecies),
-  partial_molar_volumes(nspecies),
-  residual_partial_molar_gibbs_energies(nspecies),
-  residual_partial_molar_enthalpies(nspecies),
-  ln_fugacity_coefficients(nspecies)
+: partial_molar_volumes(zeros(nspecies)),
+  residual_partial_molar_gibbs_energies(zeros(nspecies)),
+  residual_partial_molar_enthalpies(zeros(nspecies)),
+  ln_fugacity_coefficients(zeros(nspecies))
 {}
 
 CubicEOS::CubicEOS(unsigned nspecies)

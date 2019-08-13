@@ -18,6 +18,7 @@
 #pragma once
 
 // Reaktoro includes
+#include <Reaktoro/Common/Real.hpp>
 
 namespace Reaktoro {
 
@@ -30,22 +31,22 @@ struct WaterThermoState;
 struct FunctionG
 {
     /// The function g at temperature T and pressure P
-    real g;
+    real g = 0.0;
 
     /// The first-order partial derivative of function g with respect to temperature
-    real gT;
+    real gT = 0.0;
 
     /// The first-order partial derivative of function g with respect to pressure
-    real gP;
+    real gP = 0.0;
 
     /// The second-order partial derivative of function g with respect to temperature
-    real gTT;
+    real gTT = 0.0;
 
     /// The second-order partial derivative of function g with respect to temperature and pressure
-    real gTP;
+    real gTP = 0.0;
 
     /// The second-order partial derivative of function g with respect to pressure
-    real gPP;
+    real gPP = 0.0;
 };
 
 /// Calculate the function g of the HKF model.

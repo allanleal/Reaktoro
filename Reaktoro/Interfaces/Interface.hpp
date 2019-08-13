@@ -86,7 +86,7 @@ public:
     /// @param T The temperature (in units of K)
     /// @param P The pressure (in units of Pa)
     /// @param n The amounts of the species (in units of mol)
-    virtual auto properties(ChemicalModelResult& res, const real& T, const real& P, VectorConstRef n) -> void = 0;
+    virtual auto properties(ChemicalModelResult& res, const real& T, const real& P, VectorXrConstRef n) -> void = 0;
 
     /// Return a clone of this Interface instance.
     virtual auto clone() const -> std::shared_ptr<Interface> = 0;

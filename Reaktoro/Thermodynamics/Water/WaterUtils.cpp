@@ -52,7 +52,7 @@ auto waterDensity(const real& T, const real& P, const HelmholtsModel& model, Sta
     const auto Dwc_vapor = waterMolarMass / Vwc_vapor;
 
     // Determine an adequate initial guess for (dimensionless) density based on the physical state of water
-    real D;
+    real D = 0.0;
 
     switch(stateofmatter)
     {
@@ -77,7 +77,7 @@ auto waterDensity(const real& T, const real& P, const HelmholtsModel& model, Sta
     Exception exception;
     exception.error << "Unable to calculate the density of water.";
     exception.reason << "The calculations did not converge at temperature "
-        << T.val << " K and pressure " << P.val << "Pa.";
+        << T << " K and pressure " << P << "Pa.";
     RaiseError(exception);
 
     return {};
@@ -114,33 +114,33 @@ auto waterVaporDensityWagnerPruss(const real& T, const real& P) -> real
 }
 
 template<typename HelmholtzModel>
-auto waterPressure(real T, real D, const HelmholtzModel& model) -> real
+auto waterPressure(const real& T, const real& D, const HelmholtzModel& model) -> real
 {
     WaterHelmholtzState h = model(T, D);
-    return D*D*h.helmholtzD.val;
+    return D*D*h.helmholtzD;
 }
 
-auto waterPressureHGK(real T, real D) -> real
+auto waterPressureHGK(const real& T, const real& D) -> real
 {
     return waterPressure(T, D, waterHelmholtzStateHGK);
 }
 
-auto waterPressureWagnerPruss(real T, real D) -> real
+auto waterPressureWagnerPruss(const real& T, const real& D) -> real
 {
     return waterPressure(T, D, waterHelmholtzStateHGK);
 }
 
-auto waterSaturatedPressureWagnerPruss(real T) -> real
+auto waterSaturatedPressureWagnerPruss(const real& T) -> real
 {
-    const double a1 = -7.85951783;
-    const double a2 =  1.84408259;
-    const double a3 = -11.7866497;
-    const double a4 =  22.6807411;
-    const double a5 = -15.9618719;
-    const double a6 =  1.80122502;
+    const auto a1 = -7.85951783;
+    const auto a2 =  1.84408259;
+    const auto a3 = -11.7866497;
+    const auto a4 =  22.6807411;
+    const auto a5 = -15.9618719;
+    const auto a6 =  1.80122502;
 
-    const double Tcr = waterCriticalTemperature;
-    const double Pcr = waterCriticalPressure;
+    const auto Tcr = waterCriticalTemperature;
+    const auto Pcr = waterCriticalPressure;
 
     const auto t   = 1 - T/Tcr;
     const auto t15 = pow(t, 1.5);
@@ -152,17 +152,17 @@ auto waterSaturatedPressureWagnerPruss(real T) -> real
     return Pcr * exp(Tcr/T * (a1*t + a2*t15 + a3*t30 + a4*t35 + a5*t40 + a6*t75));
 }
 
-auto waterSaturatedLiquidDensityWagnerPruss(real T) -> real
+auto waterSaturatedLiquidDensityWagnerPruss(const real& T) -> real
 {
-    const double b1 =  1.99274064;
-    const double b2 =  1.09965342;
-    const double b3 = -0.510839303;
-    const double b4 = -1.75493479;
-    const double b5 = -45.5170352;
-    const double b6 = -6.74694450e+05;
+    const auto b1 =  1.99274064;
+    const auto b2 =  1.09965342;
+    const auto b3 = -0.510839303;
+    const auto b4 = -1.75493479;
+    const auto b5 = -45.5170352;
+    const auto b6 = -6.74694450e+05;
 
-    const double Tcr = waterCriticalTemperature;
-    const double Dcr = waterCriticalDensity;
+    const auto Tcr = waterCriticalTemperature;
+    const auto Dcr = waterCriticalDensity;
 
     const auto t     = 1 - T/Tcr;
     const auto t13   = pow(t, 1./3);
@@ -175,17 +175,17 @@ auto waterSaturatedLiquidDensityWagnerPruss(real T) -> real
     return Dcr * (1 + b1*t13 + b2*t23 + b3*t53 + b4*t163 + b5*t433 + b6*t1103);
 }
 
-auto waterSaturatedVapourDensityWagnerPruss(real T) -> real
+auto waterSaturatedVapourDensityWagnerPruss(const real& T) -> real
 {
-    const double c1 = -2.03150240;
-    const double c2 = -2.68302940;
-    const double c3 = -5.38626492;
-    const double c4 = -17.2991605;
-    const double c5 = -44.7586581;
-    const double c6 = -63.9201063;
+    const auto c1 = -2.03150240;
+    const auto c2 = -2.68302940;
+    const auto c3 = -5.38626492;
+    const auto c4 = -17.2991605;
+    const auto c5 = -44.7586581;
+    const auto c6 = -63.9201063;
 
-    const double Tcr = waterCriticalTemperature;
-    const double Dcr = waterCriticalDensity;
+    const auto Tcr = waterCriticalTemperature;
+    const auto Dcr = waterCriticalDensity;
 
     const auto t    = 1 - T/Tcr;
     const auto t16  = pow(t, 1./6);

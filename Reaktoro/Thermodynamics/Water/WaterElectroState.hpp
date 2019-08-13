@@ -25,40 +25,40 @@ namespace Reaktoro {
 struct WaterElectroState
 {
 	/// The dielectric constant of water
-	real epsilon;
+	real epsilon = 0.0;
 
 	/// The first-order partial derivative of the dielectric constant with respect to temperature
-	real epsilonT;
+	real epsilonT = 0.0;
 
 	/// The first-order partial derivative of the dielectric constant with respect to pressure
-	real epsilonP;
+	real epsilonP = 0.0;
 
 	/// The second-order partial derivative of the dielectric constant with respect to temperature
-	real epsilonTT;
+	real epsilonTT = 0.0;
 
 	/// The second-order partial derivative of the dielectric constant with respect to temperature and pressure
-	real epsilonTP;
+	real epsilonTP = 0.0;
 
 	/// The second-order partial derivative of the dielectric constant with respect to pressure
-	real epsilonPP;
+	real epsilonPP = 0.0;
 
 	/// The Born function \f$ Z\equiv-\frac{1}{\epsilon} \f$ (see Helgeson and Kirkham, 1974)
-	real bornZ;
+	real bornZ = 0.0;
 
 	/// The Born function \f$ Y\equiv\left[\frac{\partial Z}{\partial T}\right]_{P} \f$ (see Helgeson and Kirkham, 1974)
-	real bornY;
+	real bornY = 0.0;
 
 	/// The Born function \f$ Q\equiv\left[\frac{\partial Z}{\partial P}\right]_{T} \f$ (see Helgeson and Kirkham, 1974)
-	real bornQ;
+	real bornQ = 0.0;
 
 	/// The Born function \f$ N\equiv\left[\frac{\partial Q}{\partial P}\right]_{T} \f$ (see Helgeson and Kirkham, 1974)
-	real bornN;
+	real bornN = 0.0;
 
 	/// The Born function \f$ U\equiv\left[\frac{\partial Q}{\partial T}\right]_{P} \f$ (see Helgeson and Kirkham, 1974)
-	real bornU;
+	real bornU = 0.0;
 
 	/// The Born function \f$ X\equiv\left[\frac{\partial Y}{\partial T}\right]_{P} \f$ (see Helgeson and Kirkham, 1974)
-	real bornX;
+	real bornX = 0.0;
 };
 
 } // namespace Reaktoro

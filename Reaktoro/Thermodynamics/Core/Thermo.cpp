@@ -465,7 +465,7 @@ struct Thermo::Impl
         // Using formula:
         // G_{j}^{\circ}=-\frac{1}{\nu_{j}}\left[\sum_{i\neq j}\nu_{i}G_{i}^{\circ}+RT\ln K\right]
 
-        real sum;
+        real sum = 0.0;
         for(auto pair : params.reaction.equation)
         {
             const auto reactant = pair.first;
@@ -483,7 +483,7 @@ struct Thermo::Impl
     {
         ReactionEquation equation(reaction);
         const real RT = universalGasConstant * T;
-        real lnK;
+        real lnK = 0.0;
         for(auto pair : equation.equation())
             lnK += pair.second * standardPartialMolarGibbsEnergy(T, P, pair.first);
         lnK /= -RT;

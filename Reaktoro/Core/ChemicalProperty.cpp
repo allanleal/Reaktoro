@@ -145,7 +145,7 @@ auto ChemicalProperty::pE(const ChemicalSystem& system) -> ChemicalPropertyFunct
         const VectorXr ua = u0a + ln_aa;
 
         // The standard chemical potential of electron species (zero if not existent in the system)
-        real u0a_electron;
+        real u0a_electron = 0.0;
         if(ielectron < num_aqueous)
             u0a_electron = u0a[ielectron];
 
@@ -190,7 +190,7 @@ auto ChemicalProperty::pE(const ChemicalSystem& system, const ReactionEquation& 
 
         // Find the standard chemical potential of e- (it is not zero if the
         // standard chemical potentials were obtained from log(k)'s of reactions.
-        real G0_eminus;
+        real G0_eminus = 0.0;
         if(ielectron < num_species)
             G0_eminus = properties.standardPartialMolarGibbsEnergies()[ielectron];
 

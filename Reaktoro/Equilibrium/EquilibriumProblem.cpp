@@ -53,10 +53,10 @@ struct EquilibriumProblem::Impl
     Partition partition;
 
     /// The temperature for the equilibrium problem (in units of K)
-    real T;
+    real T = 298.15;
 
     /// The pressure for the equilibrium problem (in units of Pa)
-    real P;
+    real P = 1.0e+5;
 
     /// The amounts of the elements for the equilibrium problem (in units of mol)
     Vector b;

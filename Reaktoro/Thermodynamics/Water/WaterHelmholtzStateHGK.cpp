@@ -17,6 +17,11 @@
 
 #include "WaterHelmholtzStateHGK.hpp"
 
+// C++ includes
+#include <cmath>
+using std::log;
+using std::pow;
+
 // Reaktoro includes
 #include <Reaktoro/Thermodynamics/Water/WaterConstants.hpp>
 #include <Reaktoro/Thermodynamics/Water/WaterHelmholtzState.hpp>
@@ -187,7 +192,7 @@ const double A4[] =
 	-0.13362857E+1
 };
 
-auto calculateWaterHelmholtzStateHGK0(real t, real d) -> WaterHelmholtzState
+auto calculateWaterHelmholtzStateHGK0(const real& t, const real& d) -> WaterHelmholtzState
 {
 	WaterHelmholtzState s;
 
@@ -211,7 +216,7 @@ auto calculateWaterHelmholtzStateHGK0(real t, real d) -> WaterHelmholtzState
 	return s;
 }
 
-auto calculateWaterHelmholtzStateHGK1(real t, real d) -> WaterHelmholtzState
+auto calculateWaterHelmholtzStateHGK1(const real& t, const real& d) -> WaterHelmholtzState
 {
 	WaterHelmholtzState s;
 
@@ -232,7 +237,7 @@ auto calculateWaterHelmholtzStateHGK1(real t, real d) -> WaterHelmholtzState
 	return s;
 }
 
-auto calculateWaterHelmholtzStateHGK2(real t, real d) -> WaterHelmholtzState
+auto calculateWaterHelmholtzStateHGK2(const real& t, const real& d) -> WaterHelmholtzState
 {
 	WaterHelmholtzState s;
 
@@ -292,7 +297,7 @@ auto calculateWaterHelmholtzStateHGK2(real t, real d) -> WaterHelmholtzState
 	return s;
 }
 
-auto calculateWaterHelmholtzStateHGK3(real t, real d) -> WaterHelmholtzState
+auto calculateWaterHelmholtzStateHGK3(const real& t, const real& d) -> WaterHelmholtzState
 {
 	WaterHelmholtzState s;
 
@@ -329,7 +334,7 @@ auto calculateWaterHelmholtzStateHGK3(real t, real d) -> WaterHelmholtzState
 	return s;
 }
 
-auto calculateWaterHelmholtzStateHGK4(real t, real d) -> WaterHelmholtzState
+auto calculateWaterHelmholtzStateHGK4(const real& t, const real& d) -> WaterHelmholtzState
 {
 	WaterHelmholtzState s;
 
@@ -375,7 +380,7 @@ auto calculateWaterHelmholtzStateHGK4(real t, real d) -> WaterHelmholtzState
 
 } // namespace
 
-auto waterHelmholtzStateHGK(real T, real D) -> WaterHelmholtzState
+auto waterHelmholtzStateHGK(const real& T, const real& D) -> WaterHelmholtzState
 {
 	// The dimensionless temperature and density
 	const auto t = T/referenceTemperature;

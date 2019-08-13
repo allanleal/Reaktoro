@@ -66,7 +66,7 @@ auto ChemicalProperties::update(VectorConstRef n_) -> void
     }
 }
 
-auto ChemicalProperties::update(const real& T, const real& P, VectorConstRef n) -> void
+auto ChemicalProperties::update(const real& T, const real& P, VectorXrConstRef n) -> void
 {
     update(T, P);
     update(n);

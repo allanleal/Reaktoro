@@ -27,6 +27,7 @@
 #include <Reaktoro/Common/Exception.hpp>
 #include <Reaktoro/Common/GlobalOptions.hpp>
 #include <Reaktoro/Common/NamingUtils.hpp>
+#include <Reaktoro/Common/Real.hpp>
 #include <Reaktoro/Thermodynamics/Models/SpeciesElectroState.hpp>
 #include <Reaktoro/Thermodynamics/Models/SpeciesElectroStateHKF.hpp>
 #include <Reaktoro/Thermodynamics/Models/SpeciesThermoState.hpp>
@@ -80,7 +81,7 @@ const double theta = 228;
 const double psi = 2600;
 
 template<class SpeciesType>
-auto checkTemperatureValidityHKF(real& T, const SpeciesType& species) -> void
+auto checkTemperatureValidityHKF(const real& T, const SpeciesType& species) -> void
 {
     // Get the HKF thermodynamic data of the species
     const auto& hkf = species.thermoData().hkf.get();
@@ -90,11 +91,11 @@ auto checkTemperatureValidityHKF(real& T, const SpeciesType& species) -> void
         Assert(T >= 0.0 && T <= hkf.Tmax, "Unable to calculate the "
             "thermodynamic properties of species " + species.name() + " using the "
                 "revised HKF equations of state.", "The provided temperature `" +
-                    std::to_string(T.val) + " K` is either negative or greater than the "
+                    std::to_string(T) + " K` is either negative or greater than the "
                         "maximum allowed `" + std::to_string(hkf.Tmax) + " K`.");
 
     // Ensure temperature is not above the maximum allowed
-    T = std::min(T.val, hkf.Tmax);
+    // T = std::min(T, hkf.Tmax);
 }
 
 auto checkMineralDataHKF(const MineralSpecies& species) -> void
@@ -190,26 +191,26 @@ auto speciesThermoStateSoluteHKF(const real& T, const real& P, const AqueousSpec
     auto V = a1 + a2/(psi + Pbar) +
         (a3 + a4/(psi + Pbar))/(T - theta) - w*Q - (Z + 1)*wP;
 
-    auto G = Gf - Sr*(T - Tr) - c1*(T*log(T/Tr) - T + Tr)
-        + a1*(Pbar - Pr) + a2*log((psi + Pbar)/(psi + Pr))
+    auto G = Gf - Sr*(T - Tr) - c1*(T*std::log(T/Tr) - T + Tr)
+        + a1*(Pbar - Pr) + a2*std::log((psi + Pbar)/(psi + Pr))
         - c2*((1.0/(T - theta) - 1.0/(Tr - theta))*(theta - T)/theta
-        - T/(theta*theta)*log(Tr/T * (T - theta)/(Tr - theta)))
-        + 1.0/(T - theta)*(a3*(Pbar - Pr) + a4*log((psi + Pbar)/(psi + Pr)))
+        - T/(theta*theta)*std::log(Tr/T * (T - theta)/(Tr - theta)))
+        + 1.0/(T - theta)*(a3*(Pbar - Pr) + a4*std::log((psi + Pbar)/(psi + Pr)))
         - w*(Z + 1) + wr*(Zr + 1) + wr*Yr*(T - Tr);
 
     auto H = Hf + c1*(T - Tr) - c2*(1.0/(T - theta) - 1.0/(Tr - theta))
-        + a1*(Pbar - Pr) + a2*log((psi + Pbar)/(psi + Pr))
-        + (2.0*T - theta)/pow(T - theta, 2)*(a3*(Pbar - Pr)
-        + a4*log((psi + Pbar)/(psi + Pr)))
+        + a1*(Pbar - Pr) + a2*std::log((psi + Pbar)/(psi + Pr))
+        + (2.0*T - theta)/std::pow(T - theta, 2)*(a3*(Pbar - Pr)
+        + a4*std::log((psi + Pbar)/(psi + Pr)))
         - w*(Z + 1) + w*T*Y + T*(Z + 1)*wT + wr*(Zr + 1) - wr*Tr*Yr;
 
-    auto S = Sr + c1*log(T/Tr) - c2/theta*(1.0/(T - theta)
-        - 1.0/(Tr - theta) + log(Tr/T * (T - theta)/(Tr - theta))/theta)
-        + 1.0/pow(T - theta, 2)*(a3*(Pbar - Pr) + a4*log((psi + Pbar)/(psi + Pr)))
+    auto S = Sr + c1*std::log(T/Tr) - c2/theta*(1.0/(T - theta)
+        - 1.0/(Tr - theta) + std::log(Tr/T * (T - theta)/(Tr - theta))/theta)
+        + 1.0/std::pow(T - theta, 2)*(a3*(Pbar - Pr) + a4*std::log((psi + Pbar)/(psi + Pr)))
         + w*Y + (Z + 1)*wT - wr*Yr;
 
-    auto Cp = c1 + c2/pow(T - theta, 2) - (2.0*T/pow(T - theta, 3))*(a3*(Pbar - Pr)
-        + a4*log((psi + Pbar)/(psi + Pr))) + w*T*X + 2.0*T*Y*wT + T*(Z + 1.0)*wTT;
+    auto Cp = c1 + c2/std::pow(T - theta, 2) - (2.0*T/std::pow(T - theta, 3))*(a3*(Pbar - Pr)
+        + a4*std::log((psi + Pbar)/(psi + Pr))) + w*T*X + 2.0*T*Y*wT + T*(Z + 1.0)*wTT;
 
     auto U = H - Pbar*V;
 
@@ -274,7 +275,7 @@ auto speciesThermoStateHKF(const real& T, const real& P, const GaseousSpecies& s
 
     // Calculate the integrals of the heal capacity function of the gas from Tr to T at constant pressure Pr
     const auto CpdT   = a*(T - Tr) + 0.5*b*(T*T - Tr*Tr) - c*(1.0/T - 1.0/Tr);
-    const auto CpdlnT = a*log(T/Tr) + b*(T - Tr) - 0.5*c*(1.0/(T*T) - 1.0/(Tr*Tr));
+    const auto CpdlnT = a*std::log(T/Tr) + b*(T - Tr) - 0.5*c*(1.0/(T*T) - 1.0/(Tr*Tr));
 
     // Calculate the standard molal thermodynamic properties of the gas
     auto V  = R*T/P; // the ideal gas molar volume (in units of m3/mol)
@@ -353,28 +354,28 @@ auto speciesThermoStateHKF(const real& T, const real& P, const MineralSpecies& s
     }
 
     // Calculate the heat capacity of the mineral at T
-    real Cp;
+    real Cp = 0.0;
     for(unsigned i = 0; i+1 < Ti.size(); ++i)
         if(Ti[i] <= T && T <= Ti[i+1])
             Cp = a[i] + b[i]*T + c[i]/(T*T);
 
     // Calculate the integrals of the heat capacity function of the mineral from Tr to T at constant pressure Pr
-    real CpdT;
-    real CpdlnT;
+    real CpdT = 0.0;
+    real CpdlnT = 0.0;
     for(unsigned i = 0; i+1 < Ti.size(); ++i)
     {
         const auto T0 = Ti[i];
         const auto T1 = Ti[i+1];
 
         CpdT += a[i]*(T1 - T0) + 0.5*b[i]*(T1*T1 - T0*T0) - c[i]*(1.0/T1 - 1.0/T0);
-        CpdlnT += a[i]*log(T1/T0) + b[i]*(T1 - T0) - 0.5*c[i]*(1.0/(T1*T1) - 1.0/(T0*T0));
+        CpdlnT += a[i]*std::log(T1/T0) + b[i]*(T1 - T0) - 0.5*c[i]*(1.0/(T1*T1) - 1.0/(T0*T0));
     }
 
     // Calculate the volume and other auxiliary quantities for the thermodynamic properties of the mineral
-    real V(Vr);
-    real GdH;
-    real HdH;
-    real SdH;
+    real V = Vr;
+    real GdH = 0.0;
+    real HdH = 0.0;
+    real SdH = 0.0;
     for(unsigned i = 1; i+1 < Ti.size(); ++i)
     {
         GdH += dHt[i-1]*(T - Ti[i])/Ti[i];

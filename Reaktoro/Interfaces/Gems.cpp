@@ -276,7 +276,7 @@ auto Gems::properties(ThermoModelResult& res, const real& T, const real& P) -> v
     }
 }
 
-auto Gems::properties(ChemicalModelResult& res, const real& T, const real& P, VectorConstRef n) -> void
+auto Gems::properties(ChemicalModelResult& res, const real& T, const real& P, VectorXrConstRef n) -> void
 {
     // Update the temperature, pressure, and species amounts of the Gems instance
     set(T, P, n);
@@ -325,7 +325,7 @@ auto Gems::set(const real& T, const real& P) -> void
     node()->setPressure(P);
 }
 
-auto Gems::set(const real& T, const real& P, VectorConstRef n) -> void
+auto Gems::set(const real& T, const real& P, VectorXrConstRef n) -> void
 {
     pimpl->T = T;
     pimpl->P = P;
