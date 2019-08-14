@@ -345,7 +345,7 @@ auto Regularizer::Impl::removeTrivialConstraints(
     // The auxiliary vector used in the lambda functions below.
     // The use of this vector `x` ensures that trivial components
     // remain unchanged on the lower bounds.
-    Vector x = problem.l;
+    VectorXr x = problem.l;
 
     // Set the number of primal variables as the number of non-trivial variables
     problem.n = inontrivial_variables.size();
@@ -375,7 +375,7 @@ auto Regularizer::Impl::removeTrivialConstraints(
         ObjectiveResult res;
 
         // Update the objective function
-        problem.objective = [=](VectorConstRef X) mutable
+        problem.objective = [=](VectorXrConstRef X) mutable
         {
             x(inontrivial_variables) = X;
 
@@ -514,7 +514,8 @@ auto Regularizer::Impl::regularize(Vector& dgdp, Vector& dbdp) -> void
 auto Regularizer::Impl::recover(OptimumState& state) -> void
 {
     // Calculate dual variables y w.r.t. original equality constraints
-    state.y = lu_star.trsolve(state.f.grad - state.z);
+//    state.y = lu_star.trsolve(state.f.grad - state.z);
+    state.y = lu_star.trsolve((state.f.grad - state.z).cast<double>());
 
     // Check if there was any trivial variables and update state accordingly
     if(itrivial_variables.size())

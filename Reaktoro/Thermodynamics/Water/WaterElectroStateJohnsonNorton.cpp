@@ -97,7 +97,7 @@ auto waterElectroStateJohnsonNorton(const real& T, const real& P, const WaterThe
 
 	for(int i = 0; i <= 4; ++i)
 	{
-		const auto ri    = std::pow(r, i);
+		const auto ri    = pow(r, i);
 		const auto ki    = k[i](t);
 		const auto ki_t  = k_t[i](t)/Tr;
 		const auto ki_tt = k_tt[i](t)/Tr/Tr;

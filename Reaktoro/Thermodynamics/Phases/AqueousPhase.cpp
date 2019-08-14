@@ -83,7 +83,7 @@ struct AqueousPhase::Impl
                 const Index& i = pair.first; // the index of the selected species
                 const AqueousActivityModel& func = pair.second; // the ln activity coefficient function of the selected species
                 const real ln_gi = func(state); // evaluate the ln activity coefficient function
-                const real ln_mi = std::log(state.m[i]); // get the molality of the selected species
+                const real ln_mi = log(state.m[i]); // get the molality of the selected species
                 res.ln_activity_coefficients[i] = ln_gi; // update the ln activity coefficient selected species
                 res.ln_activities[i] = ln_gi + ln_mi; // update the ln activity of the selected species
             }
@@ -113,7 +113,7 @@ AqueousPhase::AqueousPhase(const AqueousMixture& mixture)
     setActivityModelDuanSunCO2();
 }
 
-auto AqueousPhase::setInterpolationPoints(const std::vector<real>& temperatures, const std::vector<real>& pressures) -> AqueousPhase&
+auto AqueousPhase::setInterpolationPoints(const std::vector<double>& temperatures, const std::vector<double>& pressures) -> AqueousPhase&
 {
     pimpl->mixture.setInterpolationPoints(temperatures, pressures);
     return *this;
@@ -174,7 +174,7 @@ auto AqueousPhase::setActivityModelIdeal(std::string species) -> AqueousPhase&
     return *this;
 }
 
-auto AqueousPhase::setActivityModelSetschenow(std::string species, real b) -> AqueousPhase&
+auto AqueousPhase::setActivityModelSetschenow(std::string species, const real& b) -> AqueousPhase&
 {
     const Index ispecies = indexSpecies(species);
     if(ispecies < numSpecies())

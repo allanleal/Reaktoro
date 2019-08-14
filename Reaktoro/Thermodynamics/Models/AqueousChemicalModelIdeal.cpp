@@ -35,7 +35,7 @@ auto aqueousChemicalModelIdeal(const AqueousMixture& mixture) -> PhaseChemicalMo
         state = mixture.state(T, P, n);
 
         // The ln of water mole fraction
-        real ln_xw = std::log(state.x[iH2O]);
+        real ln_xw = log(state.x[iH2O]);
 
         // Set the activity coefficients of the aqueous species
         res.ln_activity_coefficients.fill(ln_xw);

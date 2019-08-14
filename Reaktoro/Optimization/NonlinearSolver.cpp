@@ -44,8 +44,11 @@ struct NonlinearSolver::Impl
     /// The Newton step for the unknowns `x`
     Vector dx;
 
+    /// The iterate `x`
+    Vector x;
+
     /// The trial iterate `x`
-    Vector xtrial;
+    VectorXr xtrial;
 
     /// The outputter instance
     Outputter outputter;
@@ -57,7 +60,7 @@ struct NonlinearSolver::Impl
     Matrix J;
 
     /// Solve the optimization problem.
-    auto solve(const NonlinearProblem& problem, VectorRef x, const NonlinearOptions& options) -> NonlinearResult
+    auto solve(const NonlinearProblem& problem, VectorXrRef xsol, const NonlinearOptions& options) -> NonlinearResult
     {
         // Start timing the calculation
         Time begin = time();
@@ -68,6 +71,9 @@ struct NonlinearSolver::Impl
 
         // The result of the calculation
         NonlinearResult result;
+
+        // Initialize x with xsol
+        x = xsol;
 
         // Auxiliary references to problem data
         const auto& n = problem.n;
@@ -135,10 +141,10 @@ struct NonlinearSolver::Impl
         auto initialize = [&]()
         {
             // Initialize xtrial
-            xtrial.resize(n);
+            xtrial = x;
 
             // Evaluate the non-linear function
-            residual = problem.f(x);
+            residual = problem.f(xtrial);
 
             // Update the residuals of the calculation
             error = max(abs(F));
@@ -174,10 +180,10 @@ struct NonlinearSolver::Impl
             unsigned tentatives = 0;
 
             // Calculate the current quadratic residual function
-            const auto f = 0.5 * tr(F) * F;
+            const double f = 0.5 * tr(F) * F;
 
             // Calculate the slope of the Newton step
-            const auto slope = tr(F) * dx;
+            const double slope = tr(F) * dx;
 
             // Repeat until a suitable xtrial iterate if found such that f(xtrial) is finite
             for(; tentatives < 4; ++tentatives)
@@ -245,6 +251,9 @@ struct NonlinearSolver::Impl
         // Output a final header
         outputter.outputHeader();
 
+        // Copy back the computed solution in x to xsol
+		xsol = x;
+
         // Finish timing the calculation
         result.time = elapsed(begin);
 
@@ -269,12 +278,12 @@ auto NonlinearSolver::operator=(NonlinearSolver other) -> NonlinearSolver&
     return *this;
 }
 
-auto NonlinearSolver::solve(const NonlinearProblem& problem, VectorRef x) -> NonlinearResult
+auto NonlinearSolver::solve(const NonlinearProblem& problem, VectorXrRef x) -> NonlinearResult
 {
     return pimpl->solve(problem, x, {});
 }
 
-auto NonlinearSolver::solve(const NonlinearProblem& problem, VectorRef x, const NonlinearOptions& options) -> NonlinearResult
+auto NonlinearSolver::solve(const NonlinearProblem& problem, VectorXrRef x, const NonlinearOptions& options) -> NonlinearResult
 {
     return pimpl->solve(problem, x, options);
 }

@@ -49,8 +49,8 @@ auto cardano(double a, double b, double c, double d) -> CubicRoots;
 /// @param x0 The initial guess for the iterative root calculation.
 /// @param epsilon The tolerance used in \f$ |f(x)| < \epsilon \f$ to check convergence.
 /// @param maxiter The maximum number of iterations.
-auto newton(const std::function<std::tuple<double,double>(double)>& f,
-            double x0, double epsilon, unsigned maxiter) -> double;
+auto newton(const std::function<std::tuple<real,real>(const real&)>& f,
+		real x0, double epsilon, unsigned maxiter) -> real;
 
 /// Calculate the root of a non-linear multi-dimensional function using Newton's method.
 /// @param f The function that returns \f$ f(x) \f$ and \f$ J(x) \f$.

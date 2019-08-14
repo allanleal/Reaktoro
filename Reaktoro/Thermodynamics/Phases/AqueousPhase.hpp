@@ -48,7 +48,7 @@ public:
     /// is prohibitive for your application.
     /// @param temperatures The temperature points (in units of K)
     /// @param pressures The pressure points (in units of Pa)
-    auto setInterpolationPoints(const std::vector<real>& temperatures, const std::vector<real>& pressures) -> AqueousPhase&;
+    auto setInterpolationPoints(const std::vector<double>& temperatures, const std::vector<double>& pressures) -> AqueousPhase&;
 
     /// Set the chemical model of the phase with the ideal aqueous solution equation of state.
     auto setChemicalModelIdeal() -> AqueousPhase&;
@@ -82,7 +82,7 @@ public:
     /// Set the activity model of the species to be the Setschenow one.
     /// @param species The name of species to have its activity model set
     /// @param b The Setschenow constant
-    auto setActivityModelSetschenow(std::string species, real b) -> AqueousPhase&;
+    auto setActivityModelSetschenow(std::string species, const real& b) -> AqueousPhase&;
 
     /// Set the activity model of CO2(aq) to be the one of Duan and Sun (2003).
     auto setActivityModelDuanSunCO2() -> AqueousPhase&;

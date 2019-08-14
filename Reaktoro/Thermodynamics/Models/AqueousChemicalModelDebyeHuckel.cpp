@@ -105,13 +105,13 @@ auto aqueousChemicalModelDebyeHuckel(const AqueousMixture& mixture, const DebyeH
         // Update auxiliary variables
 		const auto ln_m = log(m);
 		const auto xw = x[iwater];
-		const auto ln_xw = std::log(xw);
+		const auto ln_xw = log(xw);
 		const auto mSigma = nwo * (1 - xw)/xw;
 		const auto I2 = I*I;
-		const auto sqrtI = std::sqrt(I);
-		const auto sqrt_rho = std::sqrt(rho);
+		const auto sqrtI = sqrt(I);
+		const auto sqrt_rho = sqrt(rho);
 		const auto T_epsilon = T * epsilon;
-		const auto sqrt_T_epsilon = std::sqrt(T_epsilon);
+		const auto sqrt_T_epsilon = sqrt(T_epsilon);
 		const auto A = 1.824829238e+6 * sqrt_rho/(T_epsilon*sqrt_T_epsilon);
 		const auto B = 50.29158649 * sqrt_rho/sqrt_T_epsilon;
 		const auto sigmacoeff = (2.0/3.0)*A*I*sqrtI;

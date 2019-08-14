@@ -33,6 +33,30 @@ namespace Reaktoro {
 
 struct OptimumSolverIpNewton::Impl
 {
+    /// The primal solution of the optimisation problem
+    VectorXd x;
+
+    /// The dual solution of the optimisation problem with respect to the equality constraints
+    VectorXd y;
+
+    /// The dual solution of the optimisation problem with respect to the lower bound constraints
+    VectorXd z;
+
+    /// The dual solution of the optimisation problem with respect to the upper bound constraints
+    VectorXd w;
+
+    /// The derivatives of the primal solution of the optimisation problem
+    MatrixXd xg;
+
+    /// The derivatives of the dual solution of the optimisation problem with respect to the equality constraints
+    MatrixXd yg;
+
+    /// The derivatives of the dual solution of the optimisation problem with respect to the lower bound constraints
+    MatrixXd zg;
+
+    /// The derivatives of the dual solution of the optimisation problem with respect to the upper bound constraints
+    MatrixXd wg;
+
     /// The right-hand side of the KKT equations
     KktVector rhs;
 
@@ -73,10 +97,13 @@ struct OptimumSolverIpNewton::Impl
         // Set the KKT options
         kkt.setOptions(options.kkt);
 
+        // Initialize members x, y, z, w
+        x = state.x;
+        y = state.y;
+        z = state.z;
+        w = state.w;
+
         // Define some auxiliary references to variables
-        auto& x = state.x;
-        auto& y = state.y;
-        auto& z = state.z;
         auto& f = state.f;
 
         // The number of variables and equality constraints
@@ -199,10 +226,22 @@ struct OptimumSolverIpNewton::Impl
             rhs.rz.noalias() = -(x % z - mu);
 
             // Calculate the optimality, feasibility and centrality errors
-            errorf = autodiff::val( norminf(rhs.rx) );
-            errorh = autodiff::val( norminf(rhs.ry) / bnorm );
-            errorc = autodiff::val( norminf(rhs.rz) );
+            errorf = norminf(rhs.rx);
+            errorh = norminf(rhs.ry) / bnorm;
+            errorc = norminf(rhs.rz);
             error = std::max({errorf, errorh, errorc});
+        };
+
+        auto compute_grad_and_hessian = [&](VectorXrConstRef x)
+        {
+            auto g = [&](VectorXrConstRef x)
+            {
+                f = problem.objective(x);
+                return f.grad;
+            };
+
+            f.hessian.mode = Hessian::Dense;
+            f.hessian.dense = autodiff::forward::jacobian(g, wrt(x), at(x), f.grad);
         };
 
         auto update_objective = [&](VectorXrConstRef x)
@@ -217,7 +256,8 @@ struct OptimumSolverIpNewton::Impl
                     f.hessian.diagonal = zeros(n);
                 }
             }
-            else f = problem.objective(x);
+            else
+                compute_grad_and_hessian(x);
         };
 
         // The function that initialize the state of some variables
@@ -231,7 +271,8 @@ struct OptimumSolverIpNewton::Impl
             	state.x.fill(1.0);
 
             // Update the objective function state
-            update_objective(x);
+            xtrial = x;
+            update_objective(xtrial);
 
             // Update the residuals of the calculation
             update_residuals();
@@ -283,7 +324,7 @@ struct OptimumSolverIpNewton::Impl
             // Calculate the current trial iterate for x
             for(int i = 0; i < n; ++i)
                 xtrial[i] = (x[i] + sol.dx[i] > 0.0) ?
-                    static_cast<real>(x[i] + sol.dx[i]) : static_cast<real>(x[i]*(1.0 - tau));
+                    x[i] + sol.dx[i] : x[i]*(1.0 - tau);
 
             // Update the objective function state at the trial iterate
             update_objective(xtrial);
@@ -412,6 +453,12 @@ struct OptimumSolverIpNewton::Impl
 
         // Output a final header
         outputter.outputHeader();
+
+        // Copy back the solution variables
+        state.x = x;
+        state.y = y;
+        state.z = z;
+        state.w = w;
 
         // Finish timing the calculation
         result.time = elapsed(begin);

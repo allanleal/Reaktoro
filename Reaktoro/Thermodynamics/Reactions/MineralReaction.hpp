@@ -102,13 +102,13 @@ public:
     auto equilibriumConstant() const -> const std::function<real(const real&, const real&)>&;
 
     /// Return the specific surface area of the mineral (in units of m2/kg).
-    auto specificSurfaceArea() const -> double;
+    auto specificSurfaceArea() const -> real;
 
     /// Return the volumetric surface area of the mineral (in units of m2/m3).
-    auto volumetricSurfaceArea() const -> double;
+    auto volumetricSurfaceArea() const -> real;
 
     /// Return the specified surface area of the mineral (in units of m2).
-    auto surfaceArea() const -> double;
+    auto surfaceArea() const -> real;
 
     /// Return the mineral mechanisms of the kinetic rate model of the mineral reaction.
     /// @see MineralMechanism

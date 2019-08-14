@@ -73,20 +73,20 @@ auto cardano(double a, double b, double c, double d) -> CubicRoots
     return std::make_tuple(x1, x2, x3);
 }
 
-auto newton(const std::function<std::tuple<double,double>(double)>& f,
-            double x0, double epsilon, unsigned maxiter) -> double
+auto newton(const std::function<std::tuple<real,real>(const real&)>& f,
+		real x0, double epsilon, unsigned maxiter) -> real
 {
     Assert(epsilon > 0.0, "Could not start Newton's method with given parameter.",
         "Expecting a positive tolerance parameter.");
     Assert(maxiter > 0, "Could not start Newton's method with given parameter.",
         "Expecting a positive maximum number of iterations.");
-    double x = x0;
+    real x = x0;
     for(unsigned i = 0; i < maxiter; ++i)
     {
-        double fx, dfx;
+    	real fx, dfx;
         std::tie(fx, dfx) = f(x);
         x -= fx/dfx;
-        if(std::abs(fx) < epsilon)
+        if(abs(fx) < epsilon)
             return x;
     }
     RuntimeError("Could not find the root of the given non-linear function.",

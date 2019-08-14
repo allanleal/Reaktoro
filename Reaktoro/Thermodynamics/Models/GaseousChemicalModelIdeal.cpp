@@ -38,7 +38,7 @@ auto gaseousChemicalModelIdeal(const GaseousMixture& mixture) -> PhaseChemicalMo
         const real Pbar = 1e-5 * P;
 
         // The ln of pressure in units of bar
-        const real ln_Pbar = std::log(Pbar);
+        const real ln_Pbar = log(Pbar);
 
         // The result of the ideal model
         res.ln_activities = log(state.x) + ln_Pbar;

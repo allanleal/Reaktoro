@@ -97,7 +97,7 @@ auto mineralCatalystFunctionPartialPressure(const MineralCatalyst& catalyst, con
         const auto Pbar = convertPascalToBar(P);
 
         // Evaluate the mineral catalyst function
-        const auto res = std::pow(xi * Pbar, power);
+        const auto res = pow(xi * Pbar, power);
 
         return res;
     };
@@ -144,14 +144,14 @@ auto mineralMechanismFunction(const MineralMechanism& mechanism, const Reaction&
         const auto lnOmega = lnQ - lnK;
 
         // Calculate the rate constant for the current mechanism
-        const auto kappa = mechanism.kappa * std::exp(-mechanism.Ea/R * (1.0/T - 1.0/298.15));
+        const auto kappa = mechanism.kappa * exp(-mechanism.Ea/R * (1.0/T - 1.0/298.15));
 
         // Calculate the saturation index
-        const auto Omega = std::exp(lnOmega);
+        const auto Omega = exp(lnOmega);
 
         // Calculate the p and q powers of the saturation index Omega
-        const auto pOmega = std::pow(Omega, mechanism.p);
-        const auto qOmega = std::pow(1 - pOmega, mechanism.q);
+        const auto pOmega = pow(Omega, mechanism.p);
+        const auto qOmega = pow(1 - pOmega, mechanism.q);
 
         // Calculate the function f
         f = kappa * qOmega;
@@ -201,7 +201,7 @@ auto defaultMineralReactionEquation(Index imineral, const ChemicalSystem& system
     W(E, imineral) = -1;
     Vector c = W.fullPivLu().solve(unit(E + 1, E));
     cleanRationalNumbers(c);
-    std::map<std::string, real> equation;
+    std::map<std::string, double> equation;
     for(Index i = 0; i < N; ++i)
         if(c[i] != 0.0) equation[system.species(i).name()] = c[i];
     return {equation};
@@ -269,9 +269,9 @@ struct MineralReaction::Impl
 
         // Check the appropriate unit of the surface area and set the corresponding variable
         if(units::convertible(unit, "m2/kg"))
-            specific_surface_area = units::convert(value, unit, "m2/kg");
+            specific_surface_area = value * units::convert(1.0, unit, "m2/kg");
         else if(units::convertible(unit, "m2/m3"))
-            volumetric_surface_area = units::convert(value, unit, "m2/m3");
+            volumetric_surface_area = value * units::convert(1.0, unit, "m2/m3");
         else surfaceAreaUnitError(unit);
     }
 
@@ -280,7 +280,7 @@ struct MineralReaction::Impl
         // Reset both specific and volumetric surface area instances
         specific_surface_area = 0.0;
         volumetric_surface_area = 0.0;
-        surface_area = units::convert(value, unit, "m2");
+        surface_area = value * units::convert(1.0, unit, "m2");
     }
 
     auto addMechanism(std::string mechanism) -> void
@@ -417,7 +417,7 @@ auto molarSurfaceArea(const MineralReaction& reaction, const ChemicalSystem& sys
     const real molar_mass = system.species(ispecies).molarMass();
 
     // Check if the specific surface area of the mineral was set
-    if(specific_surface_area) return specific_surface_area * molar_mass;
+    if(specific_surface_area != 0.0) return specific_surface_area * molar_mass;
 
     // The standard partial molar volumes at 25 C and 1 bar of all species
     const VectorXr V = system.properties(T, P).standardPartialMolarVolumes();
@@ -429,7 +429,7 @@ auto molarSurfaceArea(const MineralReaction& reaction, const ChemicalSystem& sys
     const real volumetric_surface_area = reaction.volumetricSurfaceArea();
 
     // Check if the volumetric surface area of the mineral was set
-    if(volumetric_surface_area) return volumetric_surface_area * molar_volume;
+    if(volumetric_surface_area != 0.0) return volumetric_surface_area * molar_volume;
 
     errroZeroSurfaceArea(reaction);
 
@@ -466,7 +466,7 @@ auto createReaction(const MineralReaction& mineralrxn, const ChemicalSystem& sys
     // Create the mineral rate function
     ReactionRateFunction rate;
 
-    if(mineralrxn.surfaceArea())
+    if(mineralrxn.surfaceArea() != 0.0)
     {
         rate = [=](const ChemicalProperties& properties)
         {
@@ -500,7 +500,8 @@ auto createReaction(const MineralReaction& mineralrxn, const ChemicalSystem& sys
             auto nm = n[imineral];
 
             // Prevent negative mole numbers here for the solution of the ODEs
-            nm = std::max(nm, 0.0);
+            if(nm < 0.0)
+            	nm = 0.0;
 
             // Iterate over all mechanism functions
             real f = 0.0;

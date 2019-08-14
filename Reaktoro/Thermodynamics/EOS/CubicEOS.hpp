@@ -131,13 +131,13 @@ public:
     auto setPhaseAsVapor() -> void;
 
     /// Set the critical temperatures of the species (in units of K).
-    auto setCriticalTemperatures(const std::vector<real>& values) -> void;
+    auto setCriticalTemperatures(const std::vector<double>& values) -> void;
 
     /// Set the critical pressures of the species (in units of Pa).
-    auto setCriticalPressures(const std::vector<real>& values) -> void;
+    auto setCriticalPressures(const std::vector<double>& values) -> void;
 
     /// Set the acentric factors of the species.
-    auto setAcentricFactors(const std::vector<real>& values) -> void;
+    auto setAcentricFactors(const std::vector<double>& values) -> void;
 
     /// Set the function that calculates the interaction parameters kij and its temperature derivatives.
     /// @see InteractionParamFunction, InteractionParamArgs, InteractionParamResult

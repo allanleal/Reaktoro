@@ -63,14 +63,14 @@ auto ChemicalField::temperature(VectorRef values) -> void
 {
     const Index len = size();
     for(Index i = 0; i < len; ++i)
-        values[i] = m_states[i].temperature();
+        values[i] = static_cast<double>(m_states[i].temperature());
 }
 
 auto ChemicalField::pressure(VectorRef values) -> void
 {
     const Index len = size();
     for(Index i = 0; i < len; ++i)
-        values[i] = m_states[i].pressure();
+        values[i] = static_cast<double>(m_states[i].pressure());
 }
 
 auto ChemicalField::elementAmounts(VectorRef values) -> void
@@ -79,7 +79,7 @@ auto ChemicalField::elementAmounts(VectorRef values) -> void
     const Index num_elements = m_system.numElements();
     Index offset = 0;
     for(Index i = 0; i < len; ++i, offset += num_elements)
-        values.segment(offset, num_elements) = m_states[i].elementAmounts();
+        values.segment(offset, num_elements) = m_states[i].elementAmounts().cast<double>();
 }
 
 auto ChemicalField::output(std::string filename, StringList quantities) -> void
@@ -393,8 +393,8 @@ auto ReactiveTransportSolver::step(ChemicalField& field) -> void
     // Collect the amounts of elements in the solid and fluid species
     for(Index icell = 0; icell < num_cells; ++icell)
     {
-        bf.row(icell) = field[icell].elementAmountsInSpecies(ifs);
-        bs.row(icell) = field[icell].elementAmountsInSpecies(iss);
+        bf.row(icell) = field[icell].elementAmountsInSpecies(ifs).cast<double>();
+        bs.row(icell) = field[icell].elementAmountsInSpecies(iss).cast<double>();
     }
 
     // Transport the elements in the fluid species
@@ -417,7 +417,9 @@ auto ReactiveTransportSolver::step(ChemicalField& field) -> void
     {
         const real T = field[icell].temperature();
         const real P = field[icell].pressure();
-        equilibriumsolver.solve(field[icell], T, P, b.row(icell));
+        VectorXr br = b.row(icell);
+        equilibriumsolver.solve(field[icell], T, P, br);
+        b.row(icell) = br;
 
         for(auto output : outputs)
             output.update(field[icell], icell);

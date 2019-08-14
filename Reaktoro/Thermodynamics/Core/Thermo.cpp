@@ -45,15 +45,15 @@ namespace {
 
 /// The signature of a function that calculates the thermodynamic state of water
 using WaterThermoStateFunction =
-    std::function<WaterThermoState(double, double)>;
+    std::function<WaterThermoState(const real&, const real&)>;
 
 /// The signature of a function that calculates the thermodynamic state of a species
 using SpeciesThermoStateFunction =
-    std::function<SpeciesThermoState(double, double, std::string)>;
+    std::function<SpeciesThermoState(const real&, const real&, std::string)>;
 
 /// The signature of a function that calculates the electrostatic state of water
 using WaterElectroStateFunction =
-    std::function<WaterElectroState(double, double)>;
+    std::function<WaterElectroState(const real&, const real&)>;
 
 auto errorNonExistentSpecies(const std::string& name) -> void
 {
@@ -359,7 +359,7 @@ struct Thermo::Impl
             "is not present in the reaction equation `" +
             std::string(reaction.equation) + "` or has zero stoichiometry.");
 
-        double sum = 0.0;
+        real sum = 0.0;
         for(auto pair : reaction.equation.equation())
         {
             const auto reactant = pair.first;
@@ -437,7 +437,7 @@ struct Thermo::Impl
         if(params.reaction.analytic.size())
         {
         	const auto& A = params.reaction.analytic;
-        	const auto logk = A[0] + A[1]*T + A[2]/T + A[3]*std::log10(T) + A[4]/(T*T) + A[5]*T*T;
+        	const auto logk = A[0] + A[1]*T + A[2]/T + A[3]*log10(T) + A[4]/(T*T) + A[5]*T*T;
         	return logk * ln10;
         }
         else if(params.reaction.delta_h)

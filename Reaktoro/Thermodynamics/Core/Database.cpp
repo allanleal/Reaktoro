@@ -133,7 +133,7 @@ auto parseReactionInterpolatedThermoProperties(const xml_node& node) -> Reaction
     for(auto& x : pressures)    x = units::convert(x, punits, "pascal");
 
     // Define a lambda function to generate a bilinear interpolator from a vector
-    auto bilinear_interpolator = [&](const std::vector<real>& data) -> BilinearInterpolator
+    auto bilinear_interpolator = [&](const std::vector<double>& data) -> BilinearInterpolator
     {
         if(data.empty()) return BilinearInterpolator();
         return BilinearInterpolator(temperatures, pressures, data);
@@ -143,7 +143,7 @@ auto parseReactionInterpolatedThermoProperties(const xml_node& node) -> Reaction
     auto gibbs_energy_from_lnk = [](const BilinearInterpolator& lnk)
     {
         const auto R = universalGasConstant;
-        auto f = [=](const real& T, const real& P) { return -R*T*lnk(T, P); };
+        auto f = [=](double T, double P) { return -R*T*lnk(T, P).val; };
         return BilinearInterpolator(lnk.xCoodinates(), lnk.yCoodinates(), f);
     };
 

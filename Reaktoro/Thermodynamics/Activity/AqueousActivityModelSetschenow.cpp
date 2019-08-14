@@ -22,10 +22,10 @@
 
 namespace Reaktoro {
 
-auto aqueousActivityModelSetschenow(const AqueousMixture& mixture, double b) -> AqueousActivityModel
+auto aqueousActivityModelSetschenow(const AqueousMixture& mixture, const real& b) -> AqueousActivityModel
 {
     // The value of ln(10)
-    const double ln10 = 2.30258509299;
+    const auto ln10 = 2.30258509299;
 
     AqueousActivityModel f = [=](const AqueousMixtureState& state)
     {
@@ -33,7 +33,7 @@ auto aqueousActivityModelSetschenow(const AqueousMixture& mixture, double b) -> 
         const auto& I = state.Ie;
 
         // The activity coefficient of the given species (in molality scale)
-        real ln_gi = ln10 * b * I;
+        const auto ln_gi = ln10 * b * I;
 
         return ln_gi;
     };

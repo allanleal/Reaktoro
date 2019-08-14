@@ -47,7 +47,7 @@ auto alpha(CubicEOS::Model type) -> std::function<AlphaResult(const real&, const
     // The alpha function for Redlich-Kwong EOS
     auto alphaRK = [](const real& T, const real& omega) -> AlphaResult
     {
-        const auto sqrtT = std::sqrt(T);
+        const auto sqrtT = sqrt(T);
         const auto val = 1.0/sqrtT;
         const auto ddT = -0.5 / T * val;
         const auto d2dT2 = 0.5/(T*T) * val - 0.5/T * ddT;
@@ -58,7 +58,7 @@ auto alpha(CubicEOS::Model type) -> std::function<AlphaResult(const real&, const
     auto alphaSRK = [](const real& T, const real& omega) -> AlphaResult
     {
         const auto m = 0.480 + 1.574*omega - 0.176*omega*omega;
-        const auto sqrtT = std::sqrt(T);
+        const auto sqrtT = sqrt(T);
         const auto aux_val = 1.0 + m*(1.0 - sqrtT);
         const auto aux_ddT = -0.5*m/sqrtT;
         const auto aux_d2dT2 = 0.25*m/(T*sqrtT);
@@ -79,7 +79,7 @@ auto alpha(CubicEOS::Model type) -> std::function<AlphaResult(const real&, const
         const auto m = omega <= 0.491 ?
             0.374640 + 1.54226*omega - 0.269920*omega*omega :
             0.379642 + 1.48503*omega - 0.164423*omega*omega + 0.016666*omega*omega*omega;
-        const auto sqrtT = std::sqrt(T);
+        const auto sqrtT = sqrt(T);
         const auto aux_val = 1.0 + m*(1.0 - sqrtT);
         const auto aux_ddT = -0.5*m/sqrtT;
         const auto aux_d2dT2 = 0.25*m/(T*sqrtT);
@@ -161,13 +161,13 @@ struct CubicEOS::Impl
     CubicEOS::Model model = CubicEOS::PengRobinson;
 
     /// The critical temperatures of the species (in units of K).
-    std::vector<real> critical_temperatures;
+    std::vector<double> critical_temperatures;
 
     /// The critical pressures of the species (in units of Pa).
-    std::vector<real> critical_pressures;
+    std::vector<double> critical_pressures;
 
     /// The acentric factors of the species.
-    std::vector<real> acentric_factors;
+    std::vector<double> acentric_factors;
 
     /// The function that calculates the interaction parameters kij and its temperature derivatives.
     InteractionParamsFunction calculate_interaction_params;
@@ -238,11 +238,11 @@ struct CubicEOS::Impl
         {
             for(unsigned j = 0; j < nspecies; ++j)
             {
-                const auto r = kres.k.empty() ? 1.0 : 1.0 - kres.k[i][j];
-                const auto rT = kres.kT.empty() ? 0.0 : -kres.kT[i][j];
-                const auto rTT = kres.kTT.empty() ? 0.0 : -kres.kTT[i][j];
+                const auto r = kres.k.empty() ? real{1.0} : 1.0 - kres.k[i][j];
+                const auto rT = kres.kT.empty() ? real{0.0} : -kres.kT[i][j];
+                const auto rTT = kres.kTT.empty() ? real{0.0} : -kres.kTT[i][j];
 
-                const auto s = std::sqrt(a[i]*a[j]);
+                const auto s = sqrt(a[i]*a[j]);
                 const auto sT = 0.5*s/(a[i]*a[j]) * (aT[i]*a[j] + a[i]*aT[j]);
                 const auto sTT = 0.5*s/(a[i]*a[j]) * (aTT[i]*a[j] + 2*aT[i]*aT[j] + a[i]*aTT[j]) - sT*sT/s;
 
@@ -311,7 +311,7 @@ struct CubicEOS::Impl
         const auto maxiter = 100;
 
         // Determine the appropriate initial guess for the cubic equation of state
-        const real Z0 = isvapor ? 1.0 : beta;
+        const real Z0 = isvapor ? real{1.0} : beta;
 
         // Calculate the compressibility factor Z using Newton's method
         real Z = newton(f, Z0, tolerance, maxiter);
@@ -324,7 +324,7 @@ struct CubicEOS::Impl
 
         // Calculate the integration factor I and its temperature derivative IT
         real I = 0.0;
-        if(epsilon != sigma) I = std::log((Z + sigma*beta)/(Z + epsilon*beta))/(sigma - epsilon);
+        if(epsilon != sigma) I = log((Z + sigma*beta)/(Z + epsilon*beta))/(sigma - epsilon);
                         else I = beta/(Z + epsilon*beta);
 
         // Calculate the temperature derivative IT of the integration factor I
@@ -344,7 +344,7 @@ struct CubicEOS::Impl
 
         // Calculate the partial molar Zi for each species
         V = Z*R*T/P;
-        G_res = R*T*(Z - 1 - std::log(Z - beta) - q*I);
+        G_res = R*T*(Z - 1 - log(Z - beta) - q*I);
         H_res = R*T*(Z - 1 + T*qT*I);
         Cp_res = R*T*(ZT + qT*I + T*qTT + T*qT*IT) + H_res/T;
 
@@ -370,7 +370,7 @@ struct CubicEOS::Impl
                             else Ii = I * (1 + betai/beta - (Zi + epsilon*betai)/(Z + epsilon*beta));
 
             Vi[i] = R*T*Zi/P;
-            Gi_res[i] = R*T*(Zi - (Zi - betai)/(Z - beta) - std::log(Z - beta) - qi*I - q*Ii + q*I);
+            Gi_res[i] = R*T*(Zi - (Zi - betai)/(Z - beta) - log(Z - beta) - qi*I - q*Ii + q*I);
             Hi_res[i] = R*T*(Zi - 1 + T*(qiT*I + qT*Ii - qT*I));
             ln_phi[i] = Gi_res[i]/(R*T);
         }

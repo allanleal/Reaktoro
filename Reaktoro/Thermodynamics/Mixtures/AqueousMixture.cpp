@@ -88,8 +88,8 @@ auto AqueousMixture::setWaterDielectricConstant(const std::function<real(const r
 
 auto AqueousMixture::setInterpolationPoints(const std::vector<double>& temperatures, const std::vector<double>& pressures) -> void
 {
-    rho = interpolate(temperatures, pressures, rho_default);
-    epsilon = interpolate(temperatures, pressures, epsilon_default);
+    rho = interpolate(temperatures, pressures, [=](double T, double P) { return rho_default(T, P).val; });
+    epsilon = interpolate(temperatures, pressures, [=](double T, double P) { return epsilon_default(T, P).val; });
 }
 
 auto AqueousMixture::numNeutralSpecies() const -> unsigned

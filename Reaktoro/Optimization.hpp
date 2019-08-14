@@ -17,7 +17,6 @@
 
 #pragma once
 
-#include <Reaktoro/Optimization/Filter.hpp>
 #include <Reaktoro/Optimization/Hessian.hpp>
 #include <Reaktoro/Optimization/Jacobian.hpp>
 #include <Reaktoro/Optimization/KktSolver.hpp>
@@ -26,13 +25,7 @@
 #include <Reaktoro/Optimization/OptimumProblem.hpp>
 #include <Reaktoro/Optimization/OptimumResult.hpp>
 #include <Reaktoro/Optimization/OptimumSolver.hpp>
-#include <Reaktoro/Optimization/OptimumSolverIpActive.hpp>
-#include <Reaktoro/Optimization/OptimumSolverIpBounds.hpp>
-#include <Reaktoro/Optimization/OptimumSolverIpFeasible.hpp>
 #include <Reaktoro/Optimization/OptimumSolverIpNewton.hpp>
-#include <Reaktoro/Optimization/OptimumSolverIpOpt.hpp>
-#include <Reaktoro/Optimization/OptimumSolverKarpov.hpp>
-#include <Reaktoro/Optimization/OptimumSolverSimplex.hpp>
 #include <Reaktoro/Optimization/OptimumState.hpp>
 #include <Reaktoro/Optimization/Regularizer.hpp>
 #include <Reaktoro/Optimization/Utils.hpp>

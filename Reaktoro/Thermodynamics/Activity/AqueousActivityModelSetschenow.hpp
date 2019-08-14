@@ -27,6 +27,6 @@ namespace Reaktoro {
 /// @param b The Setschenow constant
 /// @return The aqueous activity function of the aqueous species
 /// @see AqueousMixture, AqueousActivityModel
-auto aqueousActivityModelSetschenow(const AqueousMixture& mixture, double b) -> AqueousActivityModel;
+auto aqueousActivityModelSetschenow(const AqueousMixture& mixture, const real& b) -> AqueousActivityModel;
 
 } // namespace Reaktoro
