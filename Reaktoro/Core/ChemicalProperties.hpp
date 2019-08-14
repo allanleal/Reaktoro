@@ -41,7 +41,7 @@ public:
 
     /// Update the chemical properties of the chemical system.
     /// @param n The amounts of the species in the system (in units of mol)
-    auto update(VectorConstRef n) -> void;
+    auto update(VectorXrConstRef n) -> void;
 
     /// Update the thermodynamic and chemical properties of the chemical system.
     /// @param T The temperature in the system (in units of K)
@@ -200,10 +200,10 @@ private:
     real T = 298.15;
 
     /// The pressure of the system (in units of Pa)
-    real P = 1.0e5;
+    real P = 1.0e+5;
 
     /// The amounts of the species in the system (in units of mol).
-    Vector n;
+    VectorXr n;
 
     /// The mole fractions of the species in the system (in units of mol/mol).
     VectorXr x;

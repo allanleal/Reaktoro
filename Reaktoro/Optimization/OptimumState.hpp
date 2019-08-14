@@ -28,16 +28,16 @@ namespace Reaktoro {
 struct OptimumState
 {
     /// The primal solution of the optimisation problem
-    Vector x;
+    VectorXr x;
 
     /// The dual solution of the optimisation problem with respect to the equality constraints
-    Vector y;
+    VectorXr y;
 
     /// The dual solution of the optimisation problem with respect to the lower bound constraints
-    Vector z;
+    VectorXr z;
 
     /// The dual solution of the optimisation problem with respect to the upper bound constraints
-    Vector w;
+    VectorXr w;
 
     /// The evaluation of the objective function at `x`
     ObjectiveResult f;

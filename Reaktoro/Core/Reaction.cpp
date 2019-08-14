@@ -156,12 +156,12 @@ auto Reaction::indices() const -> const Indices&
     return pimpl->indices;
 }
 
-auto Reaction::stoichiometries() const -> VectorConstRef
+auto Reaction::stoichiometries() const -> VectorXdConstRef
 {
     return pimpl->stoichiometries;
 }
 
-auto Reaction::stoichiometry(std::string species) const -> real
+auto Reaction::stoichiometry(std::string species) const -> double
 {
     return equation().stoichiometry(species);
 }

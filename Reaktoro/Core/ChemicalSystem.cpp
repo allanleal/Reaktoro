@@ -440,38 +440,38 @@ auto ChemicalSystem::indicesSolidSpecies() const -> Indices
     return indicesSpeciesInPhases(indicesSolidPhases());
 }
 
-auto ChemicalSystem::elementAmounts(VectorConstRef n) const -> Vector
+auto ChemicalSystem::elementAmounts(VectorXrConstRef n) const -> VectorXr
 {
     MatrixConstRef W = formulaMatrix();
     return W * n;
 }
 
-auto ChemicalSystem::elementAmountsInPhase(Index iphase, VectorConstRef n) const -> Vector
+auto ChemicalSystem::elementAmountsInPhase(Index iphase, VectorXrConstRef n) const -> VectorXr
 {
     MatrixConstRef W = formulaMatrix();
-    const unsigned first = indexFirstSpeciesInPhase(iphase);
-    const unsigned size = numSpeciesInPhase(iphase);
+    const auto first = indexFirstSpeciesInPhase(iphase);
+    const auto size = numSpeciesInPhase(iphase);
     const auto Wp = cols(W, first, size);
     const auto np = rows(n, first, size);
     return Wp * np;
 }
 
-auto ChemicalSystem::elementAmountsInSpecies(const Indices& ispecies, VectorConstRef n) const -> Vector
+auto ChemicalSystem::elementAmountsInSpecies(const Indices& ispecies, VectorXrConstRef n) const -> VectorXr
 {
     MatrixConstRef W = formulaMatrix();
-    Vector b = zeros(W.rows());
+    VectorXr b = zeros(W.rows());
     for(Index i : ispecies)
         b += W.col(i) * n[i];
     return b;
 }
 
-auto ChemicalSystem::elementAmount(Index ielement, VectorConstRef n) const -> double
+auto ChemicalSystem::elementAmount(Index ielement, VectorXrConstRef n) const -> real
 {
     MatrixConstRef W = formulaMatrix();
     return W.row(ielement) * n;
 }
 
-auto ChemicalSystem::elementAmountInPhase(Index ielement, Index iphase, VectorConstRef n) const -> double
+auto ChemicalSystem::elementAmountInPhase(Index ielement, Index iphase, VectorXrConstRef n) const -> real
 {
     MatrixConstRef W = formulaMatrix();
     const unsigned first = indexFirstSpeciesInPhase(iphase);
@@ -481,10 +481,10 @@ auto ChemicalSystem::elementAmountInPhase(Index ielement, Index iphase, VectorCo
     return dot(Wp.row(ielement), np);
 }
 
-auto ChemicalSystem::elementAmountInSpecies(Index ielement, const Indices& ispecies, VectorConstRef n) const -> double
+auto ChemicalSystem::elementAmountInSpecies(Index ielement, const Indices& ispecies, VectorXrConstRef n) const -> real
 {
     MatrixConstRef W = formulaMatrix();
-    double bval = 0.0;
+    real bval = 0.0;
     for(Index i : ispecies)
         bval += W(ielement, i) * n[i];
     return bval;

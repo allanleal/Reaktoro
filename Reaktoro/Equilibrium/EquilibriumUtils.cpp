@@ -41,7 +41,7 @@ auto equilibrateAux(ChemicalState& state, const EquilibriumProblem& problem, Equ
     const auto& T = problem.temperature();
     const auto& P = problem.pressure();
     const auto& b = problem.elementAmounts();
-    const auto& be = rows(b, iee);
+    const auto& be = b(iee);
 
     // The result of the equilibrium calculation
     EquilibriumResult res;

@@ -193,34 +193,34 @@ public:
 
     /// Calculate the molar amounts of the elements (in units of mol)
     /// @param n The molar amounts of the species (in units of mol)
-    auto elementAmounts(VectorConstRef n) const -> Vector;
+    auto elementAmounts(VectorXrConstRef n) const -> VectorXr;
 
     /// Calculate the molar amounts of the elements in a given phase (in units of mol)
     /// @param iphase The index of the phase
     /// @param n The molar amounts of the species (in units of mol)
-    auto elementAmountsInPhase(Index iphase, VectorConstRef n) const -> Vector;
+    auto elementAmountsInPhase(Index iphase, VectorXrConstRef n) const -> VectorXr;
 
     /// Calculate the molar amounts of the elements in a given set of species (in units of mol)
     /// @param ispecies The indices of the species
     /// @param n The molar amounts of the species (in units of mol)
-    auto elementAmountsInSpecies(const Indices& ispecies, VectorConstRef n) const -> Vector;
+    auto elementAmountsInSpecies(const Indices& ispecies, VectorXrConstRef n) const -> VectorXr;
 
     /// Calculate the molar amount of elements (in units of mol)
     /// @param ielement The index of the element
     /// @param n The molar amounts of the species (in units of mol)
-    auto elementAmount(Index ielement, VectorConstRef n) const -> double;
+    auto elementAmount(Index ielement, VectorXrConstRef n) const -> real;
 
     /// Calculate the molar amounts of elements in a given phase (in units of mol)
     /// @param ielement The index of the element
     /// @param iphase The index of the phase
     /// @param n The molar amounts of the species (in units of mol)
-    auto elementAmountInPhase(Index ielement, Index iphase, VectorConstRef n) const -> double;
+    auto elementAmountInPhase(Index ielement, Index iphase, VectorXrConstRef n) const -> real;
 
     /// Calculate the molar amounts of elements in a given set of species (in units of mol)
     /// @param ielement The index of the element
     /// @param ispecies The indices of the species in the set
     /// @param n The molar amounts of the species (in units of mol)
-    auto elementAmountInSpecies(Index ielement, const Indices& ispecies, VectorConstRef n) const -> double;
+    auto elementAmountInSpecies(Index ielement, const Indices& ispecies, VectorXrConstRef n) const -> real;
 
     /// Calculate the standard thermodynamic properties of the species.
     /// @param T The temperature of the system (in units of K)

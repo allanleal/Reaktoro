@@ -86,10 +86,10 @@ struct KktSolverRangespaceDiagonal : KktSolverBase
 
     Vector X, Z;
     Vector D, D1, D2;
-    Matrix A1, A2;
     Vector a1, a2;
     Vector dx1, dx2;
     Vector r;
+    Matrix A1, A2;
 
     Vector invD1;
     Matrix A1invD1;
@@ -470,7 +470,7 @@ auto KktSolverNullspace::solve(const KktVector& rhs, KktSolution& sol) -> void
         "different dimension.");
 
     // Compute the `xZ` component of `x`
-    xZ = Z.transpose() * ((rx + rz/x) - G*Y*ry);
+//    xZ = Z.transpose() * ((rx + rz/x) - G*Y*ry);
     xZ = llt_ZtGZ.solve(xZ);
 
     // Compute both `x` and `y` variables

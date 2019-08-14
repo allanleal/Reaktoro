@@ -27,18 +27,18 @@
 namespace Reaktoro {
 
 auto interpolate(
-    const std::vector<real>& temperatures,
-    const std::vector<real>& pressures,
-    const std::vector<real>& scalars) -> std::function<real(const real&, const real&)>;
+    const std::vector<double>& temperatures,
+    const std::vector<double>& pressures,
+    const std::vector<double>& scalars) -> std::function<real(real, real)>;
 
 auto interpolate(
-    const std::vector<real>& temperatures,
-    const std::vector<real>& pressures,
-    const std::function<real(const real&, const real&)>& func) -> std::function<real(const real&, const real&)>;
+    const std::vector<double>& temperatures,
+    const std::vector<double>& pressures,
+    const std::function<double(double, double)>& func) -> std::function<real(real, real)>;
 
 auto interpolate(
-    const std::vector<real>& temperatures,
-    const std::vector<real>& pressures,
-    const std::vector<std::function<real(const real&, const real&)>>& fs) -> std::function<VectorXr(const real&, const real&)>;
+    const std::vector<double>& temperatures,
+    const std::vector<double>& pressures,
+    const std::vector<std::function<double(double, double)>>& fs) -> std::function<VectorXr(real, real)>;
 
 } // namespace Reaktoro

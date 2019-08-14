@@ -44,11 +44,11 @@
 namespace Reaktoro {
 namespace {
 
-const double gram_to_kilogram = 1e-3;
-const double pascal_to_bar = 1e-5;
-const double pascal_to_atm = 9.86923267e-6;
-const double atm_to_pascal = 1/pascal_to_atm;
-const double cm3_to_m3 = 1e-6;
+const auto gram_to_kilogram = 1e-3;
+const auto pascal_to_bar = 1e-5;
+const auto pascal_to_atm = 9.86923267e-6;
+const auto atm_to_pascal = 1.0/pascal_to_atm;
+const auto cm3_to_m3 = 1e-6;
 
 // The critical properties of some gases
 // The data are: {temperature [C], pressure [bar], acentric factor}
@@ -88,10 +88,10 @@ struct Phreeqc::Impl
     real P;
 
     // The current ionic strength in PHREEQC (in units of molal)
-    double I;
+    real I;
 
     // The current molar amounts of all species in PHREEQC (in units of mol)
-    Vector n;
+    VectorXr n;
 
     // The name of the database file loaded into this instance
     std::string database;
@@ -145,52 +145,52 @@ struct Phreeqc::Impl
     Eigen::FullPivLU<Matrix> lu;
 
     // The electrical charges of the species
-    Vector species_charges;
+    VectorXd species_charges;
 
     // The molar masses of the elements (in units of mol/kg)
-    Vector element_molar_masses;
+    VectorXd element_molar_masses;
 
     // The ln activity coefficients of the species
-    Vector ln_activity_coefficients;
+    VectorXr ln_activity_coefficients;
 
     // The ln activities of the species
-    Vector ln_activities;
+    VectorXr ln_activities;
 
     // The ln activity constants of the species
-    Vector ln_activity_constants;
+    VectorXr ln_activity_constants;
 
     // The ln activity coefficients of the aqueous species
-    Vector ln_activity_coefficients_aqueous_species;
+    VectorXr ln_activity_coefficients_aqueous_species;
 
     // The ln activity coefficients of the gaseous species
-    Vector ln_activity_coefficients_gaseous_species;
+    VectorXr ln_activity_coefficients_gaseous_species;
 
     // The ln activities of the aqueous species
-    Vector ln_activities_aqueous_species;
+    VectorXr ln_activities_aqueous_species;
 
     // The ln activities of the gaseous species
-    Vector ln_activities_gaseous_species;
+    VectorXr ln_activities_gaseous_species;
 
     // The standard molar Gibbs energies of the species with T and P corrections
-    Vector standard_molar_gibbs_energies;
+    VectorXr standard_molar_gibbs_energies;
 
     // The standard molar volumes of the species with T and P corrections
-    Vector standard_molar_volumes;
+    VectorXr standard_molar_volumes;
 
     // The standard molar Gibbs energies of the species with T, P, and I corrections
-    Vector standard_molar_gibbs_energies_TPI;
+    VectorXr standard_molar_gibbs_energies_TPI;
 
     // The standard molar volumes of the species with T, P, and I corrections
-    Vector standard_molar_volumes_TPI;
+    VectorXr standard_molar_volumes_TPI;
 
     // The molar volume of the aqueous phase with T, P, and I corrections
-    double molar_volume_aqueous_phase;
+    real molar_volume_aqueous_phase;
 
     // The molar volume of the gaseous phase with T and P corrections
-    double molar_volume_gaseous_phase;
+    real molar_volume_gaseous_phase;
 
     // The molar volumes of the phases (aqueous, gaseous, minerals, etc.)
-    Vector phase_molar_volumes;
+    VectorXr phase_molar_volumes;
 
     // Construct a default Phreeqc::Impl instance
     Impl();
@@ -252,7 +252,7 @@ struct Phreeqc::Impl
     auto set(const real& T, const real& P) -> void;
 
     // Set the temperature, pressure and species composition
-    auto set(const real& T, const real& P, const Vector& n) -> void;
+    auto set(const real& T, const real& P, const VectorXr& n) -> void;
 
     // Update the properties with T and P dependency.
     auto updateThermoProperties() -> void;
@@ -279,37 +279,37 @@ struct Phreeqc::Impl
     auto numReactions() const -> unsigned;
 
     // Set the molar amounts of the species
-    auto setSpeciesAmounts(VectorConstRef n) -> void;
+    auto setSpeciesAmounts(VectorXrConstRef n) -> void;
 
     // Return the temperature of the Phreeqc instance (in units of K)
-    auto temperature() const -> double;
+    auto temperature() const -> real;
 
     // Return the pressure of the Phreeqc instance (in units of Pa)
-    auto pressure() const -> double;
+    auto pressure() const -> real;
 
     // Return the molar amounts of the species (in units of mol)
-    auto speciesAmounts() const -> VectorConstRef;
+    auto speciesAmounts() const -> VectorXrConstRef;
 
     // Return the ln equilibrium constants of the reactions
-    auto lnEquilibriumConstants() -> Vector;
+    auto lnEquilibriumConstants() -> VectorXr;
 
     // Return the molar Gibbs energies of the species (in units of J/mol)
-    auto speciesMolarGibbsEnergies() -> Vector;
+    auto speciesMolarGibbsEnergies() -> VectorXr;
 
     // Return the molar volumes of the species (in units of J/mol)
-    auto speciesMolarVolumes() -> Vector;
+    auto speciesMolarVolumes() -> VectorXr;
 
     // Return the molar volumes of each phase (in units of m3/mol)
-    auto phaseMolarVolumes() -> Vector;
+    auto phaseMolarVolumes() -> VectorXr;
 
     // Return the natural logarithm of the activity coefficients of the species
-    auto lnActivityCoefficients() -> Vector;
+    auto lnActivityCoefficients() -> VectorXr;
 
     // Return the natural logarithm of the activity constants of the species
-    auto lnActivityConstants() -> Vector;
+    auto lnActivityConstants() -> VectorXr;
 
     // Return the natural logarithm of the activities of the species
-    auto lnActivities() -> Vector;
+    auto lnActivities() -> VectorXr;
 };
 
 Phreeqc::Impl::Impl()
@@ -575,7 +575,7 @@ auto Phreeqc::Impl::initializeElementMolarMasses() -> void
         return e->primary->elt->gfw;
     };
 
-    const unsigned num_elements = element_names.size();
+    const auto num_elements = element_names.size();
     element_molar_masses.resize(num_elements);
     for(unsigned i = 0; i < num_elements - 1; ++i) // all, except charge element (last)
         element_molar_masses[i] = get_element_molar_mass(elements[i]) * gram_to_kilogram;
@@ -602,10 +602,10 @@ auto Phreeqc::Impl::initializeReactions() -> void
 
 auto Phreeqc::Impl::initializeFormulaMatrix() -> void
 {
-    const unsigned num_elements = element_names.size();
-    const unsigned num_species = species_names.size();
+    const auto num_elements = element_names.size();
+    const auto num_species = species_names.size();
 
-    auto get_element_stoichiometry = [&](unsigned ielement, unsigned ispecies)
+    auto get_element_stoichiometry = [&](unsigned ielement, unsigned ispecies) -> double
     {
         // Check if the element index corresponds to the charge index (last index)
         if(ielement == element_names.size() - 1)
@@ -626,8 +626,8 @@ auto Phreeqc::Impl::initializeFormulaMatrix() -> void
 auto Phreeqc::Impl::initializeStoichiometricMatrix() -> void
 {
     // Define the number of reactions and species
-    const unsigned num_reactions = reactions.size();
-    const unsigned num_species = numSpecies();
+    const auto num_reactions = reactions.size();
+    const auto num_species = numSpecies();
 
     // Initialize the stoichiometric matrix of the equilibrium reactions
     stoichiometric_matrix = zeros(num_reactions, num_species);
@@ -635,9 +635,9 @@ auto Phreeqc::Impl::initializeStoichiometricMatrix() -> void
     {
         for(auto pair : reactions[j])
         {
-            const std::string species_name = pair.first;
-            const double species_coef = pair.second;
-            const unsigned i = index(species_name, species_names);
+            const auto species_name = pair.first;
+            const auto species_coef = pair.second;
+            const auto i = index(species_name, species_names);
             stoichiometric_matrix(j, i) = species_coef;
         }
     }
@@ -691,32 +691,32 @@ auto Phreeqc::Impl::set(const real& T, const real& P) -> void
     this->P = P;
 
     // Update the temperature member (in units of K)
-    phreeqc.tk_x = T;
+    phreeqc.tk_x = T.val;
 
     // Update the temperature member (in units of celsius)
-    phreeqc.tc_x = T - 273.15;
+    phreeqc.tc_x = T.val - 273.15;
 
     // Update the pressure member (in units of atm)
-    phreeqc.patm_x = P * pascal_to_atm;
+    phreeqc.patm_x = P.val * pascal_to_atm;
 
     // Update the thermodynamic properties (T and P dependent)
     updateThermoProperties();
 }
 
-auto Phreeqc::Impl::set(const real& T, const real& P, const Vector& n) -> void
+auto Phreeqc::Impl::set(const real& T, const real& P, const VectorXr& n) -> void
 {
     // Set the current temperature and pressure of PHREEQC
     this->T = T;
     this->P = P;
 
     // Update the temperature member (in units of K)
-    phreeqc.tk_x = T;
+    phreeqc.tk_x = T.val;
 
     // Update the temperature member (in units of celsius)
-    phreeqc.tc_x = T - 273.15;
+    phreeqc.tc_x = T.val - 273.15;
 
     // Update the pressure member (in units of atm)
-    phreeqc.patm_x = P * pascal_to_atm;
+    phreeqc.patm_x = P.val * pascal_to_atm;
 
     // Update the amounts of the species
     setSpeciesAmounts(n);
@@ -742,7 +742,7 @@ auto Phreeqc::Impl::updateThermoProperties() -> void
     phreeqc.k_temp(phreeqc.tc_x, phreeqc.patm_x);
 
     // Set the ionic strength back to its original value
-    phreeqc.mu_x = I;
+    phreeqc.mu_x = I.val;
 
     // Update the standard Gibbs energies of the species with T and P corrections
     standard_molar_gibbs_energies = speciesMolarGibbsEnergies();
@@ -781,12 +781,12 @@ auto Phreeqc::Impl::updateChemicalProperties() -> void
 auto Phreeqc::Impl::updateAqueousProperties() -> void
 {
     // Define some auxiliary variables
-    const unsigned num_aqueous_species = aqueous_species.size();
-    const double ln_10 = std::log(10.0);
+    const auto num_aqueous_species = aqueous_species.size();
+    const auto ln_10 = std::log(10.0);
 
     // Define some auxiliary alias
-    Vector& ln_g = ln_activity_coefficients_aqueous_species;
-    Vector& ln_a = ln_activities_aqueous_species;
+    VectorXr& ln_g = ln_activity_coefficients_aqueous_species;
+    VectorXr& ln_a = ln_activities_aqueous_species;
 
     // Allocate memory
     ln_g.resize(num_aqueous_species);
@@ -819,36 +819,36 @@ auto Phreeqc::Impl::updateAqueousProperties() -> void
     // Calculate the natural log of the activities of the aqueous species
     for(unsigned i = 0; i < num_aqueous_species; ++i)
         ln_a[i] = std::isfinite(aqueous_species[i]->lm) ?
-            ln_g[i] + aqueous_species[i]->lm*ln_10 : 0.0;
+            ln_g[i] + aqueous_species[i]->lm*ln_10 : real{};
 
     // Get the molar amounts of the aqueous species
     const auto n_aqueous = n.head(num_aqueous_species);
 
     // Calculate the total amount of moles in the aqueous phase
-    const double n_total = sum(n_aqueous);
+    const auto n_total = sum(n_aqueous);
 
     // Calculate the mole fraction of H2O
-    const double nH2O = aqueous_species[iH2O]->moles;
-    const double xH2O = nH2O/n_total;
+    const auto nH2O = aqueous_species[iH2O]->moles;
+    const auto xH2O = nH2O/n_total;
 
     // Calculate the activity of water
     if(phreeqc.pitzer_model || phreeqc.sit_model)
         ln_a[iH2O] = std::log(phreeqc.AW);
     else
-        ln_a[iH2O] = std::log(xH2O);
+        ln_a[iH2O] = log(xH2O);
 
     // Get the molar volumes of the aqueous species with T, P, I corrections
     const auto v_aqueous = standard_molar_volumes_TPI.head(num_aqueous_species);
 
     // Calculate the molar volume of the aqueous phase with T, P, I corrections
-    molar_volume_aqueous_phase = (n_total > 0) ? dot(v_aqueous, n_aqueous)/n_total : 0.0;
+    molar_volume_aqueous_phase = (n_total > 0) ? dot(v_aqueous, n_aqueous)/n_total : real{};
 }
 
 auto Phreeqc::Impl::updateGaseousProperties() -> void
 {
     // The number of aqueous and gaseous species
-    const unsigned num_aqueous_species = aqueous_species.size();
-    const unsigned num_gaseous_species = gaseous_species.size();
+    const auto num_aqueous_species = aqueous_species.size();
+    const auto num_gaseous_species = gaseous_species.size();
 
     // Skip this function if the system has no gaseous phase
     if(num_gaseous_species == 0)
@@ -857,8 +857,8 @@ auto Phreeqc::Impl::updateGaseousProperties() -> void
     // Define some auxiliary variables
     const real T = temperature();
     const real P = pressure();
-    const double Patm = P * pascal_to_atm;
-    const double Pbar = P * pascal_to_bar;
+    const real Patm = P * pascal_to_atm;
+    const real Pbar = P * pascal_to_bar;
 
     // Define some auxiliary alias
     auto& ln_g = ln_activity_coefficients_gaseous_species;
@@ -869,22 +869,22 @@ auto Phreeqc::Impl::updateGaseousProperties() -> void
     ln_a.resize(num_gaseous_species);
 
     // Calculate the thermodynamic properties of the gaseous phase using Peng-Robinson EOS
-    const double v = phreeqc.calc_PR(gaseous_species, Patm, T, 0.0);
+    const auto v = phreeqc.calc_PR(gaseous_species, Patm.val, T.val, 0.0);
 
     // Calculate the ln activity coefficients and ln activities of the gaseous species
     for(unsigned i = 0; i < num_gaseous_species; ++i)
     {
-        const double x = gaseous_species[i]->fraction_x; // the molar fraction of the gas
-        const double phi = gaseous_species[i]->pr_phi;   // the fugacity coefficient of the gas
+        const auto x = gaseous_species[i]->fraction_x; // the molar fraction of the gas
+        const auto phi = gaseous_species[i]->pr_phi;   // the fugacity coefficient of the gas
         ln_g[i] = std::log(phi);
-        ln_a[i] = std::log(x * phi * Pbar);
+        ln_a[i] = log(x * phi * Pbar);
     }
 
     // Get the molar amounts of the gaseous species
     const auto n_gaseous = n.segment(num_aqueous_species, num_gaseous_species);
 
     // Calculate the total amount of moles in the gaseous phase
-    const double n_total = sum(n_gaseous);
+    const auto n_total = sum(n_gaseous);
 
     // Ensure the molar volume of the phase is zero if it has zero moles
     molar_volume_gaseous_phase = (n_total > 0.0) ? v : 0.0;
@@ -910,12 +910,12 @@ auto Phreeqc::Impl::numReactions() const -> unsigned
     return secondary_species.size() + gaseous_species.size() + mineral_species.size();
 }
 
-auto Phreeqc::Impl::setSpeciesAmounts(VectorConstRef n) -> void
+auto Phreeqc::Impl::setSpeciesAmounts(VectorXrConstRef n) -> void
 {
     // Get the number of aqueous, gaseous and mineral species
-    const unsigned num_aqueous = aqueous_species.size();
-    const unsigned num_gaseous = gaseous_species.size();
-    const unsigned num_mineral = mineral_species.size();
+    const auto num_aqueous = aqueous_species.size();
+    const auto num_gaseous = gaseous_species.size();
+    const auto num_mineral = mineral_species.size();
 
     // Get the segments of aqueous, gaseous and mineral species
     auto n_aqueous = n.head(num_aqueous);
@@ -923,8 +923,8 @@ auto Phreeqc::Impl::setSpeciesAmounts(VectorConstRef n) -> void
     auto n_mineral = n.tail(num_mineral);
 
     // Get data related to water
-    const double nH2O = n_aqueous[iH2O];
-    const double massH2O = nH2O * waterMolarMass;
+    const auto nH2O = n_aqueous[iH2O];
+    const auto massH2O = nH2O * waterMolarMass;
 
     // Set the copy of current molar amounts of all species in PHREEQC
     this->n = n;
@@ -935,22 +935,22 @@ auto Phreeqc::Impl::setSpeciesAmounts(VectorConstRef n) -> void
 
     // Set the molar amounts of the aqueous species
     for(unsigned i = 0; i < num_aqueous; ++i)
-        aqueous_species[i]->moles = n_aqueous[i];
+        aqueous_species[i]->moles = n_aqueous[i].val;
 
     // Set the molar amounts of the gaseous species
     for(unsigned i = 0; i < num_gaseous; ++i)
-        gaseous_species[i]->moles_x = n_gaseous[i];
+        gaseous_species[i]->moles_x = n_gaseous[i].val;
 
     // Set the molar amounts of the mineral species
     for(unsigned i = 0; i < num_mineral; ++i)
-        mineral_species[i]->moles_x = n_mineral[i];
+        mineral_species[i]->moles_x = n_mineral[i].val;
 
     // Check if mass of water is positive before updating aqueous properties
     if(massH2O > 0.0)
     {
         // Set the molalities of the aqueous species
         for(unsigned i = 0; i < num_aqueous; ++i)
-            aqueous_species[i]->lm = std::log10(n_aqueous[i]/massH2O);
+            aqueous_species[i]->lm = autodiff::val(log10(n_aqueous[i]/massH2O));
 
         // Update the ionic strength of the aqueous phase
         I = 0.0;
@@ -959,7 +959,7 @@ auto Phreeqc::Impl::setSpeciesAmounts(VectorConstRef n) -> void
         I *= 0.5/massH2O;
 
         // Set the ionic strength of the aqueous solution
-        phreeqc.mu_x = I;
+        phreeqc.mu_x = I.val;
     }
     else {
         // Ionic strength is zero as a result of zero amounts of water
@@ -967,28 +967,28 @@ auto Phreeqc::Impl::setSpeciesAmounts(VectorConstRef n) -> void
     }
 }
 
-auto Phreeqc::Impl::temperature() const -> double
+auto Phreeqc::Impl::temperature() const -> real
 {
     return T;
 }
 
-auto Phreeqc::Impl::pressure() const -> double
+auto Phreeqc::Impl::pressure() const -> real
 {
     return P;
 }
 
-auto Phreeqc::Impl::speciesAmounts() const -> VectorConstRef
+auto Phreeqc::Impl::speciesAmounts() const -> VectorXrConstRef
 {
     return n;
 }
 
-auto Phreeqc::Impl::lnEquilibriumConstants() -> Vector
+auto Phreeqc::Impl::lnEquilibriumConstants() -> VectorXr
 {
     // The natural log of 10
     const auto ln10 = 2.30258509299;
 
     // Collect the ln equilibrium constants of the reactions
-    Vector ln_k(numReactions());
+    VectorXr ln_k(numReactions());
 
     auto ireaction = 0;
     for(auto species : secondary_species)
@@ -1003,13 +1003,13 @@ auto Phreeqc::Impl::lnEquilibriumConstants() -> Vector
     return ln_k;
 }
 
-auto Phreeqc::Impl::speciesMolarVolumes() -> Vector
+auto Phreeqc::Impl::speciesMolarVolumes() -> VectorXr
 {
     // Define some auxiliary variables
     const auto R = universalGasConstant;
 
     // Collect the standard molar volumes of the species
-    Vector v(numSpecies());
+    VectorXr v(numSpecies());
 
     auto ispecies = 0;
     for(auto species : aqueous_species)
@@ -1024,26 +1024,26 @@ auto Phreeqc::Impl::speciesMolarVolumes() -> Vector
     return v;
 }
 
-auto Phreeqc::Impl::speciesMolarGibbsEnergies() -> Vector
+auto Phreeqc::Impl::speciesMolarGibbsEnergies() -> VectorXr
 {
     // The universal gas constant (in units of J/(mol*K))
-    const double R = universalGasConstant;
+    const auto R = universalGasConstant;
 
     // Calculate the natural log of the equilibrium constants
-    Vector ln_k = lnEquilibriumConstants();
+    VectorXr ln_k = lnEquilibriumConstants();
 
     // Use the LU decomposition of the stoichiometric matrix to calculate `u0`
-    Vector G = lu.solve(ln_k);
+    VectorXr G = lu.solve(ln_k);
     G *= -R*T;
 
     return G;
 }
 
-auto Phreeqc::Impl::phaseMolarVolumes() -> Vector
+auto Phreeqc::Impl::phaseMolarVolumes() -> VectorXr
 {
-    const unsigned num_phases = numPhases();
+    const auto num_phases = numPhases();
 
-    Vector vphases(num_phases);
+    VectorXr vphases(num_phases);
 
     if(num_phases > 0)
     {
@@ -1061,11 +1061,11 @@ auto Phreeqc::Impl::phaseMolarVolumes() -> Vector
     return vphases;
 }
 
-auto Phreeqc::Impl::lnActivityCoefficients() -> Vector
+auto Phreeqc::Impl::lnActivityCoefficients() -> VectorXr
 {
-    const unsigned num_minerals = mineral_species.size();
+    const auto num_minerals = mineral_species.size();
 
-    Vector ln_g(numSpecies());
+    VectorXr ln_g(numSpecies());
     ln_g << ln_activity_coefficients_aqueous_species,
             ln_activity_coefficients_gaseous_species,
             zeros(num_minerals);
@@ -1073,20 +1073,21 @@ auto Phreeqc::Impl::lnActivityCoefficients() -> Vector
     return ln_g;
 }
 
-auto Phreeqc::Impl::lnActivityConstants() -> Vector
+auto Phreeqc::Impl::lnActivityConstants() -> VectorXr
 {
     // The number of aqueous, gaseous, and mineral species
-    const unsigned num_aqueous_species = aqueous_species.size();
-    const unsigned num_gaseous_species = gaseous_species.size();
-    const unsigned num_mineral_species = mineral_species.size();
+    const auto num_aqueous_species = aqueous_species.size();
+    const auto num_gaseous_species = gaseous_species.size();
+    const auto num_mineral_species = mineral_species.size();
 
     // Convert pressure from pascal to bar
-    const double Pbar = 1e-5 * P;
+    const real Pbar = 1e-5 * P;
+    const real lnPbar = log(Pbar);
 
-    Vector res(numSpecies());
-    res << constants(num_aqueous_species, std::log(55.508472)),
-           constants(num_gaseous_species, std::log(Pbar)),
-           zeros(num_mineral_species);
+    VectorXr res(numSpecies());
+    res << VectorXr::Constant(num_aqueous_species, std::log(55.508472)),
+           VectorXr::Constant(num_gaseous_species, lnPbar),
+           VectorXr::Zero(num_mineral_species);
 
     // The ln activity constant for water is zero
     res[iH2O] = 0.0;
@@ -1094,14 +1095,14 @@ auto Phreeqc::Impl::lnActivityConstants() -> Vector
     return res;
 }
 
-auto Phreeqc::Impl::lnActivities() -> Vector
+auto Phreeqc::Impl::lnActivities() -> VectorXr
 {
     // Auxiliary variables
     const auto R = universalGasConstant;
     const auto num_minerals = mineral_species.size();
 
     // Collect the activities of the species
-    Vector ln_a(numSpecies());
+    VectorXr ln_a(numSpecies());
     ln_a << ln_activities_aqueous_species,
             ln_activities_gaseous_species,
             zeros(num_minerals);
@@ -1132,17 +1133,17 @@ Phreeqc::Phreeqc(std::string database)
 Phreeqc::~Phreeqc()
 {}
 
-auto Phreeqc::temperature() const -> double
+auto Phreeqc::temperature() const -> real
 {
     return pimpl->temperature();
 }
 
-auto Phreeqc::pressure() const -> double
+auto Phreeqc::pressure() const -> real
 {
     return pimpl->pressure();
 }
 
-auto Phreeqc::speciesAmounts() const -> Vector
+auto Phreeqc::speciesAmounts() const -> VectorXr
 {
     return pimpl->speciesAmounts();
 }
@@ -1164,8 +1165,8 @@ auto Phreeqc::numPhases() const -> unsigned
 
 auto Phreeqc::numSpeciesInPhase(Index iphase) const -> unsigned
 {
-    const unsigned num_aqueous = pimpl->aqueous_species.size();
-    const unsigned num_gaseous = pimpl->gaseous_species.size();
+    const auto num_aqueous = pimpl->aqueous_species.size();
+    const auto num_gaseous = pimpl->gaseous_species.size();
 
     // Ensure `index` is not out-of-bound
     Assert(iphase < numPhases(),
@@ -1248,52 +1249,52 @@ auto Phreeqc::stoichiometricMatrix() const -> Matrix
     return pimpl->stoichiometric_matrix;
 }
 
-auto Phreeqc::standardMolarGibbsEnergies() const -> Vector
+auto Phreeqc::standardMolarGibbsEnergies() const -> VectorXr
 {
     return pimpl->standard_molar_gibbs_energies;
 }
 
-auto Phreeqc::standardMolarEnthalpies() const -> Vector
+auto Phreeqc::standardMolarEnthalpies() const -> VectorXr
 {
     return zeros(numSpecies());
 }
 
-auto Phreeqc::standardMolarVolumes() const -> Vector
+auto Phreeqc::standardMolarVolumes() const -> VectorXr
 {
     return pimpl->standard_molar_volumes;
 }
 
-auto Phreeqc::standardMolarHeatCapacitiesConstP() const -> Vector
+auto Phreeqc::standardMolarHeatCapacitiesConstP() const -> VectorXr
 {
     return zeros(numSpecies());
 }
 
-auto Phreeqc::standardMolarHeatCapacitiesConstV() const -> Vector
+auto Phreeqc::standardMolarHeatCapacitiesConstV() const -> VectorXr
 {
     return zeros(numSpecies());
 }
 
-auto Phreeqc::lnActivityCoefficients() const -> Vector
+auto Phreeqc::lnActivityCoefficients() const -> VectorXr
 {
     return pimpl->lnActivityCoefficients();
 }
 
-auto Phreeqc::lnActivityConstants() const -> Vector
+auto Phreeqc::lnActivityConstants() const -> VectorXr
 {
     return pimpl->lnActivityConstants();
 }
 
-auto Phreeqc::lnActivities() const -> Vector
+auto Phreeqc::lnActivities() const -> VectorXr
 {
     return pimpl->lnActivities();
 }
 
-auto Phreeqc::lnEquilibriumConstants() const -> Vector
+auto Phreeqc::lnEquilibriumConstants() const -> VectorXr
 {
     return pimpl->lnEquilibriumConstants();
 }
 
-auto Phreeqc::phaseMolarVolumes() const -> Vector
+auto Phreeqc::phaseMolarVolumes() const -> VectorXr
 {
     return pimpl->phaseMolarVolumes();
 }

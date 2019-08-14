@@ -36,7 +36,6 @@
 #include <Reaktoro/Optimization/OptimumProblem.hpp>
 #include <Reaktoro/Optimization/OptimumResult.hpp>
 #include <Reaktoro/Optimization/OptimumSolver.hpp>
-#include <Reaktoro/Optimization/OptimumSolverRefiner.hpp>
 #include <Reaktoro/Optimization/OptimumState.hpp>
 
 namespace Reaktoro {
@@ -65,16 +64,16 @@ struct EquilibriumSolver::Impl
     Vector unitjEe; // FIXME: Improve design. These vectors are needed to calculate sensitivities, but they should not exist!
 
     /// The molar amounts of the species
-    Vector n;
+    VectorXr n;
 
     /// The dual potentials of the elements
-    Vector y;
+    VectorXr y;
 
     /// The dual potentials of the species
-    Vector z;
+    VectorXr z;
 
     /// The molar amounts of the elements in the equilibrium partition
-    Vector be;
+    VectorXr be;
 
     /// The standard chemical potentials of the species
     VectorXr u0;
@@ -86,7 +85,7 @@ struct EquilibriumSolver::Impl
     VectorXr ue;
 
     /// The chemical potentials of the inert species
-    Vector ui;
+    VectorXr ui;
 
     /// The mole fractions of the equilibrium species
     VectorXr xe;
@@ -227,7 +226,7 @@ struct EquilibriumSolver::Impl
         ObjectiveResult res;
 
         // The Gibbs energy function to be minimized
-        optimum_problem.objective = [=](VectorConstRef ne) mutable
+        optimum_problem.objective = [=](VectorXrConstRef ne) mutable
         {
             // Set the molar amounts of the species
             n(ies) = ne;
@@ -269,7 +268,7 @@ struct EquilibriumSolver::Impl
             case GibbsHessian::ApproximationDiagonal:
                 res.hessian.mode = Hessian::Diagonal;
                 // res.hessian.diagonal = diagonal(xe.ddn)/xe.val;
-                res.hessian.diagonal = 1/xe - 1;
+                res.hessian.diagonal = (1/xe - 1).cast<double>();
                 break;
             }
 
@@ -287,8 +286,8 @@ struct EquilibriumSolver::Impl
     auto updateOptimumState(const ChemicalState& state) -> void
     {
         // The temperature and the RT factor
-        const real T  = state.temperature();
-        const double RT = universalGasConstant*T;
+        const auto T  = state.temperature();
+        const auto RT = universalGasConstant*T;
 
         // Set the molar amounts of the species
         n = state.speciesAmounts();
@@ -309,8 +308,8 @@ struct EquilibriumSolver::Impl
     auto updateChemicalState(ChemicalState& state) -> void
     {
         // The temperature and the RT factor
-        const real T  = state.temperature();
-        const double RT = universalGasConstant*T;
+        const auto T  = state.temperature();
+        const auto RT = universalGasConstant*T;
 
         // Update the molar amounts of the equilibrium species
         n(ies) = optimum_state.x;
@@ -336,7 +335,7 @@ struct EquilibriumSolver::Impl
     }
 
     /// Find a feasible approximation for an equilibrium problem.
-    auto approximate(ChemicalState& state, const real& T, const real& P, Vector be) -> EquilibriumResult
+    auto approximate(ChemicalState& state, const real& T, const real& P, VectorXrConstRef be) -> EquilibriumResult
     {
         // Check the dimension of the vector `be`
         Assert(unsigned(be.rows()) == Ee,
@@ -350,8 +349,8 @@ struct EquilibriumSolver::Impl
         state.setPressure(P);
 
         // Auxiliary variables
-        const double RT = universalGasConstant*T;
-        const double inf = std::numeric_limits<double>::infinity();
+        const auto RT = universalGasConstant*T;
+        const auto inf = std::numeric_limits<double>::infinity();
 
         // Update the internal state of n, y, z
         n = state.speciesAmounts();
@@ -362,10 +361,10 @@ struct EquilibriumSolver::Impl
         properties.update(T, P);
 
         // Get the standard Gibbs energies of the equilibrium species
-        const Vector ge0 = properties.standardPartialMolarGibbsEnergies()(ies);
+        const VectorXr ge0 = properties.standardPartialMolarGibbsEnergies()(ies);
 
         // Get the ln activity constants of the equilibrium species
-        const Vector ln_ce = properties.lnActivityConstants()(ies);
+        const VectorXr ln_ce = properties.lnActivityConstants()(ies);
 
         // Define the optimisation problem
         OptimumProblem optimum_problem;
@@ -395,8 +394,8 @@ struct EquilibriumSolver::Impl
         n(ies) = optimum_state.x;
 
         // Update the dual potentials of the species and elements (in units of J/mol)
-        z = zeros(N); z(ies) = optimum_state.z * RT;
-        y = zeros(E); y(iee) = optimum_state.y * RT;
+        z = zeros(N); z(ies) = optimum_state.z.cast<real>() * RT;
+        y = zeros(E); y(iee) = optimum_state.y.cast<real>() * RT;
 
         // Update the chemical state
         state.setSpeciesAmounts(n);
@@ -407,7 +406,7 @@ struct EquilibriumSolver::Impl
     }
 
     /// Find an initial guess for an equilibrium problem.
-    auto initialguess(ChemicalState& state, const real& T, const real& P, Vector be) -> EquilibriumResult
+    auto initialguess(ChemicalState& state, const real& T, const real& P, VectorXrConstRef be) -> EquilibriumResult
     {
         // Solve the linear programming problem to obtain an approximation
         auto result = approximate(state, T, P, be);
@@ -443,7 +442,7 @@ struct EquilibriumSolver::Impl
     }
 
     /// Solve the equilibrium problem
-    auto solve(ChemicalState& state, const real& T, const real& P, VectorConstRef be) -> EquilibriumResult
+    auto solve(ChemicalState& state, const real& T, const real& P, VectorXrConstRef be) -> EquilibriumResult
     {
         // Check the dimension of the vector `be`
         Assert(be.size() == static_cast<int>(Ee),
@@ -455,10 +454,10 @@ struct EquilibriumSolver::Impl
     }
 
     /// Solve the equilibrium problem
-    auto solve(ChemicalState& state, const real& T, const real& P, const double* b) -> EquilibriumResult
+    auto solve(ChemicalState& state, const real& T, const real& P, const real* b) -> EquilibriumResult
     {
         // Set the molar amounts of the elements
-        be = Vector::Map(b, Ee);
+        be = VectorXr::Map(b, Ee);
 
         // Set temperature and pressure of the chemical state
         state.setTemperature(T);
@@ -601,7 +600,7 @@ auto EquilibriumSolver::setPartition(const Partition& partition) -> void
     pimpl->setPartition(partition);
 }
 
-auto EquilibriumSolver::approximate(ChemicalState& state, const real& T, const real& P, VectorConstRef be) -> EquilibriumResult
+auto EquilibriumSolver::approximate(ChemicalState& state, const real& T, const real& P, VectorXrConstRef be) -> EquilibriumResult
 {
     return pimpl->approximate(state, T, P, be);
 }
@@ -616,12 +615,12 @@ auto EquilibriumSolver::approximate(ChemicalState& state) -> EquilibriumResult
     return approximate(state, state.temperature(), state.pressure(), state.elementAmounts());
 }
 
-auto EquilibriumSolver::solve(ChemicalState& state, const real& T, const real& P, VectorConstRef be) -> EquilibriumResult
+auto EquilibriumSolver::solve(ChemicalState& state, const real& T, const real& P, VectorXrConstRef be) -> EquilibriumResult
 {
     return pimpl->solve(state, T, P, be);
 }
 
-auto EquilibriumSolver::solve(ChemicalState& state, const real& T, const real& P, const double* be) -> EquilibriumResult
+auto EquilibriumSolver::solve(ChemicalState& state, const real& T, const real& P, const real* be) -> EquilibriumResult
 {
     return pimpl->solve(state, T, P, be);
 }

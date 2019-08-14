@@ -43,7 +43,7 @@ struct OptimumSolverIpNewton::Impl
     KktSolver kkt;
 
     /// The trial iterate x
-    Vector xtrial;
+    VectorXr xtrial;
 
     /// The outputter instance
     Outputter outputter;
@@ -199,13 +199,13 @@ struct OptimumSolverIpNewton::Impl
             rhs.rz.noalias() = -(x % z - mu);
 
             // Calculate the optimality, feasibility and centrality errors
-            errorf = norminf(rhs.rx);
-            errorh = norminf(rhs.ry) / bnorm;
-            errorc = norminf(rhs.rz);
+            errorf = autodiff::val( norminf(rhs.rx) );
+            errorh = autodiff::val( norminf(rhs.ry) / bnorm );
+            errorc = autodiff::val( norminf(rhs.rz) );
             error = std::max({errorf, errorh, errorc});
         };
 
-        auto update_objective = [&](VectorConstRef x)
+        auto update_objective = [&](VectorXrConstRef x)
         {
             if(problem.c.rows())
             {
@@ -283,7 +283,7 @@ struct OptimumSolverIpNewton::Impl
             // Calculate the current trial iterate for x
             for(int i = 0; i < n; ++i)
                 xtrial[i] = (x[i] + sol.dx[i] > 0.0) ?
-                    x[i] + sol.dx[i] : x[i]*(1.0 - tau);
+                    static_cast<real>(x[i] + sol.dx[i]) : static_cast<real>(x[i]*(1.0 - tau));
 
             // Update the objective function state at the trial iterate
             update_objective(xtrial);

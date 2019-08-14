@@ -66,10 +66,10 @@ struct Interpreter::Impl
     auto calculateEquilibrium(json node) -> void
     {
         EquilibriumProblem problem(system);
-        problem.setTemperature(node["temperature"]["value"], node["temperature"]["units"]);
-        problem.setPressure(node["pressure"]["value"], node["pressure"]["units"]);
+        problem.setTemperature(node["temperature"]["value"].get<double>(), node["temperature"]["units"]);
+        problem.setPressure(node["pressure"]["value"].get<double>(), node["pressure"]["units"]);
         for(auto item : node["substances"])
-            problem.add(item["substance"], item["quantity"], item["units"]);
+            problem.add(item["substance"], item["quantity"].get<double>(), item["units"]);
 
         ChemicalState state = equilibrate(problem);
 

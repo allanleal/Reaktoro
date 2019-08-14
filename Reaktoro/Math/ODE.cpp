@@ -17,6 +17,10 @@
 
 #include "ODE.hpp"
 
+// autodiff includes
+#include <autodiff/forward/forward.hpp>
+#include <autodiff/forward/eigen.hpp>
+
 // Sundials includes
 #include <cvode/cvode.h>
 #include <cvode/cvode_dense.h>
@@ -51,13 +55,13 @@ int CVODEJacobian(long int N, realtype t, N_Vector y, N_Vector fy, DlsMat J, voi
 
 struct ODEData
 {
-    ODEData(const ODEProblem& problem, VectorRef y, VectorRef f, MatrixRef J)
+    ODEData(const ODEProblem& problem, VectorXrRef y, VectorXrRef f, MatrixRef J)
     : problem(problem), y(y), f(f), J(J), num_equations(problem.numEquations())
     {}
 
     const ODEProblem& problem;
-    VectorRef y;
-    VectorRef f;
+    VectorXrRef y;
+    VectorXrRef f;
     MatrixRef J;
     int num_equations;
 };
@@ -89,13 +93,16 @@ struct ODESolver::Impl
     N_Vector cvode_y;
 
     /// The auxiliary vector y
-    Vector y;
+    VectorXr y;
 
     /// The auxiliary vector f for the function evaluation
-    Vector f;
+    VectorXr f;
 
     /// The auxiliary matrix J for the Jacobian evaluation
     Matrix J;
+
+    /// The auxiliary vectors y and f with  entries
+    VectorXd yd, fd;
 
     /// Construct a default ODESolver::Impl instance
     Impl()
@@ -112,7 +119,7 @@ struct ODESolver::Impl
     }
 
     /// Initializes the ODE solver
-    auto initialize(double tstart, VectorConstRef y) -> void
+    auto initialize(real tstart, VectorXrConstRef y) -> void
     {
         // Check if the ordinary differential problem has been initialized
         Assert(problem.initialized(),
@@ -140,7 +147,7 @@ struct ODESolver::Impl
         // Initialize a new vector y
         cvode_y = N_VNew_Serial(num_equations);
         for(int i = 0; i < num_equations; ++i)
-            VecEntry(cvode_y, i) = y[i];
+            VecEntry(cvode_y, i) = y[i].val;
 
         // Initialize a new cvode context
         cvode_mem = CVodeCreate(CVODEStep(options.step), CVODEIteration(options.iteration));
@@ -154,7 +161,7 @@ struct ODESolver::Impl
             "There was an error creating the CVODE context.");
 
         // Initialize the cvode context
-        CheckInitialize(CVodeInit(cvode_mem, CVODEFunction, tstart, cvode_y));
+        CheckInitialize(CVodeInit(cvode_mem, CVODEFunction, tstart.val, cvode_y));
 
         // Initialize the vector of absolute tolerances
         N_Vector abstols = N_VNew_Serial(num_equations);
@@ -191,19 +198,19 @@ struct ODESolver::Impl
     }
 
     /// Integrate the ODE performing a single step.
-    auto integrate(double& t, VectorRef y) -> void
+    auto integrate(real& t, VectorXrRef y) -> void
     {
         // Initialize the ODE data
         ODEData data(problem, y, f, J);
 
         // Define an infinite time.
-        double tfinal = 10*(t + 1);
+        const real tfinal = 10*(t + 1);
 
         // Set the user-defined data to cvode_mem
         CheckIntegration(CVodeSetUserData(cvode_mem, &data));
 
         // Solve the ode problem from `tstart` to `tfinal`
-        CheckIntegration(CVode(cvode_mem, tfinal, cvode_y, &t, CV_ONE_STEP));
+        CheckIntegration(CVode(cvode_mem, tfinal.val, cvode_y, &t.val, CV_ONE_STEP));
 
         // Transfer the result from cvode_y to y
         for(int i = 0; i < data.num_equations; ++i)
@@ -211,7 +218,7 @@ struct ODESolver::Impl
     }
 
     /// Integrate the ODE performing a single step not going over a given time.
-    auto integrate(double& t, VectorRef y, double tfinal) -> void
+    auto integrate(real& t, VectorXrRef y, real tfinal) -> void
     {
         // Initialize the ODE data
         ODEData data(problem, y, f, J);
@@ -220,13 +227,13 @@ struct ODESolver::Impl
         CheckIntegration(CVodeSetUserData(cvode_mem, &data));
 
         // Solve the ode problem from `tstart` to `tfinal`
-        CheckIntegration(CVode(cvode_mem, tfinal, cvode_y, &t, CV_ONE_STEP));
+        CheckIntegration(CVode(cvode_mem, tfinal.val, cvode_y, &t.val, CV_ONE_STEP));
 
         // Check if the current time is now greater than the final time
         if(t > tfinal)
         {
             // Interpolate y at t using its old state and the new one
-            CheckIntegration(CVodeGetDky(cvode_mem, tfinal, 0, cvode_y));
+            CheckIntegration(CVodeGetDky(cvode_mem, tfinal.val, 0, cvode_y));
 
             // Adjust the current time
             t = tfinal;
@@ -238,7 +245,7 @@ struct ODESolver::Impl
     }
 
     /// Solve the ODE equations from a given start time to a final one.
-    auto solve(double& t, double dt, VectorRef y) -> void
+    auto solve(real& t, real dt, VectorXrRef y) -> void
     {
         // Initialize the cvode context
         initialize(t, y);
@@ -250,7 +257,7 @@ struct ODESolver::Impl
         CheckIntegration(CVodeSetUserData(cvode_mem, &data));
 
         // Solve the ode problem from `tstart` to `tfinal`
-        CheckIntegration(CVode(cvode_mem, t + dt, cvode_y, &t, CV_NORMAL));
+        CheckIntegration(CVode(cvode_mem, t.val + dt.val, cvode_y, &t.val, CV_NORMAL));
 
         // Transfer the result from cvode_y to y
         for(int i = 0; i < data.num_equations; ++i)
@@ -295,7 +302,7 @@ int CVODEFunction(realtype t, N_Vector y, N_Vector f, void* user_data)
     int result = data.problem.function(t, data.y, data.f);
 
     for(int i = 0; i < data.num_equations; ++i)
-        VecEntry(f, i) = data.f[i];
+        VecEntry(f, i) = data.f[i].val;
 
     return result;
 }
@@ -307,7 +314,17 @@ int CVODEJacobian(long int N, realtype t, N_Vector y, N_Vector fy, DlsMat J, voi
     for(int i = 0; i < data.num_equations; ++i)
         data.y[i] = VecEntry(y, i);
 
-    int result = data.problem.jacobian(t, data.y, data.J);
+    int result;
+
+    auto F = [&](VectorXrConstRef y)
+    {
+        result = data.problem.function(t, y, data.f);
+        return data.f;
+    };
+
+    data.J = autodiff::forward::jacobian(F, wrt(data.y), at(data.y), data.f);
+
+    // int result = data.problem.jacobian(t, data.y, data.J);
 
     for(int i = 0; i < data.num_equations; ++i)
         for(int j = 0; j < data.num_equations; ++j)
@@ -368,12 +385,12 @@ auto ODEProblem::jacobian() const -> const ODEJacobian&
     return pimpl->ode_jacobian;
 }
 
-auto ODEProblem::function(double t, VectorConstRef y, VectorRef f) const -> int
+auto ODEProblem::function(real t, VectorXrConstRef y, VectorXrRef f) const -> int
 {
     return function()(t, y, f);
 }
 
-auto ODEProblem::jacobian(double t, VectorConstRef y, MatrixRef J) const -> int
+auto ODEProblem::jacobian(real t, VectorXrConstRef y, MatrixRef J) const -> int
 {
     return jacobian()(t, y, J);
 }
@@ -401,22 +418,22 @@ auto ODESolver::setProblem(const ODEProblem& problem) -> void
     pimpl->problem = problem;
 }
 
-auto ODESolver::initialize(double tstart, VectorConstRef y) -> void
+auto ODESolver::initialize(real tstart, VectorXrConstRef y) -> void
 {
     pimpl->initialize(tstart, y);
 }
 
-auto ODESolver::integrate(double& t, VectorRef y) -> void
+auto ODESolver::integrate(real& t, VectorXrRef y) -> void
 {
     pimpl->integrate(t, y);
 }
 
-auto ODESolver::integrate(double& t, VectorRef y, double tfinal) -> void
+auto ODESolver::integrate(real& t, VectorXrRef y, real tfinal) -> void
 {
     pimpl->integrate(t, y, tfinal);
 }
 
-auto ODESolver::solve(double& t, double dt, VectorRef y) -> void
+auto ODESolver::solve(real& t, real dt, VectorXrRef y) -> void
 {
     pimpl->solve(t, dt, y);
 }

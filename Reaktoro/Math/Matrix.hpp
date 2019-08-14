@@ -22,11 +22,21 @@
 // Eigen includes
 #include <Reaktoro/deps/eigen3/Eigen/Core>
 
+// autodiff includes
+#include <autodiff/forward/forward.hpp>
+#include <autodiff/forward/eigen.hpp>
+
 // Reaktoro includes
 #include <Reaktoro/Common/Index.hpp>
 #include <Reaktoro/Common/Real.hpp>
 
 namespace Reaktoro {
+
+using VectorXr = Eigen::VectorXdual; /// Alias to Eigen type Eigen::VectorXdual.
+using VectorXrRef = Eigen::Ref<VectorXr>; ///< Alias to Eigen type Eigen::Ref<VectorXr>.
+using VectorXrConstRef = Eigen::Ref<const VectorXr>; ///< Alias to Eigen type Eigen::Ref<const VectorXr>.
+using VectorXrMap = Eigen::Map<VectorXr>; ///< Alias to Eigen type Eigen::Map<VectorXr>.
+using VectorXrConstMap = Eigen::Map<const VectorXr>; ///< Alias to Eigen type Eigen::Map<const VectorXr>.
 
 using Vector           = Eigen::VectorXd;                             /// < Alias to Eigen type VectorXd.
 using VectorRef        = Eigen::Ref<Eigen::VectorXd>;                 /// < Alias to Eigen type Ref<VectorXd>.
@@ -49,52 +59,42 @@ using MatrixMap      = Eigen::Map<Eigen::MatrixXd>;       ///< Alias to Eigen ty
 using MatrixConstMap = Eigen::Map<const Eigen::MatrixXd>; ///< Alias to Eigen type Map<const MatrixXd>.
 
 using Vector = Eigen::VectorXd; /// Alias to Eigen type Eigen::VectorXd.
-using VectorXr = Eigen::VectorXd; /// Alias to Eigen type Eigen::VectorXd.
 using VectorXd = Eigen::VectorXd; /// Alias to Eigen type Eigen::VectorXd.
 using VectorXi = Eigen::VectorXi; /// Alias to Eigen type Eigen::VectorXi.
 
 using VectorRef = Eigen::Ref<VectorXd>; ///< Alias to Eigen type Eigen::Ref<VectorXd>.
-using VectorXrRef = Eigen::Ref<VectorXd>; ///< Alias to Eigen type Eigen::Ref<VectorXd>.
 using VectorXdRef = Eigen::Ref<VectorXd>; ///< Alias to Eigen type Eigen::Ref<VectorXd>.
 using VectorXiRef = Eigen::Ref<VectorXi>; ///< Alias to Eigen type Eigen::Ref<VectorXi>.
 
 using VectorConstRef = Eigen::Ref<const VectorXd>; ///< Alias to Eigen type Eigen::Ref<const VectorXd>.
-using VectorXrConstRef = Eigen::Ref<const VectorXd>; ///< Alias to Eigen type Eigen::Ref<const VectorXd>.
 using VectorXdConstRef = Eigen::Ref<const VectorXd>; ///< Alias to Eigen type Eigen::Ref<const VectorXd>.
 using VectorXiConstRef = Eigen::Ref<const VectorXi>; ///< Alias to Eigen type Eigen::Ref<const VectorXi>.
 
 using VectorMap = Eigen::Map<VectorXd>; ///< Alias to Eigen type Eigen::Map<VectorXd>.
-using VectorXrMap = Eigen::Map<VectorXd>; ///< Alias to Eigen type Eigen::Map<VectorXd>.
 using VectorXdMap = Eigen::Map<VectorXd>; ///< Alias to Eigen type Eigen::Map<VectorXd>.
 using VectorXiMap = Eigen::Map<VectorXi>; ///< Alias to Eigen type Eigen::Map<VectorXi>.
 
 using VectorConstMap = Eigen::Map<const VectorXd>; ///< Alias to Eigen type Eigen::Map<const VectorXd>.
-using VectorXrConstMap = Eigen::Map<const VectorXd>; ///< Alias to Eigen type Eigen::Map<const VectorXd>.
 using VectorXdConstMap = Eigen::Map<const VectorXd>; ///< Alias to Eigen type Eigen::Map<const VectorXd>.
 using VectorXiConstMap = Eigen::Map<const VectorXi>; ///< Alias to Eigen type Eigen::Map<const VectorXi>.
 
 using Matrix = Eigen::MatrixXd; /// Alias to Eigen type Eigen::MatrixXd.
-using MatrixXr = Eigen::MatrixXd; /// Alias to Eigen type Eigen::MatrixXd.
 using MatrixXd = Eigen::MatrixXd; /// Alias to Eigen type Eigen::MatrixXd.
 using MatrixXi = Eigen::MatrixXi; /// Alias to Eigen type Eigen::MatrixXi.
 
 using MatrixRef = Eigen::Ref<MatrixXd>; ///< Alias to Eigen type Eigen::Ref<MatrixXd>.
-using MatrixXrRef = Eigen::Ref<MatrixXd>; ///< Alias to Eigen type Eigen::Ref<MatrixXd>.
 using MatrixXdRef = Eigen::Ref<MatrixXd>; ///< Alias to Eigen type Eigen::Ref<MatrixXd>.
 using MatrixXiRef = Eigen::Ref<MatrixXi>; ///< Alias to Eigen type Eigen::Ref<MatrixXi>.
 
 using MatrixConstRef = Eigen::Ref<const MatrixXd>; ///< Alias to Eigen type Eigen::Ref<const MatrixXd>.
-using MatrixXrConstRef = Eigen::Ref<const MatrixXd>; ///< Alias to Eigen type Eigen::Ref<const MatrixXd>.
 using MatrixXdConstRef = Eigen::Ref<const MatrixXd>; ///< Alias to Eigen type Eigen::Ref<const MatrixXd>.
 using MatrixXiConstRef = Eigen::Ref<const MatrixXi>; ///< Alias to Eigen type Eigen::Ref<const MatrixXi>.
 
 using MatrixMap = Eigen::Map<MatrixXd>; ///< Alias to Eigen type Eigen::Map<MatrixXd>.
-using MatrixXrMap = Eigen::Map<MatrixXd>; ///< Alias to Eigen type Eigen::Map<MatrixXd>.
 using MatrixXdMap = Eigen::Map<MatrixXd>; ///< Alias to Eigen type Eigen::Map<MatrixXd>.
 using MatrixXiMap = Eigen::Map<MatrixXi>; ///< Alias to Eigen type Eigen::Map<MatrixXi>.
 
 using MatrixConstMap = Eigen::Map<const MatrixXd>; ///< Alias to Eigen type Eigen::Map<const MatrixXd>.
-using MatrixXrConstMap = Eigen::Map<const MatrixXd>; ///< Alias to Eigen type Eigen::Map<const MatrixXd>.
 using MatrixXdConstMap = Eigen::Map<const MatrixXd>; ///< Alias to Eigen type Eigen::Map<const MatrixXd>.
 using MatrixXiConstMap = Eigen::Map<const MatrixXi>; ///< Alias to Eigen type Eigen::Map<const MatrixXi>.
 
@@ -341,15 +341,15 @@ auto diagonal(const Eigen::MatrixBase<Derived>& mat) -> decltype(mat.diagonal())
 
 /// Return the Lp norm of a matrix
 template<int p, typename Derived>
-auto norm(const Eigen::MatrixBase<Derived>& mat) -> double;
+auto norm(const Eigen::MatrixBase<Derived>& mat);
 
 /// Return the L2 norm of a matrix
 template<typename Derived>
-auto norm(const Eigen::MatrixBase<Derived>& mat) -> double;
+auto norm(const Eigen::MatrixBase<Derived>& mat);
 
 /// Return the L-inf norm of a matrix
 template<typename Derived>
-auto norminf(const Eigen::MatrixBase<Derived>& mat) -> double;
+auto norminf(const Eigen::MatrixBase<Derived>& mat);
 
 /// Return the sum of the components of a matrix
 template<typename Derived>

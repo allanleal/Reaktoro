@@ -50,6 +50,12 @@ struct NonlinearSolver::Impl
     /// The outputter instance
     Outputter outputter;
 
+    /// The evaluated non-linear function
+    Vector F;
+
+    /// The evaluated Jacobian of the non-linear function
+    Matrix J;
+
     /// Solve the optimization problem.
     auto solve(const NonlinearProblem& problem, VectorRef x, const NonlinearOptions& options) -> NonlinearResult
     {
@@ -70,7 +76,8 @@ struct NonlinearSolver::Impl
         const auto& b = problem.b;
 
         // Auxiliary references to residual value and jacobian
-        auto& F = residual.val;
+        F = residual.val.cast<double>();
+
         auto& J = residual.jacobian;
 
         // Define auxiliary references to general options
@@ -86,7 +93,7 @@ struct NonlinearSolver::Impl
         auto& succeeded = result.succeeded = false;
 
         // Ensure the initial guess for `x` has adequate dimension
-        if(Index(x.size()) != n) x = zeros(n);
+        if(x.size() != n) x = zeros(n);
 
         // The function that outputs the header and initial state of the solution
         auto output_initial_state = [&]()
@@ -167,10 +174,10 @@ struct NonlinearSolver::Impl
             unsigned tentatives = 0;
 
             // Calculate the current quadratic residual function
-            const double f = 0.5 * tr(F) * F;
+            const auto f = 0.5 * tr(F) * F;
 
             // Calculate the slope of the Newton step
-            const double slope = tr(F) * dx;
+            const auto slope = tr(F) * dx;
 
             // Repeat until a suitable xtrial iterate if found such that f(xtrial) is finite
             for(; tentatives < 4; ++tentatives)
@@ -192,10 +199,10 @@ struct NonlinearSolver::Impl
                     break;
 
                 // Calculate the new quadratic residual function
-                const double f_new = 0.5 * tr(F) * F;
+                const auto f_new = 0.5 * tr(F) * F;
 
                 // Check if the trial iterate pass the Armijo condition
-                if(f_new <= 0.1*f || f_new <= f + armijo*alpha*alphax*slope + 1e-14*f)
+                if(f_new <= 0.1*f || f_new <= f + armijo*alpha*alphax*slope + 1e-14*f )
                     break;
 
                 // Decrease alpha in a hope that a shorter step results in f(xtrial) succeeded

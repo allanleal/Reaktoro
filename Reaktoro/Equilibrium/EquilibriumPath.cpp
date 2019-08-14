@@ -80,16 +80,16 @@ struct EquilibriumPath::Impl
         const Indices& ies = partition.indicesEquilibriumSpecies();
 
         /// The temperatures at the initial and final chemical states
-        const real T_i = state_i.temperature();
-        const real T_f = state_f.temperature();
+        const auto T_i = state_i.temperature();
+        const auto T_f = state_f.temperature();
 
         /// The pressures at the initial and final chemical states
-        const real P_i = state_i.pressure();
-        const real P_f = state_f.pressure();
+        const auto P_i = state_i.pressure();
+        const auto P_f = state_f.pressure();
 
         /// The molar amounts of the elements in the equilibrium partition at the initial and final chemical states
-        const Vector be_i = state_i.elementAmountsInSpecies(ies);
-        const Vector be_f = state_f.elementAmountsInSpecies(ies);
+        const auto be_i = state_i.elementAmountsInSpecies(ies);
+        const auto be_f = state_f.elementAmountsInSpecies(ies);
 
         // The equilibrium solver
         EquilibriumSolver equilibrium(system);
@@ -103,12 +103,12 @@ struct EquilibriumPath::Impl
         ChemicalState state = state_i;
 
         // The ODE function describing the equilibrium path
-        ODEFunction f = [&](double t, VectorConstRef ne, VectorRef res) -> int
+        ODEFunction f = [&](real t, VectorXrConstRef ne, VectorXrRef res) -> int
         {
-            static double tprev = t;
+            static auto tprev = t;
 
             // Skip if t is greater or equal than 1
-            if(t > 0.0 && std::abs(t - tprev) >= options.maxstep) return 1;
+            if(t > 0.0 && abs(t - tprev) >= options.maxstep) return 1;
 
             // Update tprev
             tprev = t;
@@ -119,7 +119,7 @@ struct EquilibriumPath::Impl
             // Calculate T, P, be at current t
             const real T  = T_i + t * (T_f - T_i);
             const real P  = P_i + t * (P_f - P_i);
-            const Vector be = be_i + t * (be_f - be_i);
+            const VectorXr be = be_i + t * (be_f - be_i);
 
             // Perform the equilibrium calculation at T, P, be
             result.equilibrium += equilibrium.solve(state, T, P, be);
@@ -131,9 +131,9 @@ struct EquilibriumPath::Impl
             if(!result.equilibrium.optimum.succeeded) return 1;
 
             // Calculate the right-hand side vector of the ODE
-            res = sensitivity.dndT * (T_f - T_i) +
-                  sensitivity.dndP * (P_f - P_i) +
-                  sensitivity.dndb * (be_f - be_i);
+            res = sensitivity.dndT.cast<real>() * (T_f - T_i) +
+                  sensitivity.dndP.cast<real>() * (P_f - P_i) +
+                  sensitivity.dndb.cast<real>() * (be_f - be_i);
 
             return 0;
         };
@@ -144,11 +144,11 @@ struct EquilibriumPath::Impl
         problem.setFunction(f);
 
         // The initial and final molar amounts of equilibrium species
-        Vector ne_i = rows(state_i.speciesAmounts(), ies);
-        Vector ne_f = rows(state_i.speciesAmounts(), ies);
+        const auto ne_f = state_i.speciesAmounts()(ies);
+        const auto ne_i = state_i.speciesAmounts()(ies);
 
         // Adjust the absolute tolerance parameters for each component
-        options.ode.abstols = options.ode.abstol * ((ne_i + ne_f)/2.0 + 1.0);
+        options.ode.abstols = options.ode.abstol * ((ne_i + ne_f).cast<double>()/2.0 + 1.0);
 
         // Ensure the iteration algorithm is not Newton
         options.ode.iteration = ODEIterationMode::Functional;
@@ -158,8 +158,8 @@ struct EquilibriumPath::Impl
         ode.setProblem(problem);
 
         // Initialize initial conditions
-        double t = 0.0;
-        Vector& ne = ne_i;
+        real t = 0.0;
+        VectorXr ne = ne_i;
 
         // Initialize the ODE solver
         ode.initialize(t, ne);
@@ -174,10 +174,10 @@ struct EquilibriumPath::Impl
         while(t < 1.0)
         {
             // Update the output with current state
-            if(output) output.update(state, t);
+            if(output) output.update(state, t.val);
 
             // Update the plots with current state
-            for(auto& plot : plots) plot.update(state, t);
+            for(auto& plot : plots) plot.update(state, t.val);
 
             // Integrate one time step only
             ode.integrate(t, ne);

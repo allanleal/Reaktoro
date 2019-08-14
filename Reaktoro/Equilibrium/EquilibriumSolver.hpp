@@ -64,7 +64,7 @@ public:
     /// Find an initial feasible guess for an equilibrium problem.
     /// @param state[in,out] The initial guess and the final state of the equilibrium approximation
     /// @param be The molar amounts of the elements in the equilibrium partition
-    auto approximate(ChemicalState& state, const real& T, const real& P, VectorConstRef be) -> EquilibriumResult;
+    auto approximate(ChemicalState& state, const real& T, const real& P, VectorXrConstRef be) -> EquilibriumResult;
 
     /// Find an initial feasible guess for an equilibrium problem.
     /// @param state[in,out] The initial guess and the final state of the equilibrium approximation
@@ -78,14 +78,14 @@ public:
     /// Solve an equilibrium problem with given molar amounts of the elements in the equilibrium partition..
     /// @param state[in,out] The initial guess and the final state of the equilibrium calculation
     /// @param be The molar amounts of the elements in the equilibrium partition
-    auto solve(ChemicalState& state, const real& T, const real& P, VectorConstRef be) -> EquilibriumResult;
+    auto solve(ChemicalState& state, const real& T, const real& P, VectorXrConstRef be) -> EquilibriumResult;
 
     /// Solve an equilibrium problem with given molar amounts of the elements in the equilibrium partition..
     /// @param state[in,out] The initial guess and the final state of the equilibrium calculation
     /// @param T The temperature (in units of K)
     /// @param P The pressure (in units of Pa)
     /// @param be The molar amounts of the elements in the equilibrium partition
-    auto solve(ChemicalState& state, const real& T, const real& P, const double* be) -> EquilibriumResult;
+    auto solve(ChemicalState& state, const real& T, const real& P, const real* be) -> EquilibriumResult;
 
     /// Solve an equilibrium problem with given equilibrium problem.
     /// @param state[in,out] The initial guess and the final state of the equilibrium calculation

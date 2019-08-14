@@ -59,7 +59,7 @@ struct EquilibriumProblem::Impl
     real P = 1.0e+5;
 
     /// The amounts of the elements for the equilibrium problem (in units of mol)
-    Vector b;
+    VectorXr b;
 
     /// Construct a EquilibriumProblem::Impl instance
     Impl(const Partition& partition)
@@ -103,7 +103,7 @@ auto EquilibriumProblem::setPartition(const Partition& partition) -> Equilibrium
     return *this;
 }
 
-auto EquilibriumProblem::setTemperature(double val) -> EquilibriumProblem&
+auto EquilibriumProblem::setTemperature(real val) -> EquilibriumProblem&
 {
     Assert(val > 0.0, "Cannot set temperature of the equilibrium problem.",
         "Given value must be positive.");
@@ -111,12 +111,12 @@ auto EquilibriumProblem::setTemperature(double val) -> EquilibriumProblem&
     return *this;
 }
 
-auto EquilibriumProblem::setTemperature(double val, std::string units) -> EquilibriumProblem&
+auto EquilibriumProblem::setTemperature(real val, std::string units) -> EquilibriumProblem&
 {
-    return setTemperature(units::convert(val, units, "kelvin"));
+    return setTemperature(units::convert(autodiff::val(val), units, "kelvin"));
 }
 
-auto EquilibriumProblem::setPressure(double val) -> EquilibriumProblem&
+auto EquilibriumProblem::setPressure(real val) -> EquilibriumProblem&
 {
     Assert(val > 0.0, "Cannot set pressure of the equilibrium problem.",
         "Given value must be positive.");
@@ -124,12 +124,12 @@ auto EquilibriumProblem::setPressure(double val) -> EquilibriumProblem&
     return *this;
 }
 
-auto EquilibriumProblem::setPressure(double val, std::string units) -> EquilibriumProblem&
+auto EquilibriumProblem::setPressure(real val, std::string units) -> EquilibriumProblem&
 {
-    return setPressure(units::convert(val, units, "pascal"));
+    return setPressure(units::convert(autodiff::val(val), units, "pascal"));
 }
 
-auto EquilibriumProblem::setElementAmounts(VectorConstRef b) -> EquilibriumProblem&
+auto EquilibriumProblem::setElementAmounts(VectorXrConstRef b) -> EquilibriumProblem&
 {
     Assert(pimpl->b.size() == b.size(),
         "Could not set the initial mole amounts of the elements.",
@@ -138,13 +138,13 @@ auto EquilibriumProblem::setElementAmounts(VectorConstRef b) -> EquilibriumProbl
     return *this;
 }
 
-auto EquilibriumProblem::setElementAmounts(double amount) -> EquilibriumProblem&
+auto EquilibriumProblem::setElementAmounts(real amount) -> EquilibriumProblem&
 {
     pimpl->b.fill(amount);
     return *this;
 }
 
-auto EquilibriumProblem::setElementAmount(Index ielement, double amount) -> EquilibriumProblem&
+auto EquilibriumProblem::setElementAmount(Index ielement, real amount) -> EquilibriumProblem&
 {
     Assert(ielement < system().numElements(),
         "Could not set the initial mole amount of the given element.",
@@ -153,7 +153,7 @@ auto EquilibriumProblem::setElementAmount(Index ielement, double amount) -> Equi
     return *this;
 }
 
-auto EquilibriumProblem::setElementAmount(std::string element, double amount) -> EquilibriumProblem&
+auto EquilibriumProblem::setElementAmount(std::string element, real amount) -> EquilibriumProblem&
 {
     Index ielement = system().indexElement(element);
     Assert(ielement < system().numElements(),
@@ -163,12 +163,12 @@ auto EquilibriumProblem::setElementAmount(std::string element, double amount) ->
     return *this;
 }
 
-auto EquilibriumProblem::setElectricalCharge(double amount) -> EquilibriumProblem&
+auto EquilibriumProblem::setElectricalCharge(real amount) -> EquilibriumProblem&
 {
     return setElementAmount("Z", amount);
 }
 
-auto EquilibriumProblem::add(std::string name, double amount, std::string units) -> EquilibriumProblem&
+auto EquilibriumProblem::add(std::string name, real amount, std::string units) -> EquilibriumProblem&
 {
     if(system().indexSpecies(name) < system().numSpecies())
         return addSpecies(name, amount, units);
@@ -180,18 +180,18 @@ auto EquilibriumProblem::add(const ChemicalState& state) -> EquilibriumProblem&
     return addState(state);
 }
 
-auto EquilibriumProblem::addCompound(std::string name, double amount, std::string units) -> EquilibriumProblem&
+auto EquilibriumProblem::addCompound(std::string name, real amount, std::string units) -> EquilibriumProblem&
 {
-    double molar_amount = 0.0;
+    real molar_amount = 0.0;
 
     if(units::convertible(units, "mol"))
     {
-        molar_amount = units::convert(amount, units, "mol");
+        molar_amount = amount * units::convert(1.0, units, "mol");
     }
     else if(units::convertible(units, "kg"))
     {
-        const double mass = units::convert(amount, units, "kg");
-        const double molar_mass = molarMass(name);
+        const real mass = amount * units::convert(1.0, units, "kg");
+        const real molar_mass = molarMass(name);
         molar_amount = mass / molar_mass;
     }
     else errorNonAmountOrMassUnits(units);
@@ -213,20 +213,20 @@ auto EquilibriumProblem::addCompound(std::string name, double amount, std::strin
     return *this;
 }
 
-auto EquilibriumProblem::addSpecies(std::string name, double amount, std::string units) -> EquilibriumProblem&
+auto EquilibriumProblem::addSpecies(std::string name, real amount, std::string units) -> EquilibriumProblem&
 {
-    double molar_amount = 0.0;
+    real molar_amount = 0.0;
 
     const Species& species = system().species(name);
 
     if(units::convertible(units, "mol"))
     {
-        molar_amount = units::convert(amount, units, "mol");
+        molar_amount = amount * units::convert(1.0, units, "mol");
     }
     else if(units::convertible(units, "kg"))
     {
-        const double mass = units::convert(amount, units, "kg");
-        const double molar_mass = species.molarMass();
+        const real mass = amount * units::convert(1.0, units, "kg");
+        const real molar_mass = species.molarMass();
         molar_amount = mass / molar_mass;
     }
     else errorNonAmountOrMassUnits(units);
@@ -259,17 +259,17 @@ auto EquilibriumProblem::partition() const -> const Partition&
     return pimpl->partition;
 }
 
-auto EquilibriumProblem::temperature() const -> double
+auto EquilibriumProblem::temperature() const -> real
 {
     return pimpl->T;
 }
 
-auto EquilibriumProblem::pressure() const -> double
+auto EquilibriumProblem::pressure() const -> real
 {
     return pimpl->P;
 }
 
-auto EquilibriumProblem::elementAmounts() const -> VectorConstRef
+auto EquilibriumProblem::elementAmounts() const -> VectorXrConstRef
 {
     return pimpl->b;
 }

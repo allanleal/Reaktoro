@@ -47,8 +47,8 @@ class ReactionSystem;
 /// ~~~
 /// ChemicalQuantity q(state);
 ///
-/// const double vol = q["phaseVolume(Gaseous)"];
-/// const double pH = q["pH"];
+/// const auto vol = q["phaseVolume(Gaseous)"];
+/// const auto pH = q["pH"];
 /// ~~~
 ///
 /// The table below shows all possible quantities that can be retrieved from
@@ -99,7 +99,7 @@ class ChemicalQuantity
 {
 public:
     /// A type to describe a chemical quantity function.
-    using Function = std::function<double()>;
+    using Function = std::function<real()>;
 
     /// Disable the default ChemicalQuantity constructor.
     /// This is to enforce the initialization of ChemicalQuantity
@@ -143,13 +143,13 @@ public:
     auto update(const ChemicalState& state, double t) -> ChemicalQuantity&;
 
     /// Return the value of the quantity given as a formatted string.
-    auto value(std::string str) const -> double;
+    auto value(std::string str) const -> real;
 
     /// Return a created function that calculates the chemical quantity from a formatted string.
     auto function(std::string str) const -> Function;
 
     /// Return the value of the quantity given as a formatted string.
-    auto operator()(std::string str) const -> double;
+    auto operator()(std::string str) const -> real;
 
 private:
     struct Impl;

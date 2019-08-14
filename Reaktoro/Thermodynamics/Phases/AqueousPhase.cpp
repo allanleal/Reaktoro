@@ -113,7 +113,7 @@ AqueousPhase::AqueousPhase(const AqueousMixture& mixture)
     setActivityModelDuanSunCO2();
 }
 
-auto AqueousPhase::setInterpolationPoints(const std::vector<double>& temperatures, const std::vector<double>& pressures) -> AqueousPhase&
+auto AqueousPhase::setInterpolationPoints(const std::vector<real>& temperatures, const std::vector<real>& pressures) -> AqueousPhase&
 {
     pimpl->mixture.setInterpolationPoints(temperatures, pressures);
     return *this;
@@ -174,7 +174,7 @@ auto AqueousPhase::setActivityModelIdeal(std::string species) -> AqueousPhase&
     return *this;
 }
 
-auto AqueousPhase::setActivityModelSetschenow(std::string species, double b) -> AqueousPhase&
+auto AqueousPhase::setActivityModelSetschenow(std::string species, real b) -> AqueousPhase&
 {
     const Index ispecies = indexSpecies(species);
     if(ispecies < numSpecies())

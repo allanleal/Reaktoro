@@ -22,9 +22,9 @@
 
 namespace Reaktoro {
 
-auto largestStep(VectorConstRef p, VectorConstRef dp) -> double
+auto largestStep(VectorXrConstRef p, VectorXrConstRef dp) -> double
 {
-    Vector res = -p.array() / dp.array();
+    VectorXr res = -p.array() / dp.array();
     double alpha = infinity();
     for(unsigned i = 0; i < res.size(); ++i)
         if(res[i] > 0.0 && res[i] < alpha)
@@ -32,13 +32,13 @@ auto largestStep(VectorConstRef p, VectorConstRef dp) -> double
     return alpha;
 }
 
-auto fractionToTheBoundary(VectorConstRef p, VectorConstRef dp, double tau) -> double
+auto fractionToTheBoundary(VectorXrConstRef p, VectorXrConstRef dp, double tau) -> double
 {
     Index i;
     return fractionToTheBoundary(p, dp, tau, i);
 }
 
-auto fractionToTheBoundary(VectorConstRef p, VectorConstRef dp, double tau, Index& ilimiting) -> double
+auto fractionToTheBoundary(VectorXrConstRef p, VectorXrConstRef dp, double tau, Index& ilimiting) -> double
 {
     ilimiting = p.size();
     double alpha_max = 1.0;
@@ -58,7 +58,7 @@ auto fractionToTheBoundary(VectorConstRef p, VectorConstRef dp, double tau, Inde
     return alpha_max;
 }
 
-auto fractionToTheBoundary(VectorConstRef p, VectorConstRef dp, MatrixConstRef C, VectorConstRef r, double tau) -> double
+auto fractionToTheBoundary(VectorXrConstRef p, VectorXrConstRef dp, MatrixConstRef C, VectorXrConstRef r, double tau) -> double
 {
     // The number of linear inequality constraints
     const Index m = C.rows();
@@ -82,7 +82,7 @@ auto fractionToTheBoundary(VectorConstRef p, VectorConstRef dp, MatrixConstRef C
     return alpha_max;
 }
 
-auto fractionToTheLowerBoundary(VectorConstRef p, VectorConstRef dp, VectorConstRef lower, double tau) -> double
+auto fractionToTheLowerBoundary(VectorXrConstRef p, VectorXrConstRef dp, VectorConstRef lower, double tau) -> double
 {
     double alpha_max = 1.0;
     for(unsigned i = 0; i < p.size(); ++i)

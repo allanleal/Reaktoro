@@ -384,7 +384,7 @@ auto lnEquilibriumConstantHelper(const SpeciesType* species, const real& T, cons
     // Check if the PHREEQC analytical expression for logk should be used
     if(useAnalytic(logk))
         return (logk[T_A1] + logk[T_A2]*T + logk[T_A3]/T +
-            logk[T_A4]*std::log10(T) + logk[T_A5]/(T*T) + logk[T_A6]*(T*T)) * ln10;
+            logk[T_A4]*log10(T) + logk[T_A5]/(T*T) + logk[T_A6]*(T*T)) * ln10;
 
     // Use the Van't Hoff equation instead
     return logk[logK_T0]*ln10 - logk[delta_h] * (298.15 - T)/(R*T*298.15);

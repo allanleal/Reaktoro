@@ -38,7 +38,8 @@ target_include_directories(Reaktoro
 # Link Reaktoro library against external dependencies
 target_link_libraries(Reaktoro
     PRIVATE ${THIRDPARTY_LIBS}
-    PUBLIC Boost::boost)
+    PUBLIC Boost::boost
+    PUBLIC autodiff::autodiff)
 
 # Install Reaktoro C++ library
 install(TARGETS Reaktoro

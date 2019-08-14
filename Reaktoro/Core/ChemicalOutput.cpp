@@ -177,7 +177,7 @@ struct ChemicalOutput::Impl
         for(auto word : data)
         {
             auto space = spacings[icolumn];
-            auto val = (word == "i") ? iteration : quantity.value(word);
+            auto val = (word == "i") ? static_cast<real>(iteration) : quantity.value(word);
             if(datafile.is_open()) datafile << std::left << std::setw(space) << val;
             if(terminal) std::cout << std::left << std::setw(space) << val;
             ++icolumn;

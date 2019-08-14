@@ -1,5 +1,5 @@
-# Find Boost library
 find_package(Boost REQUIRED)
+find_package(autodiff REQUIRED)
 
 # Find pybind11 library (if needed)
 if(REAKTORO_BUILD_PYTHON)

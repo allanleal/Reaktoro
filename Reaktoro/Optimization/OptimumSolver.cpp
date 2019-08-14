@@ -29,14 +29,7 @@
 #include <Reaktoro/Optimization/OptimumOptions.hpp>
 #include <Reaktoro/Optimization/OptimumProblem.hpp>
 #include <Reaktoro/Optimization/OptimumResult.hpp>
-#include <Reaktoro/Optimization/OptimumSolverActNewton.hpp>
-#include <Reaktoro/Optimization/OptimumSolverIpAction.hpp>
-#include <Reaktoro/Optimization/OptimumSolverIpActive.hpp>
-#include <Reaktoro/Optimization/OptimumSolverIpFeasible.hpp>
 #include <Reaktoro/Optimization/OptimumSolverIpNewton.hpp>
-#include <Reaktoro/Optimization/OptimumSolverIpOpt.hpp>
-#include <Reaktoro/Optimization/OptimumSolverKarpov.hpp>
-#include <Reaktoro/Optimization/OptimumSolverRefiner.hpp>
 #include <Reaktoro/Optimization/OptimumSolverSimplex.hpp>
 #include <Reaktoro/Optimization/OptimumState.hpp>
 #include <Reaktoro/Optimization/Regularizer.hpp>
@@ -47,9 +40,6 @@ struct OptimumSolver::Impl
 {
     /// The pointer to the optimization solver
     OptimumSolverBase* solver = nullptr;
-
-    /// The IpFeasible solver for approximation calculation
-    OptimumSolverIpFeasible ipfeasible;
 
     /// The regularized optimization problem (i.e., no linearly dependent equality constraints and removed trivial constraints)
     OptimumProblem rproblem;
@@ -85,26 +75,8 @@ struct OptimumSolver::Impl
 
         switch(method)
         {
-        case OptimumMethod::ActNewton:
-            solver = new OptimumSolverActNewton();
-            break;
-        case OptimumMethod::IpAction:
-            solver = new OptimumSolverIpAction();
-            break;
-        case OptimumMethod::IpActive:
-            solver = new OptimumSolverIpActive();
-            break;
         case OptimumMethod::IpNewton:
             solver = new OptimumSolverIpNewton();
-            break;
-        case OptimumMethod::IpOpt:
-            solver = new OptimumSolverIpOpt();
-            break;
-        case OptimumMethod::Karpov:
-            solver = new OptimumSolverKarpov();
-            break;
-        case OptimumMethod::Refiner:
-            solver = new OptimumSolverRefiner();
             break;
         case OptimumMethod::Simplex:
             solver = new OptimumSolverSimplex();
@@ -210,16 +182,6 @@ auto OptimumSolver::operator=(OptimumSolver other) -> OptimumSolver&
 auto OptimumSolver::setMethod(OptimumMethod method) -> void
 {
     pimpl->setMethod(method);
-}
-
-auto OptimumSolver::approximate(const OptimumProblem& problem, OptimumState& state) -> OptimumResult
-{
-    return approximate(problem, state, {});
-}
-
-auto OptimumSolver::approximate(const OptimumProblem& problem, OptimumState& state, const OptimumOptions& options) -> OptimumResult
-{
-    return pimpl->ipfeasible.approximate(problem, state, options);
 }
 
 auto OptimumSolver::solve(const OptimumProblem& problem, OptimumState& state) -> OptimumResult

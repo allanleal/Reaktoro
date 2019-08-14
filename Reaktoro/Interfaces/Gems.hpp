@@ -47,13 +47,13 @@ public:
     virtual ~Gems();
 
     /// Return the temperature (in units of K)
-    virtual auto temperature() const -> double;
+    virtual auto temperature() const -> real;
 
     /// Return the pressure (in units of Pa)
-    virtual auto pressure() const -> double;
+    virtual auto pressure() const -> real;
 
     /// Return the amounts of the species (in units of mol)
-    virtual auto speciesAmounts() const -> Vector;
+    virtual auto speciesAmounts() const -> VectorXr;
 
     /// Return the number of elements
     virtual auto numElements() const -> unsigned;
@@ -115,7 +115,7 @@ public:
     /// @param T The temperature for the equilibrium calculation (in units of K)
     /// @param P The pressure for the equilibrium calculation (in units of Pa)
     /// @param n The amounts of the elements (in units of mol)
-    auto equilibrate(const real& T, const real& P, VectorConstRef b) -> void;
+    auto equilibrate(const real& T, const real& P, VectorXrConstRef b) -> void;
 
     /// Return the convergence result of the equilibrium calculation
     auto converged() const -> bool;

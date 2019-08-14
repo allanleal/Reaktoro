@@ -156,9 +156,9 @@ auto mineralSpeciesThermoData(const PhreeqcPhase* phase) -> MineralSpeciesThermo
     // Check if the species has reaction info
     if(!params.reaction.equation.empty())
     {
-        const real T = 278.15;
-        const real P = 1e5;
-        const double molar_volume = convertCubicCentimeterToCubicMeter(phase->logk[vm0]);
+        const auto T = 278.15;
+        const auto P = 1e5;
+        const auto molar_volume = convertCubicCentimeterToCubicMeter(phase->logk[vm0]);
 
         SpeciesThermoInterpolatedProperties props;
         props.volume = BilinearInterpolator({T}, {P}, {molar_volume});
@@ -449,7 +449,7 @@ auto PhreeqcDatabase::cross(const Database& reference_database) -> Database
     // Return the Reaktoro name of a Phreeqc aqueous species
 	auto reaktoro_naming = [&](std::string name) -> std::string
 	{
-		const double charge = get_charge(name);
+		const auto charge = get_charge(name);
 		if(name == "H2O") return "H2O(l)";
 		if(name == "CH4") return "Methane(aq)";
 		if(charge == 0) return name + "(aq)";

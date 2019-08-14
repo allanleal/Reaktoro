@@ -74,13 +74,13 @@ struct KineticPath::Impl
         solver.setPartition(partition);
     }
 
-    auto solve(ChemicalState& state, double t0, double t1, std::string units) -> void
+    auto solve(ChemicalState& state, real t0, real t1, std::string units) -> void
     {
-        t0 = units::convert(t0, units, "s");
-        t1 = units::convert(t1, units, "s");
+        t0 *= units::convert(1.0, units, "s");
+        t1 *= units::convert(1.0, units, "s");
         solver.initialize(state, t0);
 
-        double t = t0;
+        real t = t0;
 
         // Initialize the output of the equilibrium path calculation
         if(output) output.open();
@@ -91,20 +91,20 @@ struct KineticPath::Impl
         while(t < t1)
         {
             // Update the output with current state
-            if(output) output.update(state, t);
+            if(output) output.update(state, t.val);
 
             // Update the plots with current state
-            for(auto& plot : plots) plot.update(state, t);
+            for(auto& plot : plots) plot.update(state, t.val);
 
             // Integrate one time step only
             t = solver.step(state, t, t1);
         }
 
         // Update the output with the final state
-        if(output) output.update(state, t1);
+        if(output) output.update(state, t1.val);
 
         // Update the plots with the final state
-        for(auto& plot : plots) plot.update(state, t1);
+        for(auto& plot : plots) plot.update(state, t1.val);
     }
 };
 

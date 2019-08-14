@@ -77,8 +77,8 @@ auto paramDuanSun(const real& T, const real& P, const double coeffs[]) -> real
     const double c11 = coeffs[10];
 
     return c1 + c2*T + c3/T + c4*T*T + c5/(630 - T) +
-        c6*Pbar + c7*Pbar*std::log(T) + c8*Pbar/T + c9*Pbar/(630 - T) +
-        c10*Pbar*Pbar/(630 - T)/(630 - T) + c11*T*std::log(Pbar);
+        c6*Pbar + c7*Pbar*log(T) + c8*Pbar/T + c9*Pbar/(630 - T) +
+        c10*Pbar*Pbar/(630 - T)/(630 - T) + c11*T*log(Pbar);
 }
 
 } // namespace

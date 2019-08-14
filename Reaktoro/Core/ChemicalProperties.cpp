@@ -28,9 +28,13 @@ ChemicalProperties::ChemicalProperties()
 {}
 
 ChemicalProperties::ChemicalProperties(const ChemicalSystem& system)
-: system(system), num_species(system.numSpecies()), num_phases(system.numPhases()),
-  T(NAN), P(NAN), n(zeros(num_species)), x(num_species),
-  tres(num_phases, num_species), cres(num_phases, num_species)
+: system(system),
+  num_species(system.numSpecies()),
+  num_phases(system.numPhases()),
+  n(zeros(num_species)),
+  x(num_species),
+  tres(num_phases, num_species),
+  cres(num_phases, num_species)
 {}
 
 auto ChemicalProperties::update(const real& T_, const real& P_) -> void
@@ -44,13 +48,8 @@ auto ChemicalProperties::update(const real& T_, const real& P_) -> void
     }
 }
 
-auto ChemicalProperties::update(VectorConstRef n_) -> void
+auto ChemicalProperties::update(VectorXrConstRef n_) -> void
 {
-    Assert(!std::isnan(T.val) && !std::isnan(P.val),
-           "Cannot proceed with method ChemicalProperties::update.",
-           "The temperature or pressure values are invalid (NAN). "
-           "Update these properties before calling this method!")
-
     n = n_;
     system.chemicalModel()(cres, T, P, n);
 
@@ -72,7 +71,7 @@ auto ChemicalProperties::update(const real& T, const real& P, VectorXrConstRef n
     update(n);
 }
 
-auto ChemicalProperties::update(const real& T_, const real& P_, VectorConstRef n_, const ThermoModelResult& tres_, const ChemicalModelResult& cres_) -> void
+auto ChemicalProperties::update(const real& T_, const real& P_, VectorXrConstRef n_, const ThermoModelResult& tres_, const ChemicalModelResult& cres_) -> void
 {
     T = T_;
     P = P_;

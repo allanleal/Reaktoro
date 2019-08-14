@@ -41,13 +41,13 @@ public:
     virtual ~Interface() = 0;
 
     /// Return the temperature (in units of K)
-    virtual auto temperature() const -> double = 0;
+    virtual auto temperature() const -> real = 0;
 
     /// Return the pressure (in units of Pa)
-    virtual auto pressure() const -> double = 0;
+    virtual auto pressure() const -> real = 0;
 
     /// Return the amounts of the species (in units of mol)
-    virtual auto speciesAmounts() const -> Vector = 0;
+    virtual auto speciesAmounts() const -> VectorXr = 0;
 
     /// Return the number of elements
     virtual auto numElements() const -> unsigned = 0;

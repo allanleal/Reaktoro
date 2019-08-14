@@ -86,7 +86,7 @@ auto lnActivityConstants(const GaseousPhase& phase) -> std::function<VectorXr(co
 
     auto f = [=](const real& T, const real& P) mutable -> VectorXr
     {
-        ln_c.fill( std::log(P * 1e-5) ); // ln(Pbar)
+        ln_c.fill( log(P * 1e-5) ); // ln(Pbar)
         return ln_c;
     };
 

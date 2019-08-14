@@ -104,11 +104,11 @@ public:
     auto indices() const -> const Indices&;
 
     /// Return the stoichiometries of the reacting species of the reaction
-    auto stoichiometries() const -> VectorConstRef;
+    auto stoichiometries() const -> VectorXdConstRef;
 
     /// Return the stoichiometry of a species in the reaction equation.
     /// @param species The name of the species.
-    auto stoichiometry(std::string species) const -> real;
+    auto stoichiometry(std::string species) const -> double;
 
     /// Calculate the equilibrium constant of the reaction (in natural log).
     /// @param properties The chemical properties of the system

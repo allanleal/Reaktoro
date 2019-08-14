@@ -21,6 +21,9 @@
 #include <memory>
 #include <string>
 
+// Reaktoro includes
+#include <Reaktoro/Common/Real.hpp>
+
 namespace Reaktoro {
 
 // Forward declarations
@@ -89,26 +92,26 @@ public:
     /// This method should be invoked whenever the user intends to make a call to `KineticsSolver::step`.
     /// @param state The state of the chemical system
     /// @param tstart The start time of the integration.
-    auto initialize(ChemicalState& state, double tstart) -> void;
+    auto initialize(ChemicalState& state, real tstart) -> void;
 
     /// Integrate one step of the chemical kinetics problem.
     /// @param state The kinetic state of the system
     /// @param[in,out] t The current time of the integration (in units of seconds)
     /// @return The updated current time after the kinetic step.
-    auto step(ChemicalState& state, double t) -> double;
+    auto step(ChemicalState& state, real t) -> real;
 
     /// Integrate one step of the chemical kinetics problem with a time step that does not go beyond a specified one.
     /// @param state The kinetic state of the system
     /// @param[in,out] t The current time of the integration (in units of seconds)
     /// @param tfinal The final time of the integration (in units of seconds)
     /// @return The updated current time after the kinetic step.
-    auto step(ChemicalState& state, double t, double tfinal) -> double;
+    auto step(ChemicalState& state, real t, real tfinal) -> real;
 
     /// Solve the chemical kinetics problem from a given initial time to a final time.
     /// @param state The kinetic state of the system
     /// @param t The start time of the integration (in units of seconds)
     /// @param dt The step to be used for the integration from `t` to `t + dt` (in units of seconds)
-    auto solve(ChemicalState& state, double t, double dt) -> void;
+    auto solve(ChemicalState& state, real t, real dt) -> void;
 
 private:
     struct Impl;

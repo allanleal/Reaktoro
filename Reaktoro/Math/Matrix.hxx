@@ -200,19 +200,19 @@ auto diagonal(const Eigen::MatrixBase<Derived>& mat) -> decltype(mat.diagonal())
 }
 
 template<int p, typename Derived>
-auto norm(const Eigen::MatrixBase<Derived>& mat) -> double
+auto norm(const Eigen::MatrixBase<Derived>& mat)
 {
     return mat.template lpNorm<p>();
 }
 
 template<typename Derived>
-auto norm(const Eigen::MatrixBase<Derived>& mat) -> double
+auto norm(const Eigen::MatrixBase<Derived>& mat)
 {
     return mat.norm();
 }
 
 template<typename Derived>
-auto norminf(const Eigen::MatrixBase<Derived>& mat) -> double
+auto norminf(const Eigen::MatrixBase<Derived>& mat)
 {
     return mat.template lpNorm<Eigen::Infinity>();
 }

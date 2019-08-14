@@ -54,46 +54,46 @@ public:
     /// Set the temperature for the equilibrium calculation.
     /// By default, the temperature is 25 &deg;C.
     /// @param val The temperature value (in units of K)
-    auto setTemperature(double val) -> EquilibriumProblem&;
+    auto setTemperature(real val) -> EquilibriumProblem&;
 
     /// Set the temperature for the equilibrium calculation with given units.
     /// By default, the temperature is 25 &deg;C.
     /// @param val The temperature value
     /// @param units The units of the temperature (K, degC, degF, degR, kelvin, celsius, fahrenheit, rankine)
-    auto setTemperature(double val, std::string units) -> EquilibriumProblem&;
+    auto setTemperature(real val, std::string units) -> EquilibriumProblem&;
 
     /// Set the pressure for the equilibrium calculation.
     /// By default, the pressure is 1 bar.
     /// @param val The pressure value (in units of Pa).
-    auto setPressure(double val) -> EquilibriumProblem&;
+    auto setPressure(real val) -> EquilibriumProblem&;
 
     /// Set the pressure for the equilibrium calculation.
     /// By default, the pressure is 1 bar.
     /// @param val The pressure value
     /// @param units The units of the pressure (Pa, kPa, MPa, GPa, atm, mmHg, inHg, psi, kpsi, Mpsi, psf, bar, torr, inH2O, ftH2O, pascal)
-    auto setPressure(double val, std::string units) -> EquilibriumProblem&;
+    auto setPressure(real val, std::string units) -> EquilibriumProblem&;
 
     /// Set the mole amounts of each element for the equilibrium calculation.
     /// @param b The vector of mole amounts of each element (in units of mol)
-    auto setElementAmounts(VectorConstRef b) -> EquilibriumProblem&;
+    auto setElementAmounts(VectorXrConstRef b) -> EquilibriumProblem&;
 
     /// Set the mole amounts of each element for the equilibrium calculation.
     /// @param amount The mole amount for all elements (in units of mol)
-    auto setElementAmounts(double amount) -> EquilibriumProblem&;
+    auto setElementAmounts(real amount) -> EquilibriumProblem&;
 
     /// Set the mole amount of an element for the equilibrium calculation (in units of mol)
     /// @param ielement The index of the element
     /// @param amount The same mole amount for all elements (in units of mol)
-    auto setElementAmount(Index ielement, double amount) -> EquilibriumProblem&;
+    auto setElementAmount(Index ielement, real amount) -> EquilibriumProblem&;
 
     /// Set the mole amount of an element for the equilibrium calculation (in units of mol)
     /// @param element The name of the element
     /// @param amount The same mole amount for all elements (in units of mol)
-    auto setElementAmount(std::string element, double amount) -> EquilibriumProblem&;
+    auto setElementAmount(std::string element, real amount) -> EquilibriumProblem&;
 
     /// Set the mole amount of electrical charge.
     /// @param amount The mole amount of electrical charge (in units of mol)
-    auto setElectricalCharge(double amount) -> EquilibriumProblem&;
+    auto setElectricalCharge(real amount) -> EquilibriumProblem&;
 
     /// Add a given amount of a compound or species to the equilibrium recipe.
     /// This method will first check if the given compound is present in the chemical system.
@@ -101,7 +101,7 @@ public:
     /// @param name The name of the compound or species
     /// @param amount The amount of the compound or species
     /// @param units The units of the amount (must be convertible to either mol or kg)
-    auto add(std::string name, double amount, std::string units) -> EquilibriumProblem&;
+    auto add(std::string name, real amount, std::string units) -> EquilibriumProblem&;
 
     /// Add the mole amounts of the equilibrium species in a ChemicalState instance to the equilibrium recipe.
     /// This method only extracts the mole amounts of equilibrium species in the given chemical state.
@@ -117,14 +117,14 @@ public:
     /// @param name The name of the compound (e.g., H2O, CaCO3)
     /// @param amount The amount of the compound
     /// @param units The units of the amount (must be convertible to either mol or kg)
-    auto addCompound(std::string name, double amount, std::string unit) -> EquilibriumProblem&;
+    auto addCompound(std::string name, real amount, std::string unit) -> EquilibriumProblem&;
 
     /// Add a given amount of a species to the equilibrium recipe
     /// The species must be present in the chemical system.
     /// @param name The name of the species
     /// @param amount The amount of the species
     /// @param units The units of the amount (must be convertible to either mol or kg)
-    auto addSpecies(std::string name, double amount, std::string unit) -> EquilibriumProblem&;
+    auto addSpecies(std::string name, real amount, std::string unit) -> EquilibriumProblem&;
 
     /// Add the mole amounts of the equilibrium species in a ChemicalState instance to the equilibrium recipe.
     /// This method only extracts the mole amounts of equilibrium species in the given chemical state.
@@ -142,13 +142,13 @@ public:
     auto partition() const -> const Partition&;
 
     /// Return the temperature for the equilibrium calculation (in units of K)
-    auto temperature() const -> double;
+    auto temperature() const -> real;
 
     /// Return the pressure for the equilibrium calculation (in units of Pa)
-    auto pressure() const -> double;
+    auto pressure() const -> real;
 
     /// Return the amounts of the elements for the equilibrium calculation (in units of mol)
-    auto elementAmounts() const -> VectorConstRef;
+    auto elementAmounts() const -> VectorXrConstRef;
 
 private:
     struct Impl;

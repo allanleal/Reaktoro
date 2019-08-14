@@ -17,9 +17,12 @@
 
 #pragma once
 
+// autodiff includes
+#include <autodiff/forward.hpp>
+
 namespace Reaktoro {
 
 /// An alias type for double
-using real = double;
+using real = autodiff::dual;
 
 } // namespace Reaktoro

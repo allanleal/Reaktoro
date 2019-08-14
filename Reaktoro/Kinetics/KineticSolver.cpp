@@ -98,16 +98,16 @@ struct KineticSolver::Impl
     real P;
 
     /// The molar composition of the equilibrium species
-    Vector ne;
+    VectorXr ne;
 
     /// The molar composition of the kinetic species
-    Vector nk;
+    VectorXr nk;
 
     /// The molar abundance of the elements in the equilibrium species
-    Vector be;
+    VectorXr be;
 
     /// The combined vector of elemental molar abundance and composition of kinetic species [be nk]
-    Vector benk;
+    VectorXr benk;
 
     /// The chemical properties of the system
     ChemicalProperties properties;
@@ -278,7 +278,7 @@ struct KineticSolver::Impl
     //     };
     // }
 
-    auto initialize(ChemicalState& state, double tstart) -> void
+    auto initialize(ChemicalState& state, real tstart) -> void
     {
         // Initialise the temperature and pressure variables
         T = state.temperature();
@@ -295,13 +295,13 @@ struct KineticSolver::Impl
         benk.tail(Nk) = nk;
 
         // Define the ODE function
-        ODEFunction ode_function = [&](double t, VectorConstRef u, VectorRef res)
+        ODEFunction ode_function = [&](real t, VectorXrConstRef u, VectorXrRef res)
         {
             return function(state, t, u, res);
         };
 
         // Define the jacobian of the ODE function
-        ODEJacobian ode_jacobian = [&](double t, VectorConstRef u, MatrixRef res)
+        ODEJacobian ode_jacobian = [&](real t, VectorXrConstRef u, MatrixRef res)
         {
             return jacobian(state, t, u, res);
         };
@@ -324,14 +324,14 @@ struct KineticSolver::Impl
         equilibrium.setOptions(options.equilibrium);
     }
 
-    auto step(ChemicalState& state, double t) -> double
+    auto step(ChemicalState& state, real t) -> real
     {
         const double tfinal = Index(-1);
         step(state, t, tfinal);
         return t;
     }
 
-    auto step(ChemicalState& state, double t, double tfinal) -> double
+    auto step(ChemicalState& state, real t, real tfinal) -> real
     {
         // Extract the composition vector of the equilibrium and kinetic species
         const auto& n = state.speciesAmounts();
@@ -358,7 +358,7 @@ struct KineticSolver::Impl
         return t;
     }
 
-    auto solve(ChemicalState& state, double t, double dt) -> void
+    auto solve(ChemicalState& state, real t, real dt) -> void
     {
         // Initialise the chemical kinetics solver
         initialize(state, t);
@@ -377,7 +377,7 @@ struct KineticSolver::Impl
         equilibrium.solve(state, T, P, be);
     }
 
-    auto function(ChemicalState& state, double t, VectorConstRef u, VectorRef res) -> int
+    auto function(ChemicalState& state, real t, VectorXrConstRef u, VectorXrRef res) -> int
     {
         // Extract the `be` and `nk` entries of the vector [be, nk]
         be = u.head(Ee);
@@ -385,7 +385,7 @@ struct KineticSolver::Impl
 
         // Check for non-finite values in the vector `benk`
         for(int i = 0; i < u.rows(); ++i)
-            if(!std::isfinite(u[i]))
+            if(!std::isfinite(u[i].val))
                 return 1; // ensure the ode solver will reduce the time step
 
         // Update the composition of the kinetic species in the member `state`
@@ -428,7 +428,7 @@ struct KineticSolver::Impl
         return 0;
     }
 
-    auto jacobian(ChemicalState& state, double t, VectorConstRef u, MatrixRef res) -> int
+    auto jacobian(ChemicalState& state, real t, VectorXrConstRef u, MatrixRef res) -> int
     {
         // // Calculate the sensitivity of the equilibrium state
         // sensitivity = equilibrium.sensitivity();
@@ -466,7 +466,7 @@ struct KineticSolver::Impl
         //     res += B * dqdu;
         // }
 
-        // return 0;
+         return 0;
     }
 };
 
@@ -497,22 +497,22 @@ auto KineticSolver::setPartition(const Partition& partition) -> void
     pimpl->setPartition(partition);
 }
 
-auto KineticSolver::initialize(ChemicalState& state, double tstart) -> void
+auto KineticSolver::initialize(ChemicalState& state, real tstart) -> void
 {
     pimpl->initialize(state, tstart);
 }
 
-auto KineticSolver::step(ChemicalState& state, double t) -> double
+auto KineticSolver::step(ChemicalState& state, real t) -> real
 {
     return pimpl->step(state, t);
 }
 
-auto KineticSolver::step(ChemicalState& state, double t, double dt) -> double
+auto KineticSolver::step(ChemicalState& state, real t, real dt) -> real
 {
     return pimpl->step(state, t, dt);
 }
 
-auto KineticSolver::solve(ChemicalState& state, double t, double dt) -> void
+auto KineticSolver::solve(ChemicalState& state, real t, real dt) -> void
 {
     pimpl->solve(state, t, dt);
 }

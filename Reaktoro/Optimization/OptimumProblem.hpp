@@ -30,10 +30,10 @@ namespace Reaktoro {
 struct ObjectiveResult
 {
     /// The value of the objective function evaluated at `x`.
-    double val = 0.0;
+    real val = 0.0;
 
     /// The gradient of the objective function evaluated at `x`.
-    Vector grad;
+    VectorXr grad;
 
     /// The Hessian of the objective function evaluated at `x`.
     Hessian hessian;
@@ -42,7 +42,7 @@ struct ObjectiveResult
 /// A type that describes the functional signature of an objective function.
 /// @param x The vector of primal variables
 /// @return The objective function evaluated at `x`
-using ObjectiveFunction = std::function<ObjectiveResult(VectorConstRef x)>;
+using ObjectiveFunction = std::function<ObjectiveResult(VectorXrConstRef x)>;
 
 /// A type that describes the non-linear constrained optimisation problem
 struct OptimumProblem

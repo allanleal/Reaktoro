@@ -311,7 +311,7 @@ struct ChemicalPlot::Impl
         for(auto item : y)
         {
             std::string qstr = std::get<1>(item);
-            auto val = (qstr == "i") ? iteration : quantity.value(qstr);
+            auto val = (qstr == "i") ? static_cast<real>(iteration) : quantity.value(qstr);
             datafile << std::left << std::setw(20) << val;
         }
         datafile << std::endl;

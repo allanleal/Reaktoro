@@ -46,7 +46,7 @@ struct NonlinearResidual
 /// A type that describes the functional signature of a non-linear residual function.
 /// @param x The vector of variables
 /// @return The residual of the non-linear function evaluated at `x`
-using NonlinearFunction = std::function<NonlinearResidual(VectorConstRef x)>;
+using NonlinearFunction = std::function<NonlinearResidual(VectorXrConstRef x)>;
 
 /// A type that describes the non-linear problem.
 struct NonlinearProblem
