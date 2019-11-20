@@ -46,16 +46,6 @@ public:
     /// Set the name of the mineral species in the reaction.
     auto setMineral(std::string mineral) -> MineralReaction&;
 
-    /// Set the equation of the mineral reaction.
-    /// @see ReactionEquation
-    auto setEquation(const ReactionEquation& equation) -> MineralReaction&;
-
-    /// Set the equation of the mineral reaction.
-    /// The format of @c equation can be found in ReactionEquation.
-    /// @param equation The @c string defining the reaction equation
-    /// @see ReactionEquation
-    auto setEquation(std::string equation) -> MineralReaction&;
-
     /// Set the equilibrium constant of the mineral reaction (in natural log scale).
     /// If no equilibrium contant is provided, it will be calculated from the
     /// standard Gibbs energies of the species in the reaction.
@@ -93,9 +83,9 @@ public:
     /// Return the name of the mineral species in the reaction.
     auto mineral() const -> std::string;
 
-    /// Return the equation of the mineral reaction as a @c string.
-    /// @see ReactionEquation
-    auto equation() const -> const ReactionEquation&;
+    // /// Return the equation of the mineral reaction as a @c string.
+    // /// @see ReactionEquation
+    // auto equation() const -> const ReactionEquation&;
 
     /// Return the equilibrium constant of the mineral reaction.
     auto equilibriumConstant() const -> const ThermoScalarFunction&;

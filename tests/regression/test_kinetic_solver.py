@@ -30,11 +30,8 @@ def kinetic_problem_with_h2o_hcl_caco3_mgco3_co2_calcite():
     editor.addMineralPhase("Calcite")
 
     calcite_reaction = editor.addMineralReaction("Calcite")
-    calcite_reaction.setEquation("Calcite = Ca++ + CO3--")
     calcite_reaction.addMechanism("logk = -5.81 mol/(m2*s); Ea = 23.5 kJ/mol")
-    calcite_reaction.addMechanism(
-        "logk = -0.30 mol/(m2*s); Ea = 14.4 kJ/mol; a[H+] = 1.0"
-    )
+    calcite_reaction.addMechanism("logk = -0.30 mol/(m2*s); Ea = 14.4 kJ/mol; a[H+] = 1.0")
     calcite_reaction.setSpecificSurfaceArea(10, "cm2/g")
 
     system = ChemicalSystem(editor)
@@ -69,27 +66,18 @@ def kinetic_problem_with_h2o_nacl_caco3_mgco3_hcl_co2_calcite_magnesite_dolomite
     editor.addMineralPhase("Halite")
 
     calcite_reaction = editor.addMineralReaction("Calcite")
-    calcite_reaction.setEquation("Calcite = Ca++ + CO3--")
     calcite_reaction.addMechanism("logk = -5.81 mol/(m2*s); Ea = 23.5 kJ/mol")
-    calcite_reaction.addMechanism(
-        "logk = -0.30 mol/(m2*s); Ea = 14.4 kJ/mol; a[H+] = 1.0"
-    )
+    calcite_reaction.addMechanism("logk = -0.30 mol/(m2*s); Ea = 14.4 kJ/mol; a[H+] = 1.0")
     calcite_reaction.setSpecificSurfaceArea(10, "cm2/g")
 
     magnesite_reaction = editor.addMineralReaction("Magnesite")
-    magnesite_reaction.setEquation("Magnesite = Mg++ + CO3--")
     magnesite_reaction.addMechanism("logk = -9.34 mol/(m2*s); Ea = 23.5 kJ/mol")
-    magnesite_reaction.addMechanism(
-        "logk = -6.38 mol/(m2*s); Ea = 14.4 kJ/mol; a[H+] = 1.0"
-    )
+    magnesite_reaction.addMechanism("logk = -6.38 mol/(m2*s); Ea = 14.4 kJ/mol; a[H+] = 1.0")
     magnesite_reaction.setSpecificSurfaceArea(10, "cm2/g")
 
     dolomite_reaction = editor.addMineralReaction("Dolomite")
-    dolomite_reaction.setEquation("Dolomite = Ca++ + Mg++ + 2*CO3--")
     dolomite_reaction.addMechanism("logk = -7.53 mol/(m2*s); Ea = 52.2 kJ/mol")
-    dolomite_reaction.addMechanism(
-        "logk = -3.19 mol/(m2*s); Ea = 36.1 kJ/mol; a[H+] = 0.5"
-    )
+    dolomite_reaction.addMechanism("logk = -3.19 mol/(m2*s); Ea = 36.1 kJ/mol; a[H+] = 0.5")
     dolomite_reaction.setSpecificSurfaceArea(10, "cm2/g")
 
     system = ChemicalSystem(editor)
@@ -213,7 +201,7 @@ def test_kinetic_path_solve_complete_path(
     (problem, reactions, partition) = setup
 
     state = equilibrate(problem)
- 
+
     for mineral in minerals_to_add:
         state.setSpeciesMass(mineral.mineral_name, mineral.amount, mineral.unit)
 

@@ -25,7 +25,6 @@ int main()
     editor.addMineralPhase("Calcite");
 
     MineralReaction reaction = editor.addMineralReaction("Calcite");
-    reaction.setEquation("Calcite = Ca++ + CO3--");
     reaction.addMechanism("logk = -5.81 mol/(m2*s); Ea = 23.5 kJ/mol");
     reaction.addMechanism("logk = -0.30 mol/(m2*s); Ea = 14.4 kJ/mol; a[H+] = 1.0");
     reaction.setSpecificSurfaceArea(10, "cm2/g");

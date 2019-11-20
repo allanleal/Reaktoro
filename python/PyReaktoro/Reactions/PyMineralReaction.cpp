@@ -28,9 +28,6 @@ namespace Reaktoro {
 
 void exportMineralReaction(py::module& m)
 {
-    auto setEquation1 = static_cast<MineralReaction&(MineralReaction::*)(const ReactionEquation&)>(&MineralReaction::setEquation);
-    auto setEquation2 = static_cast<MineralReaction&(MineralReaction::*)(std::string)>(&MineralReaction::setEquation);
-
     auto addMechanism1 = static_cast<MineralReaction&(MineralReaction::*)(const MineralMechanism&)>(&MineralReaction::addMechanism);
     auto addMechanism2 = static_cast<MineralReaction&(MineralReaction::*)(std::string)>(&MineralReaction::addMechanism);
 
@@ -38,8 +35,6 @@ void exportMineralReaction(py::module& m)
         .def(py::init<>())
         .def(py::init<std::string>())
         .def("setMineral", &MineralReaction::setMineral, py::return_value_policy::reference_internal)
-        .def("setEquation", setEquation1, py::return_value_policy::reference_internal)
-        .def("setEquation", setEquation2, py::return_value_policy::reference_internal)
         .def("setEquilibriumConstant", &MineralReaction::setEquilibriumConstant, py::return_value_policy::reference_internal)
         .def("setSpecificSurfaceArea", &MineralReaction::setSpecificSurfaceArea, py::return_value_policy::reference_internal)
         .def("setSurfaceArea", &MineralReaction::setSurfaceArea, py::return_value_policy::reference_internal)
@@ -47,7 +42,6 @@ void exportMineralReaction(py::module& m)
         .def("addMechanism", addMechanism2, py::return_value_policy::reference_internal)
         .def("setMechanisms", &MineralReaction::setMechanisms, py::return_value_policy::reference_internal)
         .def("mineral", &MineralReaction::mineral)
-        .def("equation", &MineralReaction::equation, py::return_value_policy::reference_internal)
         .def("equilibriumConstant", &MineralReaction::equilibriumConstant, py::return_value_policy::reference_internal)
         .def("specificSurfaceArea", &MineralReaction::specificSurfaceArea)
         .def("volumetricSurfaceArea", &MineralReaction::volumetricSurfaceArea)

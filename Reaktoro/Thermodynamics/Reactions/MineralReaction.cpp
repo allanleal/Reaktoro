@@ -181,7 +181,7 @@ inline auto errroZeroSurfaceArea(const MineralReaction& reaction) -> void
 {
     Exception exception;
     exception.error << "Cannot calculate the molar surface area of the mineral " << reaction.mineral() << ".";
-    exception.reason << "The specific surface area of the mineral was not set in reaction " << reaction.equation() << ".";
+    exception.reason << "The specific surface area of the mineral was not set in the reaction.";
     RaiseError(exception);
 }
 
@@ -214,12 +214,6 @@ struct MineralReaction::Impl
     /// The name of the mineral species
     std::string mineral;
 
-    /// The equation of the mineral reaction
-    ReactionEquation equation;
-
-    /// The equilibrium constant of the mineral reaction
-    ThermoScalarFunction lnk;
-
     /// The volumetric surface area of the mineral
     double volumetric_surface_area = 0.0;
 
@@ -242,21 +236,6 @@ struct MineralReaction::Impl
     auto setMineral(std::string mineral) -> void
     {
         this->mineral = mineral;
-    }
-
-    auto setEquation(const ReactionEquation& equation) -> void
-    {
-        this->equation = equation;
-    }
-
-    auto setEquation(std::string equation) -> void
-    {
-        this->equation = ReactionEquation(equation);
-    }
-
-    auto setEquilibriumConstant(const ThermoScalarFunction& lnk) -> void
-    {
-        this->lnk = lnk;
     }
 
     auto setSpecificSurfaceArea(double value, std::string unit) -> void
@@ -311,24 +290,6 @@ auto MineralReaction::setMineral(std::string mineral) -> MineralReaction&
     return *this;
 }
 
-auto MineralReaction::setEquation(const ReactionEquation& equation) -> MineralReaction&
-{
-    pimpl->setEquation(equation);
-    return *this;
-}
-
-auto MineralReaction::setEquation(std::string equation) -> MineralReaction&
-{
-    pimpl->setEquation(equation);
-    return *this;
-}
-
-auto MineralReaction::setEquilibriumConstant(const ThermoScalarFunction& lnk) -> MineralReaction&
-{
-    pimpl->setEquilibriumConstant(lnk);
-    return *this;
-}
-
 auto MineralReaction::setSpecificSurfaceArea(double value, std::string unit) -> MineralReaction&
 {
     pimpl->setSpecificSurfaceArea(value, unit);
@@ -362,16 +323,6 @@ auto MineralReaction::setMechanisms(const std::vector<MineralMechanism>& mechani
 auto MineralReaction::mineral() const -> std::string
 {
     return pimpl->mineral;
-}
-
-auto MineralReaction::equation() const -> const ReactionEquation&
-{
-    return pimpl->equation;
-}
-
-auto MineralReaction::equilibriumConstant() const -> const ThermoScalarFunction&
-{
-    return pimpl->lnk;
 }
 
 auto MineralReaction::specificSurfaceArea() const -> double
@@ -442,19 +393,14 @@ auto createReaction(const MineralReaction& mineralrxn, const ChemicalSystem& sys
     // The index of the mineral
     const Index imineral = system.indexSpeciesWithError(mineralrxn.mineral());
 
-    // Check if a default mineral reaction is needed
-    ReactionEquation equation = mineralrxn.equation().empty() ?
-        defaultMineralReactionEquation(imineral, system) : mineralrxn.equation();
+    // Create the mineral reaction equation
+    ReactionEquation equation(std::map<std::string, double>{ {mineralrxn.mineral(), -1.0} });
 
     // Create a Reaction instance
     Reaction reaction(equation, system);
 
     // Set the name of the reaction
     reaction.setName(mineralrxn.mineral());
-
-    // Check if an equilibrium constant was provided to the mineral reaction
-    if(mineralrxn.equilibriumConstant())
-        reaction.setEquilibriumConstant(mineralrxn.equilibriumConstant());
 
     // Create the mineral mechanism functions
     std::vector<ReactionRateFunction> mechanisms;

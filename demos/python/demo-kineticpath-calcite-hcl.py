@@ -25,7 +25,6 @@ editor.addMineralPhase("Calcite")
 
 # Step 3: Define mineral reaction for Calcite
 editor.addMineralReaction("Calcite") \
-    .setEquation("Calcite = Ca++ + CO3--") \
     .addMechanism("logk = -5.81 mol/(m2*s); Ea = 23.5 kJ/mol") \
     .addMechanism("logk = -0.30 mol/(m2*s); Ea = 14.4 kJ/mol; a[H+] = 1.0") \
     .setSpecificSurfaceArea(10, "cm2/g")

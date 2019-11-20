@@ -29,19 +29,16 @@ int main()
     editor.addMineralPhase("Halite");
 
     editor.addMineralReaction("Calcite")
-        .setEquation("Calcite = Ca++ + CO3--")
         .addMechanism("logk = -5.81 mol/(m2*s); Ea = 23.5 kJ/mol")
         .addMechanism("logk = -0.30 mol/(m2*s); Ea = 14.4 kJ/mol; a[H+] = 1.0")
         .setSpecificSurfaceArea(10, "cm2/g");
 
     editor.addMineralReaction("Magnesite")
-        .setEquation("Magnesite = Mg++ + CO3--")
         .addMechanism("logk = -9.34 mol/(m2*s); Ea = 23.5 kJ/mol")
         .addMechanism("logk = -6.38 mol/(m2*s); Ea = 14.4 kJ/mol; a[H+] = 1.0")
         .setSpecificSurfaceArea(10, "cm2/g");
 
     editor.addMineralReaction("Dolomite")
-        .setEquation("Dolomite = Ca++ + Mg++ + 2*CO3--")
         .addMechanism("logk = -7.53 mol/(m2*s); Ea = 52.2 kJ/mol")
         .addMechanism("logk = -3.19 mol/(m2*s); Ea = 36.1 kJ/mol; a[H+] = 0.5")
         .setSpecificSurfaceArea(10, "cm2/g");
