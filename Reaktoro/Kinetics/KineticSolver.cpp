@@ -80,8 +80,8 @@ struct KineticSolver::Impl
     /// The formula matrix of the equilibrium species
     Matrix Ae;
 
-    /// The stoichiometric matrix w.r.t. the equilibrium species
-    Matrix Se;
+    /// The formula matrix of the kinetic species
+    Matrix Ak;
 
     /// The stoichiometric matrix w.r.t. the kinetic species
     Matrix Sk;
@@ -167,16 +167,16 @@ struct KineticSolver::Impl
         Ee = iee.size();
         Ek = ike.size();
 
-        // Initialise the formula matrix of the equilibrium partition
+        // Initialise the formula matrix of the equilibrium and kinetic partitions
         Ae = partition.formulaMatrixEquilibriumPartition();
+        Ak = partition.formulaMatrixKineticPartition();
 
-        // Initialise the stoichiometric matrices w.r.t. the equilibrium and kinetic species
-        Se = cols(reactions.stoichiometricMatrix(), ies);
+        // Initialise the stoichiometric matrix w.r.t. the kinetic species
         Sk = cols(reactions.stoichiometricMatrix(), iks);
 
         // Initialise the coefficient matrix `A` of the kinetic rates
         A.resize(Ee + Nk, reactions.numReactions());
-        A.topRows(Ee) = Ae * tr(Se);
+        A.topRows(Ee) = -Ak * tr(Sk);
         A.bottomRows(Nk) = tr(Sk);
 
         // Auxiliary identity matrix
