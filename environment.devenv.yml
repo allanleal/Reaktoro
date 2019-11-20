@@ -22,6 +22,7 @@ dependencies:
   # Cannot link the Release version of `pugixml` (from conda) to the Debug version of Reaktoro
   - pugixml
   {% endif %}
+  - nlohmann_json
   - pybind11=2.3.0
   - pytest
   - pytest-cpp
